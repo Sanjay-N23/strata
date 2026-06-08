@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  * @notice Manages bonded attestors (Custodian, Legal Rep, Auditor) and 2-of-3
  *         default confirmation logic for CoverFi Protocol.
  */
-contract TIR is Ownable, ReentrancyGuard {
+contract TIR is Ownable2Step, ReentrancyGuard {
     // ─── Enums ───────────────────────────────────────────────────────
     enum AttestorType { CUSTODIAN, LEGAL_REP, AUDITOR }
     enum AttestorStatus { UNREGISTERED, ACTIVE, SLASHED, BLACKLISTED, INACTIVE }

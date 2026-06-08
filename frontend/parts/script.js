@@ -1,5 +1,5 @@
 /* ============================================================
-   CoverFi  --  Credit Protection Protocol Dashboard
+   Strata  --  AI Underwriter & Credit Protection Dashboard
    Complete Frontend JavaScript
    ============================================================ */
 
@@ -7,13 +7,13 @@
 let walletAddress = null;
 let isConnected = false;
 
-// --------------- HashKey Chain Testnet Config -----------------
-const BSC_TESTNET = {
-  chainId: '0x85',
-  chainName: 'HashKey Chain Testnet',
-  nativeCurrency: { name: 'HSK', symbol: 'HSK', decimals: 18 },
-  rpcUrls: ['https://testnet.hsk.xyz'],
-  blockExplorerUrls: ['https://testnet-explorer.hsk.xyz']
+// --------------- Mantle Sepolia Testnet Config -----------------
+const MANTLE = {
+  chainId: '0x138b', // 5003
+  chainName: 'Mantle Sepolia Testnet',
+  nativeCurrency: { name: 'Mantle', symbol: 'MNT', decimals: 18 },
+  rpcUrls: ['https://rpc.sepolia.mantle.xyz'],
+  blockExplorerUrls: ['https://explorer.sepolia.mantle.xyz']
 };
 
 // =============================================================
@@ -34,20 +34,20 @@ async function connectWallet() {
 
     const chainId = await window.ethereum.request({ method: 'eth_chainId' });
 
-    if (chainId !== BSC_TESTNET.chainId) {
+    if (chainId !== MANTLE.chainId) {
       try {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: BSC_TESTNET.chainId }]
+          params: [{ chainId: MANTLE.chainId }]
         });
       } catch (switchErr) {
         if (switchErr.code === 4902) {
           await window.ethereum.request({
             method: 'wallet_addEthereumChain',
-            params: [BSC_TESTNET]
+            params: [MANTLE]
           });
         } else {
-          showToast('error', 'Failed to switch to HashKey Chain Testnet.');
+          showToast('error', 'Failed to switch to Mantle Sepolia.');
           return;
         }
       }
@@ -464,7 +464,7 @@ function createDemoModal() {
     +       '<span class="demo-icon modal-icon">[--]</span>'
     +       '<h3 class="demo-title modal-title">Initializing Demo...</h3>'
     +     '</div>'
-    +     '<p class="demo-desc modal-desc">Preparing the CoverFi protocol demonstration.</p>'
+    +     '<p class="demo-desc modal-desc">Preparing the Strata protocol demonstration.</p>'
     +     '<div class="demo-details modal-details">'
     +       '<!-- Detail rows injected per step -->'
     +     '</div>'

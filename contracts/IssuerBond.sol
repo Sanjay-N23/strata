@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -11,7 +12,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  * @notice Holds 5% of token market cap in USDT. First liquidated on default.
  *         Earns zero yield. Returned on clean wind-down minus 0.5% fee.
  */
-contract IssuerBond is Ownable, ReentrancyGuard {
+contract IssuerBond is Ownable2Step, ReentrancyGuard, Pausable {
     using SafeERC20 for IERC20;
 
     // ─── Structs ─────────────────────────────────────────────────────
@@ -29,7 +30,7 @@ contract IssuerBond is Ownable, ReentrancyGuard {
 
     address public payoutEngine;
     address public issuerRegistry;
-    address public protocolTreasury;
+    address public immutable protocolTreasury;
 
     uint256 public constant WIND_DOWN_FEE_BPS = 50; // 0.5%
 
@@ -41,11 +42,13 @@ contract IssuerBond is Ownable, ReentrancyGuard {
     // ─── Constructor ─────────────────────────────────────────────────
     constructor(address _usdt, address _protocolTreasury) {
         require(_usdt != address(0), "IssuerBond: zero USDT");
+        require(_protocolTreasury != address(0), "IssuerBond: zero treasury");
         usdt = IERC20(_usdt);
         protocolTreasury = _protocolTreasury;
     }
 
     // ─── Admin Setters ───────────────────────────────────────────────
+    // Note: protocolTreasury is immutable and cannot be changed after deployment.
     function setPayoutEngine(address _payoutEngine) external onlyOwner {
         payoutEngine = _payoutEngine;
     }
@@ -54,9 +57,9 @@ contract IssuerBond is Ownable, ReentrancyGuard {
         issuerRegistry = _issuerRegistry;
     }
 
-    function setProtocolTreasury(address _treasury) external onlyOwner {
-        protocolTreasury = _treasury;
-    }
+    // ─── Emergency Stop ──────────────────────────────────────────────
+    function pause() external onlyOwner { _pause(); }
+    function unpause() external onlyOwner { _unpause(); }
 
     // ─── Core Functions ──────────────────────────────────────────────
 
@@ -70,7 +73,7 @@ contract IssuerBond is Ownable, ReentrancyGuard {
         address tokenAddress,
         uint256 usdtAmount,
         uint256 marketCap
-    ) external nonReentrant {
+    ) external nonReentrant whenNotPaused {
         require(bonds[tokenAddress].bondAmount == 0, "IssuerBond: bond exists");
         require(usdtAmount > 0, "IssuerBond: zero amount");
 

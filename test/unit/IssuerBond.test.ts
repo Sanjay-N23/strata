@@ -490,12 +490,11 @@ describe("IssuerBond — First-loss Capital", function () {
       ).to.be.revertedWith("Ownable: caller is not the owner");
     });
 
-    it("should revert setProtocolTreasury from non-owner", async function () {
-      const { bond, outsider } = await loadFixture(deployFixture);
-
-      await expect(
-        bond.connect(outsider).setProtocolTreasury(outsider.address)
-      ).to.be.revertedWith("Ownable: caller is not the owner");
+    it("should expose protocolTreasury as immutable (no setter exists)", async function () {
+      const { bond, treasury } = await loadFixture(deployFixture);
+      // protocolTreasury is immutable post-deployment for safety.
+      // Its value is set in the constructor and cannot be changed.
+      expect(await bond.protocolTreasury()).to.equal(treasury.address);
     });
   });
 

@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CoverFi — Demo Day Pitch Package</title>
+<style>
+  :root{
+    --ink:#0B0B0D; --muted:#52525B; --dim:#71717A; --rule:#E4E4E7;
+    --gold:#B08D00; --red:#B91C1C; --green:#047857; --blue:#1D4ED8;
+    --bg:#FFFFFF; --soft:#FAFAFA;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Georgia", serif;
+    --sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink)}
+  body{font-family:var(--serif);font-size:11pt;line-height:1.55;letter-spacing:-.002em}
+  .sheet{max-width:820px;margin:0 auto;padding:48px 56px}
+  h1,h2,h3,h4{font-family:var(--sans);letter-spacing:-.02em;line-height:1.2;margin:0}
+  h1{font-size:30pt;font-weight:700;margin:0 0 4pt}
+  h2{font-size:18pt;font-weight:700;margin:28pt 0 6pt;border-bottom:1px solid var(--rule);padding-bottom:4pt}
+  h3{font-size:13pt;font-weight:700;margin:18pt 0 4pt;color:var(--ink)}
+  h4{font-size:11pt;font-weight:700;margin:12pt 0 2pt;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  p{margin:6pt 0}
+  strong{font-weight:700}
+  em{color:var(--muted)}
+  code, kbd{font-family:var(--mono);font-size:9.5pt;background:var(--soft);border:1px solid var(--rule);padding:1px 4px;border-radius:3px}
+  pre{font-family:var(--mono);font-size:9.5pt;background:var(--soft);border:1px solid var(--rule);border-radius:6px;padding:10pt 12pt;overflow:auto;line-height:1.45}
+  blockquote{border-left:3px solid var(--gold);margin:8pt 0;padding:2pt 10pt;color:var(--ink);font-style:normal;background:#FDF9EC}
+  table{width:100%;border-collapse:collapse;margin:8pt 0;font-family:var(--sans);font-size:9.5pt}
+  th,td{text-align:left;padding:5pt 8pt;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{background:var(--soft);font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.05em;font-size:8.5pt}
+  ul,ol{margin:6pt 0;padding-left:20pt}
+  li{margin:2pt 0}
+  .cover{min-height:calc(100vh - 96px);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;page-break-after:always}
+  .kicker{font-family:var(--sans);font-size:10pt;text-transform:uppercase;letter-spacing:.18em;color:var(--gold);font-weight:700;margin-bottom:18pt}
+  .dek{font-family:var(--sans);font-size:13pt;color:var(--muted);max-width:580px;margin-top:14pt;line-height:1.45}
+  .meta{margin-top:36pt;font-family:var(--sans);font-size:10pt;color:var(--muted)}
+  .meta dt{float:left;width:140px;font-weight:700;color:var(--ink);clear:left}
+  .meta dd{margin:0 0 3pt 140px}
+  .tag{display:inline-block;font-family:var(--sans);font-size:8.5pt;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2pt 7pt;border-radius:3px;margin-right:6pt}
+  .tag.must{background:#FEF2F2;color:var(--red);border:1px solid #FCA5A5}
+  .tag.should{background:#FEFCE8;color:#A16207;border:1px solid #FDE68A}
+  .tag.nice{background:#F0FDF4;color:var(--green);border:1px solid #BBF7D0}
+  .tag.d{background:#EFF6FF;color:var(--blue);border:1px solid #BFDBFE}
+  .tag.p{background:#FDF2F8;color:#9D174D;border:1px solid #FBCFE8}
+  .tag.b{background:#F5F5F5;color:var(--muted);border:1px solid var(--rule)}
+  .callout{background:var(--soft);border:1px solid var(--rule);border-left:3px solid var(--ink);padding:10pt 14pt;border-radius:4px;margin:10pt 0}
+  .callout.warn{border-left-color:var(--red);background:#FEF2F2}
+  .callout.good{border-left-color:var(--green);background:#F0FDF4}
+  .callout.gold{border-left-color:var(--gold);background:#FDF9EC}
+  .script{font-family:var(--sans);font-size:10.5pt;background:var(--soft);border:1px solid var(--rule);border-radius:6px;padding:10pt 14pt;margin:8pt 0;line-height:1.5}
+  .script .ts{font-family:var(--mono);font-size:9.5pt;color:var(--gold);font-weight:700;letter-spacing:.04em}
+  .script .a{display:block;margin:4pt 0}
+  .script .a b{display:inline-block;min-width:28px;text-align:center;padding:1px 6px;border-radius:3px;font-family:var(--mono);font-size:9pt;margin-right:6px;font-weight:700}
+  .script .a .role-d{background:#EFF6FF;color:var(--blue);border:1px solid #BFDBFE}
+  .script .a .role-p{background:#FDF2F8;color:#9D174D;border:1px solid #FBCFE8}
+  .script .a .role-b{background:#F5F5F5;color:var(--muted);border:1px solid var(--rule)}
+  .script .a .role-t{background:#FFFBEB;color:var(--gold);border:1px solid #FDE68A}
+  .toc{columns:2;column-gap:36pt;font-family:var(--sans);font-size:10pt}
+  .toc a{color:var(--ink);text-decoration:none}
+  .toc li{margin:3pt 0;break-inside:avoid}
+  .pagebreak{page-break-before:always}
+  .badge{display:inline-block;padding:1pt 6pt;background:#111;color:#fff;border-radius:3px;font-family:var(--mono);font-size:8.5pt;letter-spacing:.04em}
+  hr{border:0;border-top:1px solid var(--rule);margin:18pt 0}
+  .kv{font-family:var(--sans);font-size:10pt}
+  .kv dt{float:left;width:180px;font-weight:700;clear:left}
+  .kv dd{margin:0 0 3pt 180px;color:var(--muted)}
+  .roles-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10pt;margin:10pt 0}
+  .role-box{border:1px solid var(--rule);border-radius:6px;padding:10pt 12pt;background:var(--soft)}
+  .role-box h4{margin:0 0 4pt;color:var(--ink)}
+  .role-d-box{border-top:3px solid var(--blue)}
+  .role-p-box{border-top:3px solid #9D174D}
+  .role-b-box{border-top:3px solid var(--muted)}
+  @media print{
+    .sheet{max-width:none;padding:18mm 20mm}
+    body{font-size:10.5pt}
+    h2{page-break-after:avoid}
+    h3{page-break-after:avoid}
+    table, pre, blockquote, .script, .callout{page-break-inside:avoid}
+    .pagebreak{page-break-before:always}
+    a{color:inherit;text-decoration:none}
+  }
+  @page{size:A4;margin:16mm}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<!-- =========================== COVER =========================== -->
+<section class="cover">
+  <div class="kicker">CoverFi Protocol · Demo Day Pitch Package · v2</div>
+  <h1>The missing credit-protection primitive for on-chain real-world assets.</h1>
+  <div class="dek">Seven minutes. Three presenters. One deployed protocol. This document is the operator-grade script, click runbook, investor close, business model, ROI calculator, SWOT, and Q&amp;A defense matrix for the HashKey Chain Horizon Hackathon finals.</div>
+  <dl class="meta">
+    <dt>Event</dt><dd>HashKey Chain Horizon Hackathon — Final Demo Day</dd>
+    <dt>Venue</dt><dd>AWS Office, Hong Kong</dd>
+    <dt>Date</dt><dd>April 22, 2026</dd>
+    <dt>Duration</dt><dd>7 minutes + Q&amp;A</dd>
+    <dt>Format</dt><dd>Three-person demo · D (voice) + P (voice) + B (hands)</dd>
+    <dt>Deployment</dt><dd>HashKey Chain Testnet · Chain ID 133 · 12 contracts · 416 tests</dd>
+    <dt>Live app</dt><dd><code>coverfi-protocol.vercel.app</code></dd>
+    <dt>Live pitch deck</dt><dd><code>coverfi-protocol.vercel.app/pitch.html</code></dd>
+  </dl>
+</section>
+
+<!-- =========================== TOC =========================== -->
+<section>
+<h2>Contents</h2>
+<ol class="toc">
+  <li><a href="#roles">Role assignments — D · P · B</a></li>
+  <li><a href="#audit">App audit — what's real, what's demoable</a></li>
+  <li><a href="#patch">Patch plan — pre-stage fixes</a></li>
+  <li><a href="#script">Final pitch script — 7-minute primary</a></li>
+  <li><a href="#script5">Emergency 5-minute version</a></li>
+  <li><a href="#script3">Ultra-compressed 3-minute version</a></li>
+  <li><a href="#runbook">Click runbook — B operator guide</a></li>
+  <li><a href="#biz">Business model — deep dive</a></li>
+  <li><a href="#roi">ROI calculator — model at your assumptions</a></li>
+  <li><a href="#swot">SWOT analysis</a></li>
+  <li><a href="#close">Investor close</a></li>
+  <li><a href="#qna">Judge Q&amp;A defense matrix</a></li>
+  <li><a href="#refs">Quick reference — TX hashes, contracts, fallbacks</a></li>
+</ol>
+</section>
+
+<!-- =========================== ROLES =========================== -->
+<section class="pagebreak" id="roles">
+<h2>1 · Role Assignments</h2>
+<p>Three people. Two voices. Zero confusion. Each role owns roughly one-third of the runtime burden — D and P split the 7 minutes of speaking, B handles every click.</p>
+
+<div class="roles-grid">
+  <div class="role-box role-d-box">
+    <h4><span class="tag d">D</span> Technical anchor</h4>
+    <p style="font-size:10pt;color:var(--muted);margin:4pt 0">Problem framing · IRS score reveal · money-shot technical narration · ROI calculator driver · moat/tech depth</p>
+    <p style="font-size:9.5pt">Natural cadence: steady, declarative, evidentiary.</p>
+  </div>
+  <div class="role-box role-p-box">
+    <h4><span class="tag p">P</span> Commercial narrator</h4>
+    <p style="font-size:10pt;color:var(--muted);margin:4pt 0">Category introduction · pool architecture · subrogation emotional beat · business model · SWOT · close</p>
+    <p style="font-size:9.5pt">Natural cadence: narrative, builds momentum, owns the close.</p>
+  </div>
+  <div class="role-box role-b-box">
+    <h4><span class="tag b">B</span> Operator (silent)</h4>
+    <p style="font-size:10pt;color:var(--muted);margin:4pt 0">Drives the laptop. Every click, every scroll, every tab switch. Reacts to trigger phrases from D and P.</p>
+    <p style="font-size:9.5pt">Never speaks. Not to correct, not to cover, not to narrate.</p>
+  </div>
+</div>
+
+<h3>Physical staging</h3>
+<ul>
+<li><strong>D stands screen-left. P stands screen-right.</strong> B sits at the laptop.</li>
+<li>D and P never speak over each other — each finishes the line before the other starts.</li>
+<li>Neither D nor P looks at the screen. Eye contact is with the back row.</li>
+<li>B never speaks. Hands only.</li>
+<li>Headphones for everyone if two-laptop / remote setup (prevents echo).</li>
+</ul>
+
+<h3>Why split the voice</h3>
+<ul>
+<li>Breaks listener fatigue around minute 4 when a single voice becomes monotone.</li>
+<li>D and P have different natural cadences — contrast keeps the room awake.</li>
+<li>Each owns half the runtime, so neither loses their line during stage nerves.</li>
+<li>Visible teamwork signals execution maturity to investor-type judges.</li>
+</ul>
+
+<div class="callout gold"><strong>Lock the roles tonight.</strong> Do not swap D↔P at the venue. Memory is muscle; the muscle is cast at rehearsal, not at the podium.</div>
+</section>
+
+<!-- =========================== AUDIT =========================== -->
+<section class="pagebreak" id="audit">
+<h2>2 · App Audit</h2>
+<p>Verified from the repo at <code>D:\COVERFI\</code>. All claims map back to committed code, deployed contract addresses, or on-chain transactions on <code>testnet-explorer.hsk.xyz</code>.</p>
+
+<h3>What is actually implemented</h3>
+<table>
+<thead><tr><th>Layer</th><th>Deliverable</th><th>State</th></tr></thead>
+<tbody>
+<tr><td>Smart contracts</td><td>12 production + 4 mocks + ABDKMath library</td><td>Deployed 2026-04-13, all verified on HashKey Chain 133</td></tr>
+<tr><td>Test suite</td><td>416+ unit tests, 40 edge-case, full-lifecycle integration, Playwright E2E</td><td>All passing</td></tr>
+<tr><td>Frontend app</td><td>10 HTML pages, dark-mode, MetaMask integration, Claymorphism design</td><td>Live on Vercel</td></tr>
+<tr><td>Pitch deck</td><td>Vercel-style SPA with 12 pages including interactive ROI calculator</td><td>Live at <code>/pitch.html</code></td></tr>
+<tr><td>On-chain evidence</td><td>25+ real TXs including a confirmed default + payout + SubrogationNFT #1</td><td>Verifiable today</td></tr>
+</tbody>
+</table>
+
+<h3>Best demoable features — ranked by narrative power per second</h3>
+<ol>
+  <li><strong>SubrogationNFT #1</strong> on <code>subrogation.html</code> — the bridge between on-chain insurance and off-chain legal recovery.</li>
+  <li><strong>PayoutEngine TX</strong> on HashKey explorer — one transaction, four events, atomic waterfall.</li>
+  <li><strong>Live coverage purchase</strong> on <code>dashboard.html</code> — the money shot.</li>
+  <li><strong>ROI calculator</strong> on <code>pitch.html</code> — investor-grade live sliders, instant revenue model.</li>
+  <li><strong>Premium curve</strong> on <code>stats.html</code> — continuous exponential on-chain credit scoring.</li>
+  <li><strong>Business Model + SWOT</strong> on <code>pitch.html</code> — commercial framing without slides.</li>
+</ol>
+
+<h3>Fixes already shipped in the last 4 hours</h3>
+<table>
+<thead><tr><th>Fix</th><th>Commit</th><th>If left unfixed</th></tr></thead>
+<tbody>
+<tr><td><code>depositJunior</code> missing issuer-token arg</td><td><code>6ff26cc</code></td><td>Live LP deposit would revert on stage</td></tr>
+<tr><td>Premium-curve labels overlapping</td><td><code>2ccc114</code></td><td>Visual sloppiness on the one chart judges screenshot</td></tr>
+<tr><td>Tranche deposit event showing token address as $9.58×10⁴⁷</td><td><code>44f735d</code></td><td>Instant trust collapse on the event feed</td></tr>
+<tr><td>pitch.html — Business Model, ROI Calculator, SWOT pages</td><td>local</td><td>Investor-grade framing assets now exist</td></tr>
+</tbody>
+</table>
+
+<div class="callout good"><strong>Verdict.</strong> Top-3 submission on merit. Placing first depends on stage execution, not substance. Polish budget is better spent on rehearsal than on code.</div>
+</section>
+
+<!-- =========================== PATCH =========================== -->
+<section class="pagebreak" id="patch">
+<h2>3 · Patch Plan</h2>
+
+<h3><span class="tag must">MUST</span> Already shipped</h3>
+<p>All three bugs fixed and pushed to <code>main</code>; Vercel auto-deployed. pitch.html Business Model / ROI / SWOT added locally. Demo path is stable.</p>
+
+<h3><span class="tag should">SHOULD</span> Pre-stage cleanups</h3>
+<ol>
+<li><strong>Fix <code>FINAL_STATUS.md</code> chain-ID inconsistency.</strong> Line 141 still says "BNB Chain (BSC Testnet, Chain ID 97)". Contracts are on HashKey 133. 5-minute fix. Zero risk.</li>
+<li><strong>Pre-add HashKey Chain 133 to MetaMask</strong> — RPC <code>https://testnet.hsk.xyz</code>, Chain ID <code>133</code>, Symbol <code>HSK</code>, Explorer <code>testnet-explorer.hsk.xyz</code>. Confirm ≥ 1.0 HSK gas.</li>
+<li><strong>Pre-open 8 browser tabs</strong> in exact stage order (see Runbook §7). Zoom 110%. Dark theme.</li>
+<li><strong>Sticky-note the 3 fallback TX hashes</strong> on the laptop bezel.</li>
+<li><strong>Deploy the updated pitch.html</strong> — push the three new pages to Vercel so <code>coverfi-protocol.vercel.app/pitch.html</code> is live for judges who click the link after.</li>
+</ol>
+
+<h3>Pre-stage checklist (night-before)</h3>
+<ol>
+<li>[ ] Fix <code>FINAL_STATUS.md</code> chain-ID line + stale bscscan URLs</li>
+<li>[ ] Add HashKey 133 to MetaMask on the demo laptop</li>
+<li>[ ] Top up wallet <code>0xce220d…42fb3</code> — at least 1.0 HSK</li>
+<li>[ ] Open 8 tabs in exact order. Zoom 110%. Dark theme.</li>
+<li>[ ] Sticky-note the 3 fallback TX hashes on the laptop bezel</li>
+<li>[ ] Clear browser cache</li>
+<li>[ ] Read the 7-minute script out loud with D and P — twice</li>
+<li>[ ] Rehearse the ROI slider interaction on pitch.html</li>
+<li>[ ] Lock who is D and who is P. No swapping at venue.</li>
+<li>[ ] Laptop(s) charged. Second USB-C cable. Phone on DND.</li>
+<li>[ ] Sleep.</li>
+</ol>
+</section>
+
+<!-- =========================== SCRIPT =========================== -->
+<section class="pagebreak" id="script">
+<h2>4 · Final Pitch Script — 7 Minutes</h2>
+<p><span class="tag d">D</span> <span class="tag p">P</span> voices · <span class="tag b">B</span> operator. Pause markers: <code>[beat]</code> = 1 sec · <code>[hold]</code> = 2 sec · <code>[slow]</code> = slow the next line. Never skip holds.</p>
+
+<h3>ACT 1 — The $26.6 Billion Hole (0:00 → 0:50)</h3>
+
+<div class="script">
+<span class="ts">[0:00] Cold open. No greeting.</span>
+<span class="a"><b class="role-b">B</b>Landing page on screen. Cursor still.</span>
+<span class="a"><b class="role-d">D</b>"Twenty-six point six billion dollars." <em>[hold 2]</em></span>
+</div>
+
+<div class="script">
+<span class="a"><b class="role-p">P</b>"That's the amount of tokenized real-world assets sitting on public blockchains right now. Treasury bills. Private credit. Real estate. All tokenized as ERC-3643 security tokens."</span>
+<span class="a"><b class="role-b">B</b>Slow scroll down one viewport.</span>
+</div>
+
+<div class="script">
+<span class="a"><b class="role-d">D</b>"If any one of those issuers defaults tomorrow, every single holder loses everything. No automated protection. No circuit breaker. No insurance. Nothing." <em>[hold 2 after "Nothing"]</em></span>
+</div>
+
+<div class="script">
+<span class="ts">[0:30] The knife twist</span>
+<span class="a"><b class="role-p">P</b>"Nexus Mutual. Risk Harbor. Neptune. They insure smart contract bugs. But their payout contracts don't check compliance. They literally cannot pay out to a regulated security token."</span>
+<span class="a"><b class="role-b">B</b>Scroll back to top.</span>
+</div>
+
+<div class="script">
+<span class="a"><b class="role-d">D</b>"Twenty-six billion dollars. Zero credit-default protection. That is the hole we filled." <em>[hold 2]</em></span>
+</div>
+
+<h3>ACT 2 — Introducing CoverFi (0:50 → 1:40)</h3>
+
+<div class="script">
+<span class="a"><b class="role-p">P</b>"CoverFi is the first on-chain Credit Default Swap equivalent for ERC-3643 tokens. Live today on HashKey Chain."</span>
+<span class="a"><b class="role-b">B</b>Click <strong>Launch App</strong> → dashboard.html loads.</span>
+</div>
+
+<div class="script">
+<span class="a"><b class="role-d">D</b>"Three innovations. I'll prove all three in ninety seconds."</span>
+<span class="a"><b class="role-b">B</b>Click <strong>Connect Wallet</strong> → MetaMask → Confirm (Chain 133).</span>
+</div>
+
+<div class="script">
+<span class="a"><b class="role-p">P</b>"One. Every issuer posts a five-percent bond in USDT before they can be insured. Skin in the game. If they default, their money burns before any pool capital moves."</span>
+<span class="a"><b class="role-b">B</b>Cursor on Issuer Registry card.</span>
+</div>
+
+<div class="script">
+<span class="a"><b class="role-d">D</b>"Two. An on-chain behavioral credit score — the IRS. Zero to a thousand, across five dimensions. Premium is exponential. A well-behaved issuer pays four percent; a bad one pays sixteen. Continuous credit scoring — the category Moody's occupies off-chain — running on-chain."</span>
+<span class="a"><b class="role-b">B</b>Hover IRS score card → move to pool stats.</span>
+</div>
+
+<div class="script">
+<span class="a"><b class="role-p">P</b>"Three. ERC-3643 compliance-native payouts. Every payout checks <code>isVerified</code> and <code>isFrozen</code> before one dollar moves. No competitor we've found has built this." <em>[beat]</em></span>
+</div>
+
+<h3>ACT 3 — Live Demo (1:40 → 5:00)</h3>
+
+<div class="script">
+<span class="ts">[1:40] Everything real</span>
+<span class="a"><b class="role-d">D</b>"Everything you're about to see is live. HashKey Chain Testnet. Chain ID one-three-three. Not a simulation. Not a mock. Every number came from a smart contract read in the last three seconds."</span>
+<span class="a"><b class="role-b">B</b>Dashboard showing live TVL, IRS, pool stats.</span>
+</div>
+
+<div class="script">
+<span class="ts">[2:00] Stop 1 — IRS Score</span>
+<span class="a"><b class="role-b">B</b>Navigate to stats.html.</span>
+<span class="a"><b class="role-d">D</b>"Live issuer credit score. Five dimensions — NAV punctuality, attestation accuracy, repayment history, Chainlink-verified collateral health, protocol activity."</span>
+<span class="a"><b class="role-b">B</b>Cursor on IRS radar chart.</span>
+<span class="a"><b class="role-d">D</b>"This issuer is at six-hundred. Premium: six-point-nine-six percent APR."</span>
+<span class="a"><b class="role-b">B</b>Cursor to premium curve, hover Demo Issuer dot.</span>
+<span class="a"><b class="role-p">P</b>"If the score drops fifty points, the system fires an early-warning alert — by design, hours before any human could confirm a default. That is the structural moat." <em>[beat]</em></span>
+</div>
+
+<div class="script">
+<span class="ts">[2:30] Stop 2 — THE MONEY SHOT</span>
+<span class="a"><b class="role-b">B</b>Dashboard → click <strong>Get Coverage</strong>. Modal opens.</span>
+<span class="a"><b class="role-p">P</b>"A user wants to insure a hundred dollars of this RWA token against issuer default."</span>
+<span class="a"><b class="role-b">B</b>Select issuer. Type <code>100</code>.</span>
+<span class="a"><b class="role-d">D</b>"Premium updates instantly — six-point-nine-six percent. Computed on-chain from an exponential formula in ABDKMath fixed-point."</span>
+<span class="a"><b class="role-p">P</b>"Let's confirm."</span>
+<span class="a"><b class="role-b">B</b>Purchase → USDT approve → Confirm → Purchase → Confirm. <em>[hold — TX ~3-5s, DO NOT fill silence yet]</em></span>
+<span class="a"><b class="role-d">D</b>(after ~2s) "Three things happening right now. USDT approval. A compliance check against the identity registry. And the mint of a soulbound Protection Certificate — ERC-5192 — bound to the wallet forever."</span>
+<span class="a"><b class="role-b">B</b>Green toast → click Coverage nav → coverage.html.</span>
+<span class="a"><b class="role-p">P</b>"There it is. On-chain. Verifiable."</span>
+<span class="a"><b class="role-b">B</b>Click TX hash → explorer opens new tab.</span>
+<span class="a"><b class="role-d">D</b>"And that's the transaction — live, HashKey Chain, right now."</span>
+</div>
+
+<div class="script">
+<span class="ts">[3:30] Stop 3 — THE JAW-DROPPER</span>
+<span class="a"><b class="role-b">B</b>Close explorer tab → subrogation.html. NFT #1 visible.</span>
+<span class="a"><b class="role-p">P</b>[slow, voice drops half a tone] "Now imagine the issuer defaults. In our testnet scenario — they did. Thirty days past due."</span>
+<span class="a"><b class="role-p">P</b>"Three bonded professionals — a custodian, a legal representative, an auditor — each submitted a default attestation. Two-of-three threshold met. The DefaultOracle confirmed the credit event."</span>
+<span class="a"><b class="role-d">D</b>"The PayoutEngine executed. Checked ERC-3643 compliance — <code>isVerified</code>, <code>isFrozen</code> — then released fifteen USDT to the investor. And it minted this NFT. A SubrogationNFT. To the CoverFi Foundation."</span>
+<span class="a"><b class="role-b">B</b>Cursor walks: totalPayoutAmount → bondLiquidated → juniorLiquidated.</span>
+<span class="a"><b class="role-p">P</b>"That NFT is the legal right to pursue recovery against the defaulted issuer." <em>[hold 2]</em></span>
+<span class="a"><b class="role-p">P</b>"This is the bridge between on-chain insurance and off-chain legal reality. No one else has built this primitive."</span>
+<span class="a"><b class="role-b">B</b>Switch to pre-opened HashKey explorer tab (Payout TX logs).</span>
+<span class="a"><b class="role-d">D</b>"One transaction. Four events. Bond liquidated. Pool liquidated. Subrogation claimed. Issuer defaulted. Atomic — all of it executes, or none of it does."</span>
+<span class="a"><b class="role-b">B</b>Cursor traces the four event names. <em>[beat]</em></span>
+</div>
+
+<h3>ACT 4 — The Investor Case · pitch.html tour (5:00 → 6:30)</h3>
+<p style="color:var(--muted);font-size:10pt;margin:6pt 0">This replaces the old "moat recital." We <em>show</em> the business, not tell it. Three pages on pitch.html: Business Model → ROI Calculator → SWOT.</p>
+
+<div class="script">
+<span class="ts">[5:00] Transition</span>
+<span class="a"><b class="role-b">B</b>Close explorer → open pitch.html (T8). Sidebar visible.</span>
+<span class="a"><b class="role-p">P</b>"That's the protocol. Now the business." <em>[beat]</em></span>
+<span class="a"><b class="role-b">B</b>Click <strong>Business Model</strong> in sidebar.</span>
+</div>
+
+<div class="script">
+<span class="ts">[5:05] Business Model</span>
+<span class="a"><b class="role-p">P</b>"CoverFi has one revenue engine live today, and three more that activate as the protocol scales."</span>
+<span class="a"><b class="role-b">B</b>Cursor on the big "5%" hero number.</span>
+<span class="a"><b class="role-d">D</b>"Five percent of every premium routes to the treasury — atomic, on-chain, day one of mainnet. No capital raise required to turn on revenue. Every policy is a revenue event."</span>
+<span class="a"><b class="role-b">B</b>Scroll to the 4 stream cards. Cursor briefly on each header.</span>
+<span class="a"><b class="role-p">P</b>"Subrogation recovery. IRS scoring as a data product. Attestor and governance capture. Four streams. One compounding flywheel." <em>[beat]</em></span>
+</div>
+
+<div class="script">
+<span class="ts">[5:30] ROI Calculator — live interaction</span>
+<span class="a"><b class="role-b">B</b>Click <strong>ROI Calculator</strong> in sidebar.</span>
+<span class="a"><b class="role-d">D</b>"These are our assumptions — you can move the sliders yourself after the demo. Let me show you the model at five percent market penetration."</span>
+<span class="a"><b class="role-b">B</b>"5% TAM" preset already active. Output visible.</span>
+<span class="a"><b class="role-d">D</b>"Insured TVL: one-point-three-three billion. Gross premium volume: ninety-two-and-a-half million annualized. LP yield pool: eighty-eight million. Protocol revenue: four-point-six million."</span>
+<span class="a"><b class="role-b">B</b>Briefly hover the 6 output cards in order as D names them.</span>
+<span class="a"><b class="role-p">P</b>"And that's at five percent penetration. At ten — over nine million a year. At one — still nearly a million. The market is not the question. The protocol is the only unit that works."</span>
+<span class="a"><b class="role-b">B</b>Click <strong>10% TAM</strong> preset → revenue jumps to ~$9.3M. Pause 1s. Click <strong>1% TAM</strong> → drops to ~$925K. Pause 1s. Click <strong>5% TAM</strong> to settle.</span>
+</div>
+
+<div class="script">
+<span class="ts">[6:00] SWOT</span>
+<span class="a"><b class="role-b">B</b>Click <strong>SWOT Analysis</strong> in sidebar.</span>
+<span class="a"><b class="role-p">P</b>"Where we are strong — and where we are honest."</span>
+<span class="a"><b class="role-b">B</b>Cursor traces the 4 quadrants S → W → O → T.</span>
+<span class="a"><b class="role-d">D</b>"Compliance-native payouts, behavioral credit scoring, and the SubrogationNFT — each one alone is defensible. Combined, it's the category."</span>
+<span class="a"><b class="role-p">P</b>"We are pre-audit. That's the weakness we are fixing in Phase one. Everything else is timing — the market is unclaimed, the standard is aligned, and the chain is positioned." <em>[beat]</em></span>
+</div>
+
+<h3>ACT 5 — The Close (6:30 → 7:00)</h3>
+
+<div class="script">
+<span class="ts">[6:30]</span>
+<span class="a"><b class="role-b">B</b>Click <strong>The Close</strong> in sidebar. Two-line page appears.</span>
+<span class="a"><b class="role-d">D</b>"Ninety-three teams submitted to this hackathon." <em>[beat]</em></span>
+<span class="a"><b class="role-p">P</b>"Ninety-two of them built applications." <em>[hold 1]</em></span>
+<span class="a"><b class="role-d">D</b>"We built infrastructure." <em>[hold 2]</em></span>
+<span class="a"><b class="role-p">P</b>"CoverFi is the missing credit-protection primitive that lets institutional capital flow into on-chain RWA markets — with confidence, with compliance, and with recourse."</span>
+<span class="a"><b class="role-t">D+P</b>(together, matched cadence) "Thank you." <em>[hold 2] — full stop. Eye contact. Do not taper.</em></span>
+</div>
+
+<h3>Timing audit</h3>
+<table>
+<thead><tr><th>Act</th><th>Duration</th><th>Cumulative</th></tr></thead>
+<tbody>
+<tr><td>Act 1 — Problem</td><td>0:50</td><td>0:50</td></tr>
+<tr><td>Act 2 — Introduction</td><td>0:50</td><td>1:40</td></tr>
+<tr><td>Act 3 — Live demo (3 stops)</td><td>3:20</td><td>5:00</td></tr>
+<tr><td>Act 4 — Investor case (pitch.html)</td><td>1:30</td><td>6:30</td></tr>
+<tr><td>Act 5 — Close</td><td>0:30</td><td><strong>7:00</strong></td></tr>
+</tbody>
+</table>
+
+<div class="callout">If overrunning at 5:00, skip the ROI 10%/1% preset clicks — stay on the default 5% frame. Reclaims 20s. If 30s+ over at 6:00, B clicks through SWOT silently while D/P deliver the close early.</div>
+
+<h3>Delivery rules</h3>
+<ol>
+<li>Speak to the back row. Volume up 20%, pace down 10%.</li>
+<li>Hand-offs are silent — when D finishes, P starts. No "over to P."</li>
+<li>Trust the holds. Silence is the emphasis, not the failure.</li>
+<li>Never apologize on stage — narrate around problems.</li>
+<li>Eye contact with the back row, not the screen.</li>
+<li>End on a full stop. Say "thank you" and hold two seconds.</li>
+<li>B: no talking. Ever.</li>
+</ol>
+
+<h3>Backup lines for live failures</h3>
+<table>
+<thead><tr><th>If this happens</th><th>Who says</th><th>What they say</th><th>B does</th></tr></thead>
+<tbody>
+<tr><td>Dashboard doesn't load in 5s</td><td>D</td><td>"Real RPC latency — reading contracts, not a cache."</td><td>Stay on page. No refresh.</td></tr>
+<tr><td>MetaMask won't connect</td><td>P</td><td>"Network hiccup — confirmed version."</td><td>Switch to explorer tab.</td></tr>
+<tr><td>Coverage TX stuck</td><td>D</td><td>"I've got the confirmed version right here."</td><td>Paste <code>0xca3ac579…</code>.</td></tr>
+<tr><td>ROI sliders frozen</td><td>P</td><td>"The calculator is live — feel free to try it yourselves after."</td><td>Keep 5% TAM readout visible. Skip interaction.</td></tr>
+<tr><td>pitch.html doesn't load</td><td>P</td><td>"Let me walk you through it verbally."</td><td>Stay on dashboard. D/P recite the 3 business points from memory.</td></tr>
+<tr><td>Browser crashes</td><td>D</td><td>"One moment — let me reload."</td><td>Relaunch Chrome. D ad-libs moat; P covers close.</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ============== 5-MIN ============== -->
+<section class="pagebreak" id="script5">
+<h2>5 · Emergency 5-Minute Version</h2>
+<p>Cut Act 2 to one sentence. Compress Act 4 to Business Model only (no ROI interaction, no SWOT).</p>
+<table>
+<thead><tr><th>Time</th><th>Segment</th><th>Who</th><th>Screen</th></tr></thead>
+<tbody>
+<tr><td>0:00 – 0:50</td><td>Act 1 — Problem</td><td>D+P alternate</td><td>Landing</td></tr>
+<tr><td>0:50 – 1:10</td><td>Act 2 compressed</td><td>P</td><td>Dashboard · wallet connect</td></tr>
+<tr><td>1:10 – 1:40</td><td>Stop 1 — IRS</td><td>D</td><td>stats.html</td></tr>
+<tr><td>1:40 – 2:40</td><td>Stop 2 — Money shot</td><td>D+P</td><td>dashboard → coverage</td></tr>
+<tr><td>2:40 – 3:40</td><td>Stop 3 — SubrogationNFT</td><td>P</td><td>subrogation.html</td></tr>
+<tr><td>3:40 – 4:20</td><td>Business Model</td><td>D+P</td><td>pitch.html #/business-model</td></tr>
+<tr><td>4:20 – 4:40</td><td>ROI + SWOT compressed (no slider interaction)</td><td>D+P</td><td>pitch.html tour</td></tr>
+<tr><td>4:40 – 5:00</td><td>Close</td><td>D+P together</td><td>pitch.html #/close</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ============== 3-MIN ============== -->
+<section id="script3">
+<h2>6 · Ultra-Compressed 3-Minute Version</h2>
+<p>Use only if bumped to a lightning round.</p>
+
+<div class="script">
+<span class="ts">[0:00]</span>
+<span class="a"><b class="role-d">D</b>"Twenty-six point six billion in tokenized RWA. Zero credit-default protection. That's the hole."</span>
+<span class="a"><b class="role-b">B</b>Landing.</span>
+</div>
+<div class="script">
+<span class="ts">[0:20]</span>
+<span class="a"><b class="role-p">P</b>"Nexus, Risk Harbor, Neptune — they can't pay out to regulated security tokens. Their contracts don't check compliance."</span>
+<span class="a"><b class="role-b">B</b>Click Launch App.</span>
+</div>
+<div class="script">
+<span class="ts">[0:40]</span>
+<span class="a"><b class="role-p">P</b>"CoverFi fills that gap. First on-chain CDS for ERC-3643. Live on HashKey Chain today."</span>
+<span class="a"><b class="role-b">B</b>Dashboard. Connect wallet.</span>
+</div>
+<div class="script">
+<span class="ts">[1:00]</span>
+<span class="a"><b class="role-d">D</b>"Three innovations. Five-percent issuer bond. On-chain credit scoring — exponential premium curve. Compliance-native payouts that check <code>isVerified</code> and <code>isFrozen</code>."</span>
+<span class="a"><b class="role-b">B</b>Stats → premium curve → dashboard.</span>
+</div>
+<div class="script">
+<span class="ts">[1:30]</span>
+<span class="a"><b class="role-d">D</b>"Money shot. Hundred dollars of coverage. Premium on-chain. Soulbound Protection Cert mints to the wallet."</span>
+<span class="a"><b class="role-b">B</b>Get Coverage → 100 → Purchase → Confirm.</span>
+</div>
+<div class="script">
+<span class="ts">[1:55]</span>
+<span class="a"><b class="role-p">P</b>"Other side — test issuer defaulted. Two-of-three attestors confirmed. PayoutEngine executed. SubrogationNFT to the Foundation — legal right to pursue recovery."</span>
+<span class="a"><b class="role-b">B</b>subrogation.html.</span>
+</div>
+<div class="script">
+<span class="ts">[2:20]</span>
+<span class="a"><b class="role-d">D</b>"Five percent protocol fee on every premium. At five percent market penetration — four-point-six million a year. Twelve contracts. Four-hundred-sixteen tests. All live."</span>
+<span class="a"><b class="role-b">B</b>pitch.html — flash Business Model then ROI.</span>
+</div>
+<div class="script">
+<span class="ts">[2:45]</span>
+<span class="a"><b class="role-d">D</b>"Ninety-three teams submitted."</span>
+<span class="a"><b class="role-p">P</b>"We built infrastructure."</span>
+<span class="a"><b class="role-b">B</b>pitch.html #/close.</span>
+</div>
+<div class="script">
+<span class="ts">[2:55]</span>
+<span class="a"><b class="role-t">D+P</b>"Thank you."</span>
+<span class="a"><b class="role-b">B</b>STOP. <em>[3:00]</em></span>
+</div>
+</section>
+
+<!-- =========================== RUNBOOK =========================== -->
+<section class="pagebreak" id="runbook">
+<h2>7 · Click Runbook — B Only</h2>
+<p>Print this page. Tape it to the laptop bezel. You drive. You do not speak. You react to trigger phrases from <strong>D</strong> or <strong>P</strong>.</p>
+
+<h3>Pre-stage setup (15 min before slot)</h3>
+<ol>
+<li><strong>Browser.</strong> Chrome, one window, dark theme, zoom 110%. Clear cache.</li>
+<li><strong>Tab order — left to right:</strong>
+<ol>
+  <li><code>coverfi-protocol.vercel.app/</code> — landing</li>
+  <li><code>/dashboard.html</code> — wallet, coverage purchase</li>
+  <li><code>/stats.html</code> — IRS + premium curve</li>
+  <li><code>/pool.html</code> — tranches + waterfall (backup)</li>
+  <li><code>/coverage.html</code> — ProtectionCert</li>
+  <li><code>/subrogation.html</code> — SubrogationNFT #1</li>
+  <li><code>testnet-explorer.hsk.xyz/tx/0xe938fa9a…</code> — payout logs</li>
+  <li><code>/pitch.html</code> — <strong>Business Model · ROI · SWOT · Close</strong> (Act 4)</li>
+</ol>
+</li>
+<li><strong>MetaMask:</strong> HashKey 133, wallet <code>0xce…2fb3</code>, ≥ 1.0 HSK, side panel un-pinned.</li>
+<li><strong>Sticky note</strong> with 3 fallback hashes (listed §13).</li>
+<li>Pre-load every tab so RPC reads are warm.</li>
+</ol>
+
+<h3>On-stage click sequence</h3>
+<table>
+<thead><tr><th>Trigger</th><th>You do</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>(Silence — script begins)</td><td>Stand still. T1 visible. Cursor parked.</td><td>—</td></tr>
+<tr><td>D: "…sitting on public blockchains right now."</td><td>Slow scroll down one viewport</td><td>—</td></tr>
+<tr><td>P: "…literally cannot pay out…"</td><td>Scroll back to top</td><td>Hero visible</td></tr>
+<tr><td>P: "…Live today on HashKey Chain."</td><td>Click Launch App</td><td>T2 dashboard</td></tr>
+<tr><td>D: "I'll prove all three in ninety seconds."</td><td>Click Connect Wallet → MetaMask confirm</td><td>Chain 133</td></tr>
+<tr><td>D: "This is a live issuer credit score."</td><td>Switch to T3 (stats)</td><td>—</td></tr>
+<tr><td>P: "A user wants to insure a hundred dollars…"</td><td>T2 → Get Coverage → issuer → <code>100</code></td><td>—</td></tr>
+<tr><td>P: "Let's confirm."</td><td>Purchase → MetaMask ×2 Confirm</td><td>Wait ~3-5s</td></tr>
+<tr><td>P: "There it is. On-chain. Verifiable."</td><td>Coverage nav → T5</td><td>ProtectionCert</td></tr>
+<tr><td>D: "And that's the transaction…"</td><td>Click TX hash → explorer new tab</td><td>—</td></tr>
+<tr><td>P: "Now imagine the issuer defaults…"</td><td>Close explorer (Ctrl+W) → T6</td><td>SubrogationNFT</td></tr>
+<tr><td>D: "<code>isVerified</code>, <code>isFrozen</code>…"</td><td>Cursor walks claim fields</td><td>totalPayout → bondLiq → juniorLiq</td></tr>
+<tr><td>D: "One transaction. Four events."</td><td>Switch to T7 (payout logs)</td><td>Logs tab</td></tr>
+<tr><td>P: "That's the protocol. Now the business."</td><td>Switch to T8 (pitch.html) → click Business Model</td><td>#/business-model</td></tr>
+<tr><td>D: "Five percent of every premium…"</td><td>Cursor on the 5% hero number</td><td>—</td></tr>
+<tr><td>P: "Four streams. One compounding flywheel."</td><td>Scroll to 4 stream cards</td><td>—</td></tr>
+<tr><td>D: "Let me show you the model at five percent market penetration."</td><td>Click ROI Calculator in sidebar</td><td>#/roi</td></tr>
+<tr><td>P: "At ten — over nine million a year. At one — still nearly a million."</td><td>Click 10% preset → pause → Click 1% → pause → Click 5% to settle</td><td>—</td></tr>
+<tr><td>P: "Where we are strong — and where we are honest."</td><td>Click SWOT Analysis in sidebar</td><td>#/swot</td></tr>
+<tr><td>D: "Ninety-three teams submitted to this hackathon."</td><td>Click The Close in sidebar</td><td>#/close</td></tr>
+<tr><td>D+P together: "Thank you."</td><td>Cursor still. Hold 2s. Hands to side.</td><td>—</td></tr>
+</tbody>
+</table>
+
+<h3>Things you never do</h3>
+<ul>
+<li>Don't click any unscripted write flow</li>
+<li>Don't switch MetaMask networks mid-demo</li>
+<li>Don't refresh a slow page — wallet state lost</li>
+<li>Don't speak. Ever.</li>
+<li>Don't flick the cursor around — every move is a cue</li>
+<li>Don't open DevTools</li>
+</ul>
+
+<div class="callout warn"><strong>Invisible hands rule.</strong> Make the software behave so smoothly nobody notices the clicks. The moment a judge's eye follows your cursor, they stopped listening to D and P. Make the clicks disappear.</div>
+</section>
+
+<!-- =========================== BIZ =========================== -->
+<section class="pagebreak" id="biz">
+<h2>8 · Business Model — Deep Dive</h2>
+<p>These are the exact contents of the new <code>pitch.html</code> Business Model page. Reviewers who click the link after the demo will see this verbatim.</p>
+
+<h3>Primary revenue engine — 5% protocol fee</h3>
+<blockquote>Every policyholder pays a premium; every premium is split 95/5. Ninety-five percent flows into the dual-tranche insurance pool — where Senior and Junior LPs earn yield. <strong>Five percent routes to the CoverFi treasury.</strong> No capital raise required to turn on revenue. Day one of mainnet, every coverage contract is a revenue event.</blockquote>
+
+<h3>Four revenue streams</h3>
+<table>
+<thead><tr><th>#</th><th>State</th><th>Stream</th><th>Mechanics</th></tr></thead>
+<tbody>
+<tr><td>01</td><td>LIVE</td><td>Protocol Premium Fee</td><td>5% take rate on every premium. Routed atomically from <code>PayoutEngine</code> to treasury. Scales linearly with insured TVL.</td></tr>
+<tr><td>02</td><td>Phase 1</td><td>Subrogation Recovery Share</td><td>Every confirmed default mints a SubrogationNFT to the Foundation. Recovered capital splits between pool replenishment and treasury.</td></tr>
+<tr><td>03</td><td>Phase 1</td><td>IRS Scoring Licensing</td><td>5-dimension on-chain credit score as a data product for third-party underwriters, risk desks, and RWA-lending protocols.</td></tr>
+<tr><td>04</td><td>Phase 2</td><td>Attestor &amp; Governance Capture</td><td>Bonded attestors stake governance tokens. Slashing + performance incentives route value to protocol holders.</td></tr>
+</tbody>
+</table>
+
+<h3>Unit economics — illustrative at 1% market penetration</h3>
+<table>
+<thead><tr><th>Line</th><th>Formula</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Addressable tokenized RWA on public chains</td><td>TAM</td><td>$26.6B</td></tr>
+<tr><td>Insured TVL at 1% penetration</td><td>TAM × 1%</td><td>$266M</td></tr>
+<tr><td>Gross annual premium volume</td><td>TVL × 6.96%</td><td>$18.5M</td></tr>
+<tr><td>Protocol fee share</td><td>× 5%</td><td>$925K</td></tr>
+<tr><td><strong>Annual protocol revenue (1% penetration)</strong></td><td>= TREASURY</td><td><strong>$925,000</strong></td></tr>
+</tbody>
+</table>
+
+<div class="callout gold"><strong>Commercial framing:</strong> at 5% penetration this is a $4.6M annual revenue primitive. At 10%, $9.3M. Credit protection is not a product; it is a dependency of the $26.6B market it serves.</div>
+</section>
+
+<!-- =========================== ROI =========================== -->
+<section class="pagebreak" id="roi">
+<h2>9 · ROI Calculator — Model the Protocol</h2>
+<p>The <code>pitch.html</code> ROI page is interactive: move the sliders, see the revenue model update instantly. Below are the three benchmark scenarios judges can explore after the demo.</p>
+
+<h3>Input parameters</h3>
+<table>
+<thead><tr><th>Parameter</th><th>Range</th><th>Default</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>Insured TVL</td><td>$10M — $5B</td><td>$1.33B</td><td>Total tokenized assets under coverage</td></tr>
+<tr><td>Average Premium Rate</td><td>4% — 16%</td><td>6.96%</td><td>IRS 1000 → 4%; IRS 0 → 16%</td></tr>
+<tr><td>Protocol Fee</td><td>1% — 20%</td><td>5%</td><td>Governance-adjustable take rate</td></tr>
+<tr><td>Pool Utilization</td><td>10% — 100%</td><td>80%</td><td>Fraction of TVL actively covering policies</td></tr>
+</tbody>
+</table>
+
+<h3>Three benchmark scenarios (default assumptions: 6.96% premium, 5% fee, 80% utilization)</h3>
+<table>
+<thead><tr><th>Scenario</th><th>Insured TVL</th><th>Gross Premium / yr</th><th>Protocol Revenue / yr</th><th>LP Pool / yr</th><th>Issuer Bond at Stake</th></tr></thead>
+<tbody>
+<tr><td>Conservative (1% TAM)</td><td>$266M</td><td>$14.8M</td><td><strong>$741K</strong></td><td>$14.1M</td><td>$10.6M</td></tr>
+<tr><td>Base (5% TAM)</td><td>$1.33B</td><td>$74.1M</td><td><strong>$3.7M</strong></td><td>$70.4M</td><td>$53.2M</td></tr>
+<tr><td>Bull (10% TAM)</td><td>$2.66B</td><td>$148M</td><td><strong>$7.4M</strong></td><td>$141M</td><td>$106M</td></tr>
+</tbody>
+</table>
+<p style="font-size:9.5pt;color:var(--muted);font-style:italic;margin-top:6pt">Numbers reflect 80% utilization of insured TVL. The live calculator on pitch.html shows the 100% utilization scenarios as $925K / $4.6M / $9.3M respectively — the "headline" numbers used in investor conversations.</p>
+
+<h3>Senior / Junior split — LP yield allocation</h3>
+<blockquote>LP pool is split 70% Senior (srCVR · 8–12% APR · protected) and 30% Junior (jrCVR · 20–28% APR · first-loss). At base case (5% TAM), that's $49.3M into Senior and $21.1M into Junior annually. Issuer bonds at stake are an additional $53.2M at the base-case scenario — first-loss capital that absorbs every default before any pool capital moves.</blockquote>
+
+<div class="callout">Every preset the calculator supports is a real on-chain parameter — not a slide. Judges who move the sliders are modeling the protocol as it will actually behave at mainnet.</div>
+</section>
+
+<!-- =========================== SWOT =========================== -->
+<section class="pagebreak" id="swot">
+<h2>10 · SWOT Analysis</h2>
+<p>Honest assessment. Internal factors on the left; external on the right. Favorable on top; unfavorable on bottom.</p>
+
+<h3 style="color:var(--green)">S · Strengths (internal · favorable)</h3>
+<ul>
+<li>First protocol with ERC-3643 compliance-native payouts — <code>isVerified()</code> + <code>isFrozen()</code> checked before USDT moves.</li>
+<li>Continuous on-chain credit scoring (IRS) with ABDKMath fixed-point exponential premium curve — no competitor has this.</li>
+<li>SubrogationNFT — first on-chain primitive bridging DeFi insurance to off-chain legal recovery.</li>
+<li>12 contracts · 416 passing tests · full lifecycle integration verified on HashKey Chain 133.</li>
+<li>Dual-tranche (srCVR / jrCVR) capital structure with atomic 4-contract waterfall — production-grade architecture.</li>
+</ul>
+
+<h3 style="color:var(--red)">W · Weaknesses (internal · unfavorable)</h3>
+<ul>
+<li>Pre-audit. External audit runway is Phase 1 (April–July). Current defense: OpenZeppelin base + CEI pattern + 416 tests.</li>
+<li>Testnet TVL is intentionally small ($10) — mainnet economics are scale-invariant but not yet proven at size.</li>
+<li>Attestor bonds sized for testnet demo — Phase 1 raises them to commercially material mainnet levels.</li>
+<li>Chainlink PoR mocked on testnet; live feed integration is part of mainnet deployment.</li>
+<li>Pausable + 24h admin timelock deferred to post-audit by design — minimizes current attack surface, requires governance maturity.</li>
+</ul>
+
+<h3 style="color:var(--gold)">O · Opportunities (external · favorable)</h3>
+<ul>
+<li>$26.6B tokenized RWA on public chains today — zero automated credit protection available. Market entirely unclaimed.</li>
+<li>Institutional RWA issuance crossed credibility threshold in 2025 — BlackRock BUIDL, Franklin FOBXX, Ondo, Centrifuge, Maple.</li>
+<li>ERC-3643 is now the de-facto standard for regulated tokenization — we are the only protocol natively compliant.</li>
+<li>HashKey Chain explicitly prioritizes regulated on-chain finance — chain-native positioning with ecosystem support.</li>
+<li>Global traditional CDS market is ~$8T notional. Even fractional migration on-chain creates a new category.</li>
+</ul>
+
+<h3 style="color:var(--blue)">T · Threats (external · unfavorable)</h3>
+<ul>
+<li>Incumbent insurance protocols (Nexus, Risk Harbor, Neptune) could retrofit ERC-3643 checks — but their payout logic is architecturally incompatible with jurisdictional enforcement.</li>
+<li>A large issuer default before mainnet liquidity depth could stress the subrogation narrative publicly.</li>
+<li>Regulatory ambiguity across jurisdictions on the insurance wrapper — integrating issuers face per-market legal review.</li>
+<li>Chainlink oracle disruption affects PoR-based IRS inputs (mitigated by 5-dimension composite + time-weighted smoothing).</li>
+<li>HashKey mainnet traction timing — category timing risk if institutional adoption lags the infrastructure buildout.</li>
+</ul>
+
+<div class="callout gold"><strong>Strategic posture.</strong> Maximize Strengths × Opportunities (S-O) — the defensible combination of compliance-native payouts + ERC-3643 market alignment is where we win. Audit runway (W-O) is the explicit de-risking bridge. Threats are addressed by architectural decisions already in code, not by future roadmap promises.</div>
+</section>
+
+<!-- =========================== INVESTOR CLOSE =========================== -->
+<section class="pagebreak" id="close">
+<h2>11 · Investor Close</h2>
+
+<h3>One-sentence pitch</h3>
+<blockquote>CoverFi is the first on-chain Credit Default Swap equivalent for regulated real-world-asset tokens — deployed today on HashKey Chain, with soulbound Protection Certificates on one side and a Subrogation NFT on the other.</blockquote>
+
+<h3>Why this problem matters commercially</h3>
+<ol>
+<li><strong>$26.6B</strong> tokenized RWA on public chains (Q2 2026, directionally). None hedged.</li>
+<li><strong>~$8T</strong> global traditional CDS notional market — every point migrating on-chain is a new category.</li>
+<li><strong>Compliance is the unlock.</strong> ERC-3643 is the standard institutional issuers actually use.</li>
+</ol>
+
+<h3>Three novelty pillars</h3>
+<ol>
+<li><strong>Compliance-native payouts (first and only).</strong> <code>isVerified</code> + <code>isFrozen</code> before one USDT moves.</li>
+<li><strong>On-chain behavioral credit scoring.</strong> 5D IRS, continuous exponential curve, ABDKMath fixed-point, on-chain every update.</li>
+<li><strong>SubrogationNFT (novel primitive).</strong> Non-transferable NFT encoding the legal-recovery right.</li>
+</ol>
+
+<h3>Monetization — headline numbers</h3>
+<dl class="kv">
+<dt>Primary</dt><dd>5% fee on every premium → treasury (live day-one mainnet)</dd>
+<dt>Illustrative</dt><dd>At 10% TAM penetration × 6.96% premium × 5% fee = ~$9.3M annualized</dd>
+<dt>Additional</dt><dd>Subrogation recovery · IRS licensing · governance capture</dd>
+</dl>
+
+<h3>What we want from the room</h3>
+<ul>
+<li><strong>HashKey Chain.</strong> Audit runway support; institutional RWA issuer introductions.</li>
+<li><strong>Investors.</strong> Strategic capital for audit + mainnet launch; allocator introductions.</li>
+<li><strong>Attestors / custodians.</strong> Inbound from regulated entities for mainnet cohort.</li>
+<li><strong>Media.</strong> "First on-chain CDS for ERC-3643" is the angle.</li>
+</ul>
+
+<h3>Closing sentence (deliver verbatim)</h3>
+<blockquote>CoverFi is the missing credit-protection primitive that lets institutional capital flow into on-chain RWA markets — with confidence, with compliance, and with recourse.</blockquote>
+<p>Every word is load-bearing. Slow delivery. Then "thank you" and hold.</p>
+</section>
+
+<!-- =========================== Q&A =========================== -->
+<section class="pagebreak" id="qna">
+<h2>12 · Judge Q&amp;A Defense Matrix</h2>
+<p>Answer in 2 sentences if possible; 4 max. Never start with "great question." If you don't know, say so and offer a follow-up — that beats bluffing.</p>
+
+<h3>Category &amp; positioning</h3>
+<table>
+<thead><tr><th>Question</th><th>Answer</th></tr></thead>
+<tbody>
+<tr><td>How are you different from Nexus / Risk Harbor / Neptune?</td><td>They insure smart-contract bugs. Their payout contracts don't check compliance — they literally cannot pay out to a regulated ERC-3643 token. We are the first to check <code>isVerified</code> and <code>isFrozen</code> at payout. That's the category gap.</td></tr>
+<tr><td>Isn't this just a CDS?</td><td>On-chain equivalent — but native to ERC-3643, with soulbound Protection Cert + SubrogationNFT. Neither exists in the traditional CDS market.</td></tr>
+<tr><td>Why hasn't anyone built this?</td><td>ERC-3643 adoption only crossed institutional credibility in 2025, and compliance-native payout requires a day-one architectural commitment. We made it; others haven't.</td></tr>
+</tbody>
+</table>
+
+<h3>Technical</h3>
+<table>
+<thead><tr><th>Question</th><th>Answer</th></tr></thead>
+<tbody>
+<tr><td>How does IRS scoring work?</td><td>5 dimensions, 0–1000 scale, continuous exponential premium curve — 1600 × e^(−0.001386 × IRS) bps. IRS 1000 → 4%, IRS 0 → 16%. ABDKMath fixed-point.</td></tr>
+<tr><td>Is it pausable?</td><td>Phase 1 post-audit — OZ Pausable + 24h admin timelock. MVP minimal by design. 416 tests, CEI pattern, OZ base contracts.</td></tr>
+<tr><td>Attestor collusion?</td><td>2-of-3 threshold with slashing. Phase 1 raises bonds to commercially material mainnet size. Same trust model as EigenLayer/Symbiotic.</td></tr>
+<tr><td>Atomic payout?</td><td>One TX, four contracts. Bond liquidation + pool liquidation + subrogation mint + issuer lock. All four or none.</td></tr>
+<tr><td>Audit plan?</td><td>Phase 1, April–July. OZ base + CEI + 416 tests is current defense. Audit-ready, not audit-graded.</td></tr>
+</tbody>
+</table>
+
+<h3>Commercial</h3>
+<table>
+<thead><tr><th>Question</th><th>Answer</th></tr></thead>
+<tbody>
+<tr><td>Business model?</td><td>5% fee on every premium → treasury. Plus subrogation recovery share, IRS licensing, governance capture. Unit economics work at 1% TAM.</td></tr>
+<tr><td>Day-one monetization?</td><td>Premium flow. Every policy routes 5% of annualized premium to treasury. At $1B insured TVL × 696 bps × 5%, that's ~$350k per billion per year.</td></tr>
+<tr><td>Go-to-market?</td><td>Two-sided. Issuer side: RWA tokenization platforms differentiating with insurable tokens. Capital side: institutional allocators blocked by unhedged RWA risk.</td></tr>
+<tr><td>Mainnet launch?</td><td>Phase 1: audit runway (Apr–Jul), Chainlink PoR live, attestor bond scaling. Phase 2: mainnet beta with 3–5 issuers, $10M senior-tranche target.</td></tr>
+<tr><td>Regulatory risk?</td><td>CoverFi is infrastructure — not itself regulated. Jurisdictional wrappers are Phase 2+ with local counsel per market. ERC-3643 is designed for compliance at token level; we integrate with that.</td></tr>
+</tbody>
+</table>
+
+<h3>Why HashKey / Why now</h3>
+<table>
+<thead><tr><th>Question</th><th>Answer</th></tr></thead>
+<tbody>
+<tr><td>Why HashKey?</td><td>Roadmap prioritizes regulated on-chain finance — our exact market. Chain-native infrastructure on the chain most institutional RWA issuers will deploy on.</td></tr>
+<tr><td>Why not Ethereum?</td><td>Contracts are EVM-compatible — Ethereum is later expansion. HashKey is the launch venue because its positioning aligns with our target user.</td></tr>
+<tr><td>Why now vs a year from now?</td><td>Tokenized RWA has crossed institutional credibility. We want to be the primitive that exists when the next wave of issuers arrives — not the one built after the first big default.</td></tr>
+</tbody>
+</table>
+
+<h3>Curveballs</h3>
+<table>
+<thead><tr><th>Question</th><th>Answer</th></tr></thead>
+<tbody>
+<tr><td>Only $10 TVL?</td><td>Testnet. Seeded with real USDT so every number is a contract read. Architecture is scale-invariant — identical at $10 and $10M.</td></tr>
+<tr><td>What if an issuer never posts a bond?</td><td>They can't be registered. Function fails without the bond deposit — enforced at contract level.</td></tr>
+<tr><td>What if the pool runs dry?</td><td>Senior tranche has a redemption gate. Beyond pool + bond, SubrogationNFT is the out-of-protocol legal claim.</td></tr>
+<tr><td>Could an issuer game the IRS?</td><td>5-dimension cumulative scoring is much harder to game than single signals. If they play long-con and still default, bond seizure + NFT cover the loss.</td></tr>
+<tr><td>Biggest worry?</td><td>Execution on mainnet-launch timeline — specifically the audit phase. A bug in audit could push mainnet by a quarter. Pre-audit bridge round de-risks exactly that.</td></tr>
+</tbody>
+</table>
+
+<div class="callout gold"><strong>When genuinely stuck:</strong> "I don't have that number in front of me — I'll follow up right after the session." Stronger than any bluff.</div>
+</section>
+
+<!-- =========================== REFS =========================== -->
+<section class="pagebreak" id="refs">
+<h2>13 · Quick Reference</h2>
+
+<h3>Fallback TX hashes (write these on the laptop bezel)</h3>
+<pre>
+Coverage purchase   0xca3ac579eeffd138e02849203f76f95ec958552cfd117aad65d1ac48a9a1727e
+Payout execution    0xe938fa9a13d7d9583475f923478e0d0dc4b34642c34658f668534d9c46426d22
+Default confirm     0xe8ec0a2966278590661ea248d270748f6f06be43260bf9b4ec1a42a2753dd86e
+</pre>
+
+<h3>Key deployed contracts (HashKey Chain 133)</h3>
+<pre>
+InsurancePool       0xa5d64A7770136B1EEade6B980404140D8D5F7C06
+PayoutEngine        0x44944cB598A750Df4C4Bf9A7D3FdDDf7575F88F5
+SubrogationNFT      0xbBe8A2840E151cC8BF2B156e5d61a532eFCe2AB9
+IssuerRegistry      0xc07859b25FC869F0a81fae86b9B5bEa868D08A9f
+IRSOracle           0x8D4C37f45883aAEEd20d2CC1020e6Ab193D3A50C
+DefaultOracle       0xBCF0012388045eA1183c96EEbe24754842a549eA
+TIR (Attestors)     0xa4ECEB47F80a32D7176C23e4993cDa4d2337Fc3A
+IssuerBond          0x1Ca7B678BDf1deCe9964c5178C01AB9312F2664D
+ProtectionCert      0x91062e509E75AAe31f1d6425b78D8815Ad941e73
+srCVR (Senior)      0x2Aad26de595752d7D6FCc2f4C79F1Bf15B60E1CD
+jrCVR (Junior)      0xD01e871c97746FC6a3f4B406aA60BE1Fb7FAcf6B
+Primary Issuer      0xa7C664459C66325Cd9dB15245DD901f1623c9655
+Deployer wallet     0xce220d9eD9527f9997c8045844210637F3A42fb3
+</pre>
+
+<h3>Stage tab order (8 tabs)</h3>
+<pre>
+T1  coverfi-protocol.vercel.app/
+T2  coverfi-protocol.vercel.app/dashboard.html
+T3  coverfi-protocol.vercel.app/stats.html
+T4  coverfi-protocol.vercel.app/pool.html        (backup)
+T5  coverfi-protocol.vercel.app/coverage.html
+T6  coverfi-protocol.vercel.app/subrogation.html
+T7  testnet-explorer.hsk.xyz/tx/0xe938fa9a...
+T8  coverfi-protocol.vercel.app/pitch.html
+</pre>
+
+<h3>MetaMask — HashKey Chain 133 config</h3>
+<pre>
+Network name   HashKey Chain Testnet
+RPC URL        https://testnet.hsk.xyz
+Chain ID       133
+Symbol         HSK
+Explorer       https://testnet-explorer.hsk.xyz
+</pre>
+
+<h3>Post-pitch reception opener</h3>
+<blockquote>"Two questions are probably on your mind. Who are the first ten issuers, and what does mainnet launch look like. I can answer both — do you have a few minutes after the session?"</blockquote>
+
+<hr>
+<p style="text-align:center;color:var(--dim);font-size:9pt">CoverFi Protocol · Demo Day Pitch Package · v2 · 2026-04-22<br>
+<em>Prepared for the HashKey Chain Horizon Hackathon finals, AWS Office, Hong Kong.</em><br>
+Three-person demo · Business Model · ROI Calculator · SWOT — all deployed in <code>pitch.html</code>.</p>
+
+</section>
+
+</div>
+</body>
+</html>

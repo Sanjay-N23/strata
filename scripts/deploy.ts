@@ -1,9 +1,17 @@
 import { ethers } from "hardhat";
 import * as fs from "fs";
 import * as path from "path";
+import { deploymentFilename, assertTestnetOnly } from "./deployHelpers";
 
 async function main() {
   const [deployer] = await ethers.getSigners();
+  const network = await ethers.provider.getNetwork();
+  const chainId = Number(network.chainId);
+
+  // SAFETY: This script deploys MOCK contracts (MockUSDT, MockBAS, etc).
+  // Mocks must NEVER touch mainnet. Use scripts/deploy-mainnet.ts instead.
+  assertTestnetOnly(chainId);
+
   console.log("Deploying CoverFi Protocol with account:", deployer.address);
   console.log("Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)));
 
@@ -190,9 +198,42 @@ async function main() {
   console.log("\n✅ All permissions wired successfully!");
 
   // ═══════════════════════════════════════════════════════════════════
+  // STEP 3.5: Deploy Strata AI Layer (Turing Test)
+  // ═══════════════════════════════════════════════════════════════════
+  console.log("\n--- Deploying Strata AI Layer ---");
+
+  const StrataAIAgent = await ethers.getContractFactory("StrataAIAgent");
+  const strataAgent = await StrataAIAgent.deploy(addresses.IRSOracle, addresses.DefaultOracle);
+  await strataAgent.waitForDeployment();
+  addresses.StrataAIAgent = await strataAgent.getAddress();
+  console.log("StrataAIAgent:", addresses.StrataAIAgent);
+
+  const ReplayOracle = await ethers.getContractFactory("ReplayOracle");
+  const replayOracle = await ReplayOracle.deploy();
+  await replayOracle.waitForDeployment();
+  addresses.ReplayOracle = await replayOracle.getAddress();
+  console.log("ReplayOracle:", addresses.ReplayOracle);
+
+  const TuringBenchmark = await ethers.getContractFactory("TuringBenchmark");
+  const turingBenchmark = await TuringBenchmark.deploy();
+  await turingBenchmark.waitForDeployment();
+  addresses.TuringBenchmark = await turingBenchmark.getAddress();
+  console.log("TuringBenchmark:", addresses.TuringBenchmark);
+
+  // Wire Strata layer. Human gate preserved: the agent can FLAG defaults but only
+  // 2-of-3 TIR attestors CONFIRM them. The operator wallet runs the off-chain agent
+  // (submitScore + benchmark.record + replay.pushSignals).
+  await irsOracle.setStrataAgent(addresses.StrataAIAgent);
+  await defaultOracle.setAIProposer(addresses.StrataAIAgent);
+  await strataAgent.setBenchmark(addresses.TuringBenchmark);
+  await turingBenchmark.setStrataAgent(addresses.StrataAIAgent);
+  await turingBenchmark.setRecorder(deployer.address);
+  await replayOracle.setReplayKeeper(deployer.address);
+  console.log("Strata AI layer wired (agent + benchmark + replay)");
+
+  // ═══════════════════════════════════════════════════════════════════
   // STEP 4: Save Deployment Addresses
   // ═══════════════════════════════════════════════════════════════════
-  const network = await ethers.provider.getNetwork();
   const deployment = {
     network: network.name,
     chainId: Number(network.chainId),
@@ -207,10 +248,7 @@ async function main() {
     fs.mkdirSync(deployDir, { recursive: true });
   }
 
-  const filename = network.chainId === 97n ? "bscTestnet.json" :
-                   network.chainId === 56n ? "bscMainnet.json" :
-                   network.chainId === 133n ? "hashkeyTestnet.json" :
-                   "localhost.json";
+  const filename = deploymentFilename(network.chainId);
 
   fs.writeFileSync(
     path.join(deployDir, filename),

@@ -3,14 +3,14 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 /**
  * @title ProtectionCert — Soulbound Protection Certificate
  * @notice ERC-721 + ERC-5192 (Soulbound). Non-transferable coverage proof.
  *         Minted on coverage purchase, burned on payout.
  */
-contract ProtectionCert is ERC721Enumerable, Ownable {
+contract ProtectionCert is ERC721Enumerable, Ownable2Step {
     // ─── Structs ─────────────────────────────────────────────────────
     struct CertMetadata {
         address issuerToken;

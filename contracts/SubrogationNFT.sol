@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 /**
  * @title SubrogationNFT — Post-Default Evidence Container
@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  *         Contains full default evidence package for legal recovery.
  *         Non-transferable except by Foundation.
  */
-contract SubrogationNFT is ERC721, Ownable {
+contract SubrogationNFT is ERC721, Ownable2Step {
     // ─── Structs ─────────────────────────────────────────────────────
     struct SubrogationClaimData {
         address issuerToken;

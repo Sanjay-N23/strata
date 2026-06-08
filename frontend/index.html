@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CoverFi — On-Chain Credit Protection for RWA Tokens</title>
-  <meta name="description" content="CoverFi Protocol — Decentralized credit default coverage for RWA token holders on HashKey Chain. Algorithmic premiums, community-funded pools, instant payouts.">
-  <meta name="keywords" content="CoverFi, DeFi, insurance, RWA, HashKey Chain, credit default swap, ERC-3643">
-  <meta property="og:title" content="CoverFi — Cover Your Positions">
+  <title>Strata — On-Chain Credit Protection for RWA Tokens</title>
+  <meta name="description" content="Strata Protocol — Decentralized credit default coverage for RWA token holders on Mantle. Algorithmic premiums, community-funded pools, instant payouts.">
+  <meta name="keywords" content="Strata, DeFi, insurance, RWA, Mantle, credit default swap, ERC-3643">
+  <meta property="og:title" content="Strata — Cover Your Positions">
   <meta property="og:description" content="On-chain credit default coverage for ERC-3643 RWA tokens">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="CoverFi Protocol">
+  <meta name="twitter:title" content="Strata Protocol">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='8,8 16,8 20,14 16,20 8,20 4,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,8 24,8 28,14 24,20 16,20 12,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,5 22,14 16,23 10,14' fill='%23F0B90B'/><circle cx='16' cy='13' r='1.5' fill='white'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://testnet.hsk.xyz">
+  <link rel="preconnect" href="https://rpc.sepolia.mantle.xyz">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
 /* ============================================================
-   CoverFi — Marketing Landing Page Styles
+   Strata — Marketing Landing Page Styles
    ============================================================ */
 
 /* ---------- THEME VARIABLES ---------- */
@@ -929,6 +929,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </style>
 </head>
 <body>
+<!-- COVERFI MAINNET PHASE 1 BANNER -->
+<div id="cfMainnetBanner" style="
+  position:fixed;top:0;left:0;right:0;z-index:99999;
+  background:linear-gradient(90deg,#fbbf24,#f59e0b);
+  color:#1f2937;font-weight:600;font-size:13px;
+  padding:8px 16px;text-align:center;
+  border-bottom:1px solid #d97706;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+">
+  ⚠️ MAINNET — PHASE 1 DEPLOYMENT · Coverage purchase activates in Phase 2 once issuer onboarding completes ·
+  <a href="https://explorer.mantle.xyz" target="_blank" rel="noopener" style="color:#1f2937;text-decoration:underline;">View on Blockscout</a>
+</div>
+<style>body{padding-top:36px !important;}</style>
+<!-- END BANNER -->
+
 
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
@@ -976,7 +992,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
      ============================================================ -->
 <nav class="nav" id="nav" aria-label="Main navigation">
   <div class="nav-inner">
-    <a href="#hero" class="nav-logo" aria-label="CoverFi home">
+    <a href="#hero" class="nav-logo" aria-label="Strata home">
       <svg width="36" height="36" viewBox="0 0 32 32" fill="none" aria-hidden="true">
         <polygon points="10,9 16,9 19,13 16,17 10,17 7,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
         <polygon points="16,9 22,9 25,13 22,17 16,17 13,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
@@ -1068,7 +1084,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     <div class="trust-strip stagger">
       <div class="trust-item reveal">
         <svg width="16" height="16" viewBox="0 0 32 32" fill="none"><path d="M16 2L4 9v14l12 7 12-7V9L16 2z" fill="url(#goldGrad)"/></svg>
-        Built on HashKey Chain
+        Built on Mantle
       </div>
       <div class="trust-item reveal">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="url(#payoutGrad)"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1157,12 +1173,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <div class="protocol-stat reveal">
         <span class="protocol-stat-number" data-count="25">0</span>
         <span class="protocol-stat-label">On-Chain Transactions</span>
-        <span class="protocol-stat-sub">Live on HashKey Chain Testnet</span>
+        <span class="protocol-stat-sub">Live on Mantle Testnet</span>
       </div>
     </div>
     <div class="hackathon-badge reveal">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#F0B90B"/></svg>
-      Built for the HashKey Chain Hackathon 2026
+      Built for the Mantle Hackathon 2026
     </div>
   </div>
 </section>
@@ -1173,7 +1189,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <section class="how-section" id="how-it-works">
   <div class="container">
     <div class="section-header reveal">
-      <h2>How CoverFi Works</h2>
+      <h2>How Strata Works</h2>
       <p>Six steps from registration to payout. Fully on-chain, fully transparent.</p>
     </div>
 
@@ -1246,7 +1262,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
      ============================================================ -->
 <div class="features-section" id="features">
   <div class="section-header reveal">
-    <h2>Why CoverFi?</h2>
+    <h2>Why Strata?</h2>
     <p>Four pillars of on-chain credit protection for RWA tokens.</p>
   </div>
   <div class="feature-panes stagger">
@@ -1389,7 +1405,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         </svg>
         <span class="nav-logo-text" style="font-size:1.125rem">Cover<span class="accent">Fi</span></span>
       </a>
-      <p>Decentralized credit protection for RWA token issuers on HashKey Chain. Built for the HashKey Chain Hackathon 2026.</p>
+      <p>Decentralized credit protection for RWA token issuers on Mantle. Built for the Mantle Hackathon 2026.</p>
     </div>
     <div class="reveal">
       <h5>Protocol</h5>
@@ -1408,13 +1424,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <li><a href="https://testnet-explorer.hsk.xyz/address/0xce220d9eD9527f9997c8045844210637F3A42fb3" target="_blank" rel="noopener">Smart Contracts</a></li>
         <li><a href="https://github.com/Sanjay-N23/coverfi-protocol#readme" target="_blank" rel="noopener">Documentation</a></li>
         <li><a href="https://github.com/Sanjay-N23/coverfi-protocol" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="https://testnet-explorer.hsk.xyz" target="_blank" rel="noopener">HashKeyScan</a></li>
+        <li><a href="https://testnet-explorer.hsk.xyz" target="_blank" rel="noopener">MantleScan</a></li>
       </ul>
     </div>
     <div class="reveal">
       <h5>Resources</h5>
       <ul class="footer-links">
-        <li><a href="https://github.com/Sanjay-N23/coverfi-protocol/blob/main/Proposal/CoverFi_Proposal.md" target="_blank" rel="noopener">Whitepaper</a></li>
+        <li><a href="https://github.com/Sanjay-N23/coverfi-protocol/blob/main/Proposal/Strata_Proposal.md" target="_blank" rel="noopener">Whitepaper</a></li>
         <li><a href="https://github.com/Sanjay-N23/coverfi-protocol/tree/main/test" target="_blank" rel="noopener">Security Audits</a></li>
         <li><a href="https://github.com/Sanjay-N23/coverfi-protocol/issues" target="_blank" rel="noopener">Bug Bounty</a></li>
         <li><a href="https://github.com/Sanjay-N23/coverfi-protocol" target="_blank" rel="noopener">Brand Kit</a></li>
@@ -1422,9 +1438,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
   </div>
   <div class="footer-bottom">
-    <span>&copy; 2026 CoverFi &mdash; HashKey Chain Hackathon</span>
+    <span>&copy; 2026 Strata &mdash; Mantle Hackathon</span>
     <div class="footer-social">
-      <a href="https://x.com/CoverFiProtocol" target="_blank" rel="noopener" aria-label="Follow us on X (Twitter)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="https://x.com/StrataProtocol" target="_blank" rel="noopener" aria-label="Follow us on X (Twitter)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
       <a href="https://github.com/Sanjay-N23/coverfi-protocol" target="_blank" rel="noopener" aria-label="View on GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a>
       <a href="https://github.com/Sanjay-N23/coverfi-protocol/discussions" target="_blank" rel="noopener" aria-label="Join our Discord"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg></a>
     </div>

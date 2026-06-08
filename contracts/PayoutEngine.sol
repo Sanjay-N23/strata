@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./interfaces/IERC3643.sol";
@@ -43,7 +44,7 @@ interface IIssuerRegistry {
  * @notice Manages coverage purchases, maintains insured holder registry,
  *         executes payouts with KYC/freeze compliance checks, and mints SubrogationNFTs.
  */
-contract PayoutEngine is Ownable, ReentrancyGuard {
+contract PayoutEngine is Ownable2Step, ReentrancyGuard, Pausable {
     using SafeERC20 for IERC20;
 
     // ─── Structs ─────────────────────────────────────────────────────
@@ -86,7 +87,7 @@ contract PayoutEngine is Ownable, ReentrancyGuard {
     address public subrogationNFT;
     address public irsOracle;
     address public issuerRegistry;
-    address public foundation;
+    address public immutable foundation;
 
     // ─── Events ──────────────────────────────────────────────────────
     event CoveragePurchased(address indexed holder, address indexed issuerToken, uint256 coveredAmount, uint256 certId, uint256 estimatedPayoutPct);
@@ -98,11 +99,14 @@ contract PayoutEngine is Ownable, ReentrancyGuard {
 
     // ─── Constructor ─────────────────────────────────────────────────
     constructor(address _usdt, address _foundation) {
+        require(_usdt != address(0), "PayoutEngine: zero usdt");
+        require(_foundation != address(0), "PayoutEngine: zero foundation");
         usdt = IERC20(_usdt);
         foundation = _foundation;
     }
 
     // ─── Admin Setters ───────────────────────────────────────────────
+    // Note: foundation is immutable and cannot be changed after deployment.
     function setInsurancePool(address _pool) external onlyOwner { insurancePool = _pool; }
     function setDefaultOracle(address _oracle) external onlyOwner { defaultOracle = _oracle; }
     function setProtectionCert(address _cert) external onlyOwner { protectionCert = _cert; }
@@ -110,6 +114,10 @@ contract PayoutEngine is Ownable, ReentrancyGuard {
     function setSubrogationNFT(address _nft) external onlyOwner { subrogationNFT = _nft; }
     function setIRSOracle(address _oracle) external onlyOwner { irsOracle = _oracle; }
     function setIssuerRegistry(address _registry) external onlyOwner { issuerRegistry = _registry; }
+
+    // ─── Emergency Stop ──────────────────────────────────────────────
+    function pause() external onlyOwner { _pause(); }
+    function unpause() external onlyOwner { _unpause(); }
 
     // ─── Coverage Purchase ───────────────────────────────────────────
 
@@ -120,7 +128,7 @@ contract PayoutEngine is Ownable, ReentrancyGuard {
     function purchaseCoverage(
         address issuerToken,
         uint256 coveredAmount
-    ) external nonReentrant returns (uint256 certId) {
+    ) external nonReentrant whenNotPaused returns (uint256 certId) {
         require(!isInsured[issuerToken][msg.sender], "PayoutEngine: already insured");
         require(coveredAmount > 0, "PayoutEngine: zero amount");
 
@@ -172,7 +180,7 @@ contract PayoutEngine is Ownable, ReentrancyGuard {
      *         Liquidation waterfall: Bond → Junior → Senior
      *         ERC-3643 compliance: checks isVerified() + !isFrozen() before each payout
      */
-    function executePayout(address issuerToken) external nonReentrant {
+    function executePayout(address issuerToken) external nonReentrant whenNotPaused {
         require(msg.sender == owner() || msg.sender == defaultOracle, "PayoutEngine: unauthorized");
 
         // 1. Liquidate issuer bond (first loss)
@@ -258,7 +266,7 @@ contract PayoutEngine is Ownable, ReentrancyGuard {
 
     // ─── Escrow Management ───────────────────────────────────────────
 
-    function releaseEscrow(address holder) external nonReentrant {
+    function releaseEscrow(address holder) external nonReentrant whenNotPaused {
         EscrowRecord storage esc = escrows[holder];
         require(esc.amount > 0, "PayoutEngine: no escrow");
 

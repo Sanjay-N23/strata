@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -25,7 +26,7 @@ interface IjrCVR {
  * @notice Manages senior (70%) and junior (30%) tranches with redemption gate,
  *         premium distribution, and liquidation waterfall.
  */
-contract InsurancePool is Ownable, ReentrancyGuard {
+contract InsurancePool is Ownable2Step, ReentrancyGuard, Pausable {
     using SafeERC20 for IERC20;
 
     // ─── Structs ─────────────────────────────────────────────────────
@@ -95,6 +96,10 @@ contract InsurancePool is Ownable, ReentrancyGuard {
     function setDefaultOracle(address _oracle) external onlyOwner { defaultOracle = _oracle; }
     function setPayoutEngine(address _engine) external onlyOwner { payoutEngine = _engine; }
 
+    // ─── Emergency Stop ──────────────────────────────────────────────
+    function pause() external onlyOwner { _pause(); }
+    function unpause() external onlyOwner { _unpause(); }
+
     // ─── Pool Activation ─────────────────────────────────────────────
 
     function activatePool(address issuerToken) external onlyOwner {
@@ -107,7 +112,7 @@ contract InsurancePool is Ownable, ReentrancyGuard {
     /**
      * @notice Deposit USDT into senior tranche. Mints srCVR tokens.
      */
-    function depositSenior(address issuerToken, uint256 usdtAmount) external nonReentrant returns (uint256 srCVRMinted) {
+    function depositSenior(address issuerToken, uint256 usdtAmount) external nonReentrant whenNotPaused returns (uint256 srCVRMinted) {
         PoolState storage pool = pools[issuerToken];
         require(pool.isActive, "InsurancePool: pool not active");
         require(!pool.redemptionGateActive, "InsurancePool: gate active");
@@ -135,7 +140,7 @@ contract InsurancePool is Ownable, ReentrancyGuard {
     /**
      * @notice Deposit USDT into junior tranche. Mints jrCVR tokens.
      */
-    function depositJunior(address issuerToken, uint256 usdtAmount) external nonReentrant returns (uint256 jrCVRMinted) {
+    function depositJunior(address issuerToken, uint256 usdtAmount) external nonReentrant whenNotPaused returns (uint256 jrCVRMinted) {
         PoolState storage pool = pools[issuerToken];
         require(pool.isActive, "InsurancePool: pool not active");
         require(!pool.redemptionGateActive, "InsurancePool: gate active");

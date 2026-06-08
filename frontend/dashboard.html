@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CoverFi Dashboard — On-Chain Credit Protection</title>
+  <title>Strata Dashboard — On-Chain Credit Protection</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='8,8 16,8 20,14 16,20 8,20 4,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,8 24,8 28,14 24,20 16,20 12,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,5 22,14 16,23 10,14' fill='%23F0B90B'/><circle cx='16' cy='13' r='1.5' fill='white'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://testnet.hsk.xyz">
+  <link rel="preconnect" href='https://rpc.mantle.xyz'>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
 /* ============================================================
-   CoverFi Dashboard — Claymorphism Warm Light Design
+   Strata Dashboard — Claymorphism Warm Light Design
    ============================================================ */
 
 :root {
@@ -2139,13 +2139,29 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </style>
 </head>
 <body>
+<!-- COVERFI MAINNET PHASE 1 BANNER -->
+<div id="cfMainnetBanner" style="
+  position:fixed;top:0;left:0;right:0;z-index:99999;
+  background:linear-gradient(90deg,#fbbf24,#f59e0b);
+  color:#1f2937;font-weight:600;font-size:13px;
+  padding:8px 16px;text-align:center;
+  border-bottom:1px solid #d97706;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+">
+  ⚠️ MAINNET — PHASE 1 DEPLOYMENT · Coverage purchase activates in Phase 2 once issuer onboarding completes ·
+  <a href="https://explorer.mantle.xyz" target="_blank" rel="noopener" style="color:#1f2937;text-decoration:underline;">View on Blockscout</a>
+</div>
+<style>body{padding-top:36px !important;}</style>
+<!-- END BANNER -->
+
 
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
 <!-- Network Warning Banner -->
 <div class="network-warning" id="networkWarning" style="display:none;" role="alert">
   <span class="warn-icon" aria-hidden="true">&#9888;&#65039;</span>
-  <span>Wrong network detected. Please switch to HashKey Chain Testnet to use CoverFi.</span>
+  <span>Wrong network detected. Please switch to Mantle Testnet to use Strata.</span>
   <button class="btn-switch-network" onclick="switchToBSCTestnet()">Switch Network</button>
 </div>
 
@@ -2192,7 +2208,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
      ============================================================ -->
 <nav class="dash-nav" aria-label="Main navigation">
   <div class="dash-nav-inner">
-    <a href="index.html" class="nav-logo" aria-label="CoverFi home">
+    <a href="index.html" class="nav-logo" aria-label="Strata home">
       <svg width="36" height="36" viewBox="0 0 32 32" fill="none" aria-hidden="true">
         <polygon points="10,9 16,9 19,13 16,17 10,17 7,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
         <polygon points="16,9 22,9 25,13 22,17 16,17 13,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
@@ -2211,7 +2227,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
 
     <div class="nav-actions">
-      <div class="badge-testnet"><span class="dot"></span> HashKey Chain Testnet</div>
+      <div class="badge-testnet"><span class="dot"></span> Mantle Testnet</div>
       <div class="role-dropdown" id="roleDropdown" style="display:none;">
         <button class="role-dropdown-btn" id="roleDropdownBtn" onclick="toggleRoleDropdown()" aria-haspopup="true" aria-expanded="false">
           <span id="roleDropdownLabel">My Roles</span>
@@ -2293,7 +2309,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <!-- ---- LIVE DATA BANNER ---- -->
 <div class="live-data-banner" id="liveDataBanner">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg>
-  <span id="bannerText">Live HashKey Chain Testnet — Connect wallet to transact</span>
+  <span id="bannerText">Live Mantle Testnet — Connect wallet to transact</span>
   <button class="banner-btn" id="bannerBtn" onclick="connectWallet()">Connect Wallet</button>
 </div>
 
@@ -2504,7 +2520,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <div class="event-item">
           <div class="event-dot" style="background:#00B894"></div>
           <div>
-            <div class="event-text"><strong>Payout Executed</strong> &mdash; $15,000 USDT to coverage holders via 2-of-3 attestation <a href="https://testnet-explorer.hsk.xyz/tx/0x5381147c824b4006cd95af66434f57795578c050000b24674b06a16078d74c65" target="_blank" class="event-tx-link">0x5381...4c65</a></div>
+            <div class="event-text"><strong>Payout Executed</strong> &mdash; $15,000 USDT to coverage holders via 2-of-3 attestation <a href="https://explorer.mantle.xyz/tx/0x5381147c824b4006cd95af66434f57795578c050000b24674b06a16078d74c65" target="_blank" class="event-tx-link">0x5381...4c65</a></div>
             <div class="event-time">just now</div>
           </div>
         </div>
@@ -3006,7 +3022,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         </span>
         Your Transactions
       </h3>
-      <a href="https://testnet-explorer.hsk.xyz/address/0xce220d9eD9527f9997c8045844210637F3A42fb3" target="_blank" class="view-all-link" id="txViewAllLink">View all on HashKeyScan &#x2197;</a>
+      <a href="https://explorer.mantle.xyz/address/0xce220d9eD9527f9997c8045844210637F3A42fb3" target="_blank" class="view-all-link" id="txViewAllLink">View all on MantleScan &#x2197;</a>
     </div>
     <div class="tx-list" id="txList">
       <!-- Populated by JS -->
@@ -3219,42 +3235,42 @@ document.addEventListener('keydown', function(e) {
 // ---- Reduced motion ----
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ---- HashKey Chain Testnet Contract Addresses (from deployments/hashkeyTestnet.json) ----
+// ---- Mantle Mainnet Contract Addresses (from deployments/hashkeyMainnet.json) ----
 const CONTRACTS = {
-  MockUSDT:          '0x65A3Ae0e4787856CfcDdE505015c5CC3d5560212',
+  MockUSDT:          '0x38907cC4E615D3C7BDCBC9910C050260bBC836E5',
   MockIdentityRegistry: '0x20619c533854C5a0c20284f7Dc7F5Dc3DFdD06B3',
   MockERC3643Token:  '0xa7C664459C66325Cd9dB15245DD901f1623c9655',
   MockBAS:           '0xB10b1c9D88126965E57cCa2a7ED5a1348dbf7552',
   MockChainlink:     '0xF1E25246D7Dcc8E63EAe39BE03DEae0C2Ed93E71',
-  TIR:               '0xa4ECEB47F80a32D7176C23e4993cDa4d2337Fc3A',
-  IssuerBond:        '0x1Ca7B678BDf1deCe9964c5178C01AB9312F2664D',
-  IRSOracle:         '0x8D4C37f45883aAEEd20d2CC1020e6Ab193D3A50C',
-  DefaultOracle:     '0xBCF0012388045eA1183c96EEbe24754842a549eA',
-  IssuerRegistry:    '0xc07859b25FC869F0a81fae86b9B5bEa868D08A9f',
-  InsurancePool:     '0xa5d64A7770136B1EEade6B980404140D8D5F7C06',
-  srCVR:             '0x2Aad26de595752d7D6FCc2f4C79F1Bf15B60E1CD',
-  jrCVR:             '0xD01e871c97746FC6a3f4B406aA60BE1Fb7FAcf6B',
-  ProtectionCert:    '0x91062e509E75AAe31f1d6425b78D8815Ad941e73',
-  PayoutEngine:      '0x44944cB598A750Df4C4Bf9A7D3FdDDf7575F88F5',
-  SubrogationNFT:    '0xbBe8A2840E151cC8BF2B156e5d61a532eFCe2AB9'
+  TIR:               '0x7dD7C1adC65D9e6e7Bd5532b678f856C8Ea627fC',
+  IssuerBond:        '0x65A3Ae0e4787856CfcDdE505015c5CC3d5560212',
+  IRSOracle:         '0x20619c533854C5a0c20284f7Dc7F5Dc3DFdD06B3',
+  DefaultOracle:     '0xa7C664459C66325Cd9dB15245DD901f1623c9655',
+  IssuerRegistry:    '0xB10b1c9D88126965E57cCa2a7ED5a1348dbf7552',
+  InsurancePool:     '0xF1E25246D7Dcc8E63EAe39BE03DEae0C2Ed93E71',
+  srCVR:             '0xa4ECEB47F80a32D7176C23e4993cDa4d2337Fc3A',
+  jrCVR:             '0x1Ca7B678BDf1deCe9964c5178C01AB9312F2664D',
+  ProtectionCert:    '0x8D4C37f45883aAEEd20d2CC1020e6Ab193D3A50C',
+  PayoutEngine:      '0xBCF0012388045eA1183c96EEbe24754842a549eA',
+  SubrogationNFT:    '0xc07859b25FC869F0a81fae86b9B5bEa868D08A9f'
 };
 // Keep backward compat alias
 const COVERFI_ADDRESSES = CONTRACTS;
 
-const BSC_TESTNET_CHAIN_ID = 133;
+const BSC_TESTNET_CHAIN_ID = 177;
 const BSC_TESTNET_CONFIG = {
-  chainId: '0x85',
-  chainName: 'HashKey Chain Testnet',
-  nativeCurrency: { name: 'HSK', symbol: 'HSK', decimals: 18 },
-  rpcUrls: ['https://testnet.hsk.xyz'],
-  blockExplorerUrls: ['https://testnet-explorer.hsk.xyz']
+  chainId: '0xb1',
+  chainName: 'Mantle Mainnet',
+  nativeCurrency: { name: 'MNT', symbol: 'MNT', decimals: 18 },
+  rpcUrls: ['https://rpc.mantle.xyz'],
+  blockExplorerUrls: ['https://explorer.mantle.xyz']
 };
 
 // Demo issuer token address (MockERC3643Token deployed in demo)
 const DEMO_ISSUER_TOKEN = CONTRACTS.MockERC3643Token;
 
 // ---- Read-Only Provider (no wallet needed) ----
-var BSC_TESTNET_RPC = 'https://testnet.hsk.xyz';
+var BSC_TESTNET_RPC = 'https://rpc.mantle.xyz';
 var readProvider = new ethers.JsonRpcProvider(BSC_TESTNET_RPC);
 
 // Read-only contract instances for data loading
@@ -3551,7 +3567,7 @@ function updateBanner() {
   if (!banner) return;
 
   if (walletConnected && isLiveData) {
-    bannerText.innerHTML = '<span class="live-data-badge"><span class="dot dot-green"></span> LIVE</span> Connected to HashKey Chain Testnet';
+    bannerText.innerHTML = '<span class="live-data-badge"><span class="dot dot-green"></span> LIVE</span> Connected to Mantle Testnet';
     bannerBtn.textContent = 'Refresh';
     bannerBtn.setAttribute('onclick', 'loadLiveData()');
     banner.style.background = 'var(--color-success-dim)';
@@ -3561,7 +3577,7 @@ function updateBanner() {
     bannerText.textContent = 'Loading on-chain data...';
     bannerBtn.style.display = 'none';
   } else {
-    bannerText.textContent = 'Live HashKey Chain Testnet \u2014 Connect wallet to transact';
+    bannerText.textContent = 'Live Mantle Testnet \u2014 Connect wallet to transact';
     bannerBtn.textContent = 'Connect';
     bannerBtn.setAttribute('onclick', 'connectWallet()');
     bannerBtn.style.display = '';
@@ -3593,11 +3609,11 @@ async function checkAndSwitchNetwork() {
           });
           return true;
         } catch (addError) {
-          showToast('Failed to add HashKey Chain Testnet. Please add it manually.', 'error');
+          showToast('Failed to add Mantle Testnet. Please add it manually.', 'error');
           return false;
         }
       }
-      showToast('Please switch to HashKey Chain Testnet (Chain ID: 133)', 'error');
+      showToast('Please switch to Mantle Testnet (Chain ID: 133)', 'error');
       return false;
     }
   }
@@ -3667,7 +3683,7 @@ async function switchToBSCTestnet() {
   try {
     await window.ethereum.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: '0x85' }]
+      params: [{ chainId: '0xb1' }]
     });
     hideNetworkWarning();
   } catch (e) {
@@ -3676,19 +3692,19 @@ async function switchToBSCTestnet() {
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [{
-            chainId: '0x85',
-            chainName: 'HashKey Chain Testnet',
-            rpcUrls: ['https://testnet.hsk.xyz'],
-            nativeCurrency: { name: 'HSK', symbol: 'HSK', decimals: 18 },
-            blockExplorerUrls: ['https://testnet-explorer.hsk.xyz']
+            chainId: '0xb1',
+            chainName: 'Mantle Mainnet',
+            rpcUrls: ['https://rpc.mantle.xyz'],
+            nativeCurrency: { name: 'MNT', symbol: 'MNT', decimals: 18 },
+            blockExplorerUrls: ['https://explorer.mantle.xyz']
           }]
         });
         hideNetworkWarning();
       } catch (addErr) {
-        showToast('Failed to add HashKey Chain Testnet. Please add it manually.', 'error');
+        showToast('Failed to add Mantle Testnet. Please add it manually.', 'error');
       }
     } else {
-      showToast('Please switch to HashKey Chain Testnet manually in your wallet.', 'error');
+      showToast('Please switch to Mantle Testnet manually in your wallet.', 'error');
     }
   }
 }
@@ -3743,7 +3759,7 @@ function updateWalletDropdown() {
     addrEl.textContent = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
   }
   if (linkEl && walletAddress) {
-    linkEl.href = 'https://testnet-explorer.hsk.xyz/address/' + walletAddress;
+    linkEl.href = 'https://explorer.mantle.xyz/address/' + walletAddress;
   }
 }
 
@@ -3833,7 +3849,7 @@ if (typeof window.ethereum !== 'undefined') {
       showNetworkWarning();
       updateBanner();
       showMockData();
-      showToast('Wrong network. Please switch to HashKey Chain Testnet (Chain ID: 133)', 'error');
+      showToast('Wrong network. Please switch to Mantle Testnet (Chain ID: 133)', 'error');
     } else {
       hideNetworkWarning();
       if (walletConnected) {
@@ -4346,8 +4362,8 @@ async function loadContractData() {
     clearTimeout(_loadingTimeout);
     setLoadingState(false);
     updateLastUpdated();
-    showToast('Live on-chain data loaded from HashKey Chain Testnet', 'success');
-    addNotification('Data refreshed from HashKey Chain Testnet', 'info');
+    showToast('Live on-chain data loaded from Mantle Testnet', 'success');
+    addNotification('Data refreshed from Mantle Testnet', 'info');
 
   } catch (err) {
     clearTimeout(_loadingTimeout);
@@ -5032,12 +5048,12 @@ async function ensureCorrectNetwork() {
     var chainId = await window.ethereum.request({ method: 'eth_chainId' });
     var currentChainId = parseInt(chainId, 16);
     if (currentChainId !== BSC_TESTNET_CHAIN_ID) {
-      showToast('Please switch to HashKey Chain Testnet', 'error');
+      showToast('Please switch to Mantle Testnet', 'error');
       return false;
     }
     return true;
   } catch (e) {
-    showToast('Please switch to HashKey Chain Testnet', 'error');
+    showToast('Please switch to Mantle Testnet', 'error');
     return false;
   }
 }
@@ -5091,7 +5107,7 @@ function parseContractError(err) {
     return 'Network congested, retrying...';
   }
   if (msg.includes('insufficient funds') || msg.includes('insufficient balance for gas') || msg.includes('gas required exceeds allowance')) {
-    return 'Insufficient HSK for gas';
+    return 'Insufficient MNT for gas';
   }
   if (msg.includes('execution reverted')) {
     var match = msg.match(/execution reverted:\s*(.+?)(?:"|$)/);
@@ -5459,11 +5475,11 @@ document.querySelectorAll('.reveal').forEach(function(el, i) {
 
 // ---- Global Error Handlers ----
 window.addEventListener('error', function(e) {
-  console.error('CoverFi error:', e.message);
+  console.error('Strata error:', e.message);
   // Don't show toast for every JS error — only log to console
 });
 window.addEventListener('unhandledrejection', function(e) {
-  console.error('CoverFi promise error:', e.reason);
+  console.error('Strata promise error:', e.reason);
   if (e.reason && e.reason.code === 'ACTION_REJECTED') {
     showToast('Transaction cancelled by user', 'warning');
   } else {
@@ -5596,7 +5612,7 @@ function renderTxList() {
   // Update "View all" link with wallet address
   var viewAllLink = document.getElementById('txViewAllLink');
   if (viewAllLink && walletAddress) {
-    viewAllLink.href = 'https://testnet-explorer.hsk.xyz/address/' + walletAddress;
+    viewAllLink.href = 'https://explorer.mantle.xyz/address/' + walletAddress;
   }
 
   if (txHistory.length === 0) {
@@ -5618,7 +5634,7 @@ function renderTxList() {
     var statusClass = tx.status === 'confirmed' ? 'tx-confirmed' : 'tx-pending';
     var statusLabel = tx.status === 'confirmed' ? 'Confirmed' : 'Pending';
     var shortHash = tx.hash ? tx.hash.slice(0, 6) + '...' + tx.hash.slice(-3) : '';
-    var txUrl = 'https://testnet-explorer.hsk.xyz/tx/' + (tx.hash || '');
+    var txUrl = 'https://explorer.mantle.xyz/tx/' + (tx.hash || '');
 
     html +=
       '<div class="tx-item">' +

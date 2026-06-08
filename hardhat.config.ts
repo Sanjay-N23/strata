@@ -13,7 +13,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 200, // Production-balanced: small deploy + efficient runtime gas.
       },
       viaIR: true,
     },
@@ -37,11 +37,78 @@ const config: HardhatUserConfig = {
     hashkeyTestnet: {
       url: "https://testnet.hsk.xyz",
       chainId: 133,
+      // Slight bump above network minimum (~0.001 gwei) to overtake any
+      // stuck pending tx during retries. Negligible cost on L2.
+      gasPrice: 10_000_000, // 0.01 gwei
+      accounts: DEPLOYER_PRIVATE_KEY !== "0x" + "0".repeat(64) ? [DEPLOYER_PRIVATE_KEY] : [],
+    },
+    hashkeyMainnet: {
+      url: "https://mainnet.hsk.xyz",
+      chainId: 177,
+      // Same gas price strategy as testnet. HashKey Mainnet base fee is
+      // ~0.001 gwei; 0.01 gwei guarantees prompt inclusion at trivial cost.
+      gasPrice: 10_000_000, // 0.01 gwei
+      accounts: DEPLOYER_PRIVATE_KEY !== "0x" + "0".repeat(64) ? [DEPLOYER_PRIVATE_KEY] : [],
+    },
+    // ─── Mantle (Turing Test Hackathon 2026) ───────────────────────
+    // Gas is paid in MNT (not ETH). gasPrice omitted: Mantle has an L1 data
+    // fee component, so let the provider estimate rather than pin a value.
+    mantleSepolia: {
+      url: "https://rpc.sepolia.mantle.xyz",
+      chainId: 5003,
+      accounts: DEPLOYER_PRIVATE_KEY !== "0x" + "0".repeat(64) ? [DEPLOYER_PRIVATE_KEY] : [],
+    },
+    mantleMainnet: {
+      url: "https://rpc.mantle.xyz",
+      chainId: 5000,
       accounts: DEPLOYER_PRIVATE_KEY !== "0x" + "0".repeat(64) ? [DEPLOYER_PRIVATE_KEY] : [],
     },
   },
   etherscan: {
-    apiKey: BSCSCAN_API_KEY,
+    apiKey: {
+      bscTestnet: BSCSCAN_API_KEY,
+      bsc: BSCSCAN_API_KEY,
+      // Blockscout doesn't require an API key but hardhat-verify needs a
+      // non-empty placeholder. Any string works for Blockscout endpoints.
+      hashkeyMainnet: "blockscout-no-key-required",
+      hashkeyTestnet: "blockscout-no-key-required",
+      mantleMainnet: "blockscout-no-key-required",
+      mantleSepolia: "blockscout-no-key-required",
+    },
+    customChains: [
+      {
+        network: "mantleMainnet",
+        chainId: 5000,
+        urls: {
+          apiURL: "https://explorer.mantle.xyz/api",
+          browserURL: "https://explorer.mantle.xyz",
+        },
+      },
+      {
+        network: "mantleSepolia",
+        chainId: 5003,
+        urls: {
+          apiURL: "https://explorer.sepolia.mantle.xyz/api",
+          browserURL: "https://explorer.sepolia.mantle.xyz",
+        },
+      },
+      {
+        network: "hashkeyMainnet",
+        chainId: 177,
+        urls: {
+          apiURL: "https://hashkey.blockscout.com/api",
+          browserURL: "https://hashkey.blockscout.com",
+        },
+      },
+      {
+        network: "hashkeyTestnet",
+        chainId: 133,
+        urls: {
+          apiURL: "https://testnet-explorer.hsk.xyz/api",
+          browserURL: "https://testnet-explorer.hsk.xyz",
+        },
+      },
+    ],
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS === "true",

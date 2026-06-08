@@ -8,7 +8,7 @@ cat > index.html << 'HTMLSTART'
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CoverFi — On-Chain Credit Protection for RWA Tokens</title>
+  <title>Strata — On-Chain Credit Protection for RWA Tokens</title>
   <style>
 HTMLSTART
 

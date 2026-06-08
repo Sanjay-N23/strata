@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CoverFi — Issuer Registration</title>
+  <title>Strata — Issuer Registration</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='8,8 16,8 20,14 16,20 8,20 4,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,8 24,8 28,14 24,20 16,20 12,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,5 22,14 16,23 10,14' fill='%23F0B90B'/><circle cx='16' cy='13' r='1.5' fill='white'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
 /* ============================================================
-   CoverFi Registration — Claymorphism Warm Light Design
+   Strata Registration — Claymorphism Warm Light Design
    ============================================================ */
 
 :root {
@@ -699,6 +699,22 @@ code, pre { font-family: var(--font-mono); }
   </style>
 </head>
 <body>
+<!-- COVERFI MAINNET PHASE 1 BANNER -->
+<div id="cfMainnetBanner" style="
+  position:fixed;top:0;left:0;right:0;z-index:99999;
+  background:linear-gradient(90deg,#fbbf24,#f59e0b);
+  color:#1f2937;font-weight:600;font-size:13px;
+  padding:8px 16px;text-align:center;
+  border-bottom:1px solid #d97706;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+">
+  ⚠️ MAINNET — PHASE 1 DEPLOYMENT · Coverage purchase activates in Phase 2 once issuer onboarding completes ·
+  <a href="https://explorer.mantle.xyz" target="_blank" rel="noopener" style="color:#1f2937;text-decoration:underline;">View on Blockscout</a>
+</div>
+<style>body{padding-top:36px !important;}</style>
+<!-- END BANNER -->
+
 
 <!-- Background Blobs -->
 <div class="bg-blobs" aria-hidden="true">
@@ -724,7 +740,7 @@ code, pre { font-family: var(--font-mono); }
       <a href="coverage.html" class="dash-nav-link">Coverage</a>
     </div>
     <div class="nav-actions">
-      <span class="badge-testnet"><span class="dot"></span> HashKey Testnet</span>
+      <span class="badge-testnet"><span class="dot"></span> Mantle Testnet</span>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
         <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -768,7 +784,7 @@ code, pre { font-family: var(--font-mono); }
           <div class="form-group">
             <label class="form-label">Token Contract Address</label>
             <input type="text" class="form-input mono" id="tokenAddress" placeholder="0x..." maxlength="42">
-            <div class="form-hint">Enter the ERC-3643 token contract address deployed on HashKey Chain Testnet</div>
+            <div class="form-hint">Enter the ERC-3643 token contract address deployed on Mantle Testnet</div>
           </div>
           <button class="btn-outline" id="btnValidate" onclick="validateToken()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -911,7 +927,7 @@ code, pre { font-family: var(--font-mono); }
               <ol>
                 <li>Visit the Attestation Service portal</li>
                 <li>Connect your wallet (the same one registering here)</li>
-                <li>Navigate to "Create Attestation" and select the CoverFi Legal Entity schema</li>
+                <li>Navigate to "Create Attestation" and select the Strata Legal Entity schema</li>
                 <li>Fill in your legal entity details: company name, jurisdiction, registration number</li>
                 <li>Submit the attestation and pay the gas fee</li>
                 <li>Copy the attestation UID from the transaction receipt</li>
@@ -993,10 +1009,10 @@ function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
 
 // ---- Contract Addresses ----
 var CONTRACTS = {
-  IssuerRegistry:   '0xc07859b25FC869F0a81fae86b9B5bEa868D08A9f',
-  IssuerBond:       '0x1Ca7B678BDf1deCe9964c5178C01AB9312F2664D',
-  TIR:              '0xa4ECEB47F80a32D7176C23e4993cDa4d2337Fc3A',
-  MockUSDT:         '0x65A3Ae0e4787856CfcDdE505015c5CC3d5560212',
+  IssuerRegistry:   '0xB10b1c9D88126965E57cCa2a7ED5a1348dbf7552',
+  IssuerBond:       '0x65A3Ae0e4787856CfcDdE505015c5CC3d5560212',
+  TIR:              '0x7dD7C1adC65D9e6e7Bd5532b678f856C8Ea627fC',
+  MockUSDT:         '0x38907cC4E615D3C7BDCBC9910C050260bBC836E5',
   MockERC3643Token: '0xa7C664459C66325Cd9dB15245DD901f1623c9655'
 };
 
@@ -1078,7 +1094,7 @@ async function handleWalletClick() {
     // Check network
     var network = await provider.getNetwork();
     if (Number(network.chainId) !== 133) {
-      showToast('Please switch to HashKey Chain Testnet (chainId 133)', 'error');
+      showToast('Please switch to Mantle Testnet (chainId 133)', 'error');
     }
   } catch (err) {
     showToast('Wallet connection failed: ' + (err.message || err), 'error');
@@ -1189,7 +1205,7 @@ async function validateToken() {
       document.getElementById('step1BtnRow').style.display = 'flex';
     } else {
       document.getElementById('step1BtnRow').style.display = 'none';
-      showToast('This token is not ERC-3643 compliant. CoverFi requires ERC-3643 tokens only.', 'error');
+      showToast('This token is not ERC-3643 compliant. Strata requires ERC-3643 tokens only.', 'error');
     }
 
   } catch (err) {

@@ -1,0 +1,23 @@
+{
+  "issuerLabel": "USDC (Circle) — SVB depeg, March 2023",
+  "source": "Public USDC/USD price action + Circle's SVB-exposure disclosures, 8–13 Mar 2023",
+  "event": {
+    "type": 2,
+    "typeName": "COLLATERAL_SHORTFALL",
+    "eventEpoch": 6,
+    "defaulted": true,
+    "note": "Ground-truth distress: USDC broke peg to ~$0.87 on 11 Mar 2023 after Circle disclosed $3.3B of reserves stuck at the failed SVB. The benchmark measures who flagged the COLLATERAL_SHORTFALL event EARLIEST. USDC later repegged to ~$1.00 after the regulator backstop (epoch 8) — so this is a distress/shortfall event, NOT a permanent issuer failure. Framed honestly."
+  },
+  "schema": "IssuerSignals: navPunctuality, attestationConsistency, repaymentReliability (0..1000); collateralRatioBps (0..20000, 10000=100%); activityScore, offChainSentiment (0..1000)",
+  "epochs": [
+    { "epoch": 0, "date": "2023-03-08", "navPunctuality": 960, "attestationConsistency": 955, "repaymentReliability": 960, "collateralRatioBps": 10200, "activityScore": 750, "offChainSentiment": 920, "note": "Calm. USDC at $1.00, reserves healthy." },
+    { "epoch": 1, "date": "2023-03-09 AM", "navPunctuality": 950, "attestationConsistency": 950, "repaymentReliability": 955, "collateralRatioBps": 10100, "activityScore": 740, "offChainSentiment": 740, "note": "SVB stock crashes; early whispers of banking stress. Sentiment softens." },
+    { "epoch": 2, "date": "2023-03-09 PM", "navPunctuality": 945, "attestationConsistency": 945, "repaymentReliability": 950, "collateralRatioBps": 10000, "activityScore": 720, "offChainSentiment": 520, "note": "Rumors of stablecoin issuer SVB exposure; social panic building. Fundamentals still fine." },
+    { "epoch": 3, "date": "2023-03-10 AM", "navPunctuality": 935, "attestationConsistency": 910, "repaymentReliability": 945, "collateralRatioBps": 9900, "activityScore": 700, "offChainSentiment": 330, "note": "SVB taken over by FDIC. Confidence collapsing fast — but peg still ~$1.00." },
+    { "epoch": 4, "date": "2023-03-10 PM", "navPunctuality": 900, "attestationConsistency": 880, "repaymentReliability": 900, "collateralRatioBps": 9500, "activityScore": 680, "offChainSentiment": 200, "note": "Circle confirms $3.3B of reserves stuck at SVB. Acute fear." },
+    { "epoch": 5, "date": "2023-03-11", "navPunctuality": 720, "attestationConsistency": 700, "repaymentReliability": 780, "collateralRatioBps": 8800, "activityScore": 500, "offChainSentiment": 130, "note": "USDC depegs — trades ~$0.88. Redemptions strained." },
+    { "epoch": 6, "date": "2023-03-11 PM", "navPunctuality": 150, "attestationConsistency": 150, "repaymentReliability": 150, "collateralRatioBps": 8700, "activityScore": 200, "offChainSentiment": 110, "note": "Trough ~$0.87. Full operational + collateral stress. SHORTFALL EVENT." },
+    { "epoch": 7, "date": "2023-03-12", "navPunctuality": 300, "attestationConsistency": 350, "repaymentReliability": 350, "collateralRatioBps": 9000, "activityScore": 300, "offChainSentiment": 220, "note": "Stress persists ~$0.90; uncertainty about backstop." },
+    { "epoch": 8, "date": "2023-03-13", "navPunctuality": 800, "attestationConsistency": 820, "repaymentReliability": 850, "collateralRatioBps": 9950, "activityScore": 600, "offChainSentiment": 640, "note": "Regulators backstop SVB depositors. USDC repegs to ~$1.00. Recovery." }
+  ]
+}

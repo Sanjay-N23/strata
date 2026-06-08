@@ -1,27 +1,63 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=14&duration=3500&pause=800&color=F0B90B&center=true&vCenter=true&width=750&lines=%E2%96%88%E2%96%88%E2%96%88+CoverFi+Protocol+%E2%96%88%E2%96%88%E2%96%88;First+On-Chain+RWA+Credit+Default+Swap;%2412B+in+RWA+tokens.+ZERO+issuer-default+protection.+Until+now.;ERC-3643+Native+%C2%B7+HashKey+Chain+%C2%B7+416+Tests+Passing" alt="CoverFi Typing Banner" />
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=14&duration=3500&pause=800&color=F0B90B&center=true&vCenter=true&width=750&lines=%E2%96%88%E2%96%88%E2%96%88+Strata+Protocol+%E2%96%88%E2%96%88%E2%96%88;First+On-Chain+RWA+Credit+Default+Swap;%2412B+in+RWA+tokens.+ZERO+issuer-default+protection.+Until+now.;ERC-3643+Native+%C2%B7+Mantle+Network+%C2%B7+900%2B+Tests+Passing" alt="Strata Typing Banner" />
 
 <br/>
 
-# ⬡ CoverFi Protocol
+# ⬡ Strata Protocol
 
 ### *The world's first on-chain Credit Default Swap for ERC-3643 RWA tokens*
 
 <br/>
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-coverfi--protocol.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://coverfi-protocol.vercel.app)
-[![HashKey Chain](https://img.shields.io/badge/⛓_Chain-HashKey_Testnet_133-F0B90B?style=for-the-badge)](https://testnet.hsk.xyz)
-[![Tests](https://img.shields.io/badge/✅_Tests-416_Passing-00B894?style=for-the-badge)](./test)
+[![AI Console](https://img.shields.io/badge/🤖_AI_Underwriter-Console-1E7BFF?style=for-the-badge)](./frontend/console.html)
+[![Mantle](https://img.shields.io/badge/⛓_Chain-Mantle_Sepolia_5003-F0B90B?style=for-the-badge)](https://explorer.sepolia.mantle.xyz)
+[![Tests](https://img.shields.io/badge/✅_Tests-900%2B_Passing-00B894?style=for-the-badge)](./test)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.19-363636?style=for-the-badge&logo=solidity)](./contracts)
-[![ERC-3643](https://img.shields.io/badge/Standard-ERC--3643_T--REX-7C4DFF?style=for-the-badge)](https://erc3643.org)
+[![ERC-8004](https://img.shields.io/badge/Agent_ID-ERC--8004-7C4DFF?style=for-the-badge)](./contracts/strata)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](./LICENSE)
 
 <br/>
 
-> **⚡ Hackathon:** HashKey Chain Horizon 2026 · **Track:** DeFi · **Prize Pool:** 40,000 USDT
+> **⚡ Hackathon:** The Turing Test 2026 · **Track:** AI × RWA · **Chain:** Mantle Network
 
 </div>
+
+---
+
+## 🤖 Strata = AI Underwriter (Turing Test Hackathon 2026, Mantle)
+
+**Strata is an autonomous AI underwriting desk for RWA credit risk.** An AI agent continuously
+re-underwrites issuers, prices risk, and acts on-chain — and **proves on-chain that it flags distress
+earlier than the static rulebook.** That proof is the Turing Test.
+
+- 🧠 **Hybrid AI underwriter** — Z.AI GLM-4.6 (credit memo) + a deterministic PD scorecard (the number).
+- 🏆 **On-chain Turing benchmark** — replayed against the **real USDC–SVB depeg**: the AI flagged the
+  collateral shortfall **3 epochs before** the rules-based baseline. Deterministic & reproducible.
+- 🛡️ **Human-in-the-loop** — the AI *proposes* defaults; **2-of-3 human attestors** confirm. The AI never
+  confirms a legal event. Institutionally trustworthy by design.
+- 🪪 **ERC-8004 agent identity + reputation** — accrues only from correct, timely calls.
+- ⛓️ **Mantle-native** — `StrataAIAgent.submitScore()` is an AI-powered on-chain function that reprices
+  the issuer in the same tx (Deployment Award).
+
+```bash
+# prove it
+npx hardhat test test/integration/TuringBenchmark.test.ts
+# see it — open the AI Underwriter Console
+frontend/console.html        # then hit ▶ Play replay
+# run the agent (after deploy)
+NETWORK=mantleSepolia ISSUER_ADDRESS=0x... npx ts-node agent/index.ts
+```
+
+> *Honest framing:* USDC repegged — the benchmark measures who flagged the **shortfall event** earliest,
+> not permanent failure. We avoid the "AI smarter than humans" claim; the value is **continuous,
+> autonomous, earlier** underwriting with humans keeping the legal gate.
+
+**New Strata components:** [`contracts/strata/`](./contracts/strata) · [`agent/`](./agent) · [`frontend/console.html`](./frontend/console.html) · [demo script](./STRATA_DEMO.md)
+
+> The sections below document the underlying protocol (12 contracts, dual-tranche pool, ERC-3643
+> compliance, SubrogationNFT) that the AI layer underwrites. *Some legacy figures/links below predate the
+> Mantle migration; live addresses are published after the Mantle Sepolia deploy.*
 
 ---
 
@@ -47,7 +83,7 @@
 
 When an RWA issuer defaults — a bond issuer misses payments, a real estate fund collapses, a trade finance company disappears — **lenders holding ERC-3643 ProtectionCerts have zero on-chain recourse**. Every existing DeFi insurance protocol covers *smart contract risk*. None cover *issuer credit risk*.
 
-**CoverFi closes this gap.**
+**Strata closes this gap.**
 
 ---
 
@@ -63,7 +99,7 @@ Lender deposits USDT  →  Receives ProtectionCert SBT  →  Issuer defaults  �
 
 </div>
 
-CoverFi is a **decentralized Credit Default Swap (CDS)** protocol. It lets lenders who hold tokenized RWA bonds purchase on-chain default protection. When a 2-of-3 trusted attestor quorum confirms an issuer default, the PayoutEngine automatically triggers compliant USDT payouts — with subrogated recovery rights minted as an NFT to the CoverFi Foundation.
+Strata is a **decentralized Credit Default Swap (CDS)** protocol. It lets lenders who hold tokenized RWA bonds purchase on-chain default protection. When a 2-of-3 trusted attestor quorum confirms an issuer default, the PayoutEngine automatically triggers compliant USDT payouts — with subrogated recovery rights minted as an NFT to the Strata Foundation.
 
 ---
 
@@ -114,7 +150,7 @@ After payout, an ERC-721 **SubrogationNFT** is minted capturing:
 - Issuer identity
 - Recovery metadata
 
-CoverFi Foundation holds subrogated legal claim to recover from the defaulted issuer.
+Strata Foundation holds subrogated legal claim to recover from the defaulted issuer.
 
 </td>
 </tr>
@@ -140,7 +176,7 @@ flowchart TD
     J --> K{"ERC-3643\nCompliance Check\nisVerified + !isFrozen"}
     K -->|"✅ Pass"| L["💸 USDT transferred\nto lender wallet"]
     K -->|"🔒 Held"| M["Compliance Escrow\nReleased when verified"]
-    J --> N["🖼️ SubrogationNFT\nMinted to CoverFi Foundation\nSubrogated recovery rights"]
+    J --> N["🖼️ SubrogationNFT\nMinted to Strata Foundation\nSubrogated recovery rights"]
 
     F -.->|"Burns on payout"| L
 ```
@@ -225,7 +261,7 @@ sequenceDiagram
     PE-->>Lender: 💸 USDT payout transferred
     PE->>PE: burn ProtectionCert
     PE->>NFT: mint(issuerId, amount, defaultType)
-    NFT-->>PE: SubrogationNFT to CoverFi Foundation 🖼️
+    NFT-->>PE: SubrogationNFT to Strata Foundation 🖼️
 ```
 
 ---
@@ -286,7 +322,7 @@ Tests cover: unit · integration · edge cases · access control · reentrancy �
 
 </div>
 
-The CoverFi dApp ships **10 pages**, wallet-free public stats and wallet-gated protocol actions:
+The Strata dApp ships **10 pages**, wallet-free public stats and wallet-gated protocol actions:
 
 ```
 📊 Stats       → Protocol health, IRS distribution, Premium Rate Curve, TVL
@@ -299,32 +335,32 @@ The CoverFi dApp ships **10 pages**, wallet-free public stats and wallet-gated p
 
 ---
 
-## ⛓ Why HashKey Chain?
+## ⛓ Why Mantle?
 
-HashKey Chain is purpose-built for compliant financial infrastructure — making it the **only viable home** for CoverFi:
+Mantle is purpose-built for compliant financial infrastructure — making it the **only viable home** for Strata:
 
-| Requirement | Why HashKey Chain |
+| Requirement | Why Mantle |
 |-------------|------------------|
 | **EVM compatibility** | Full Solidity + Hardhat support — zero contract rewrites needed |
 | **Regulated environment** | Alignment with licensed exchange — critical for RWA insurance |
 | **Low gas costs** | Insurance micro-transactions (premium payments) must be economically viable |
 | **ERC-3643 ecosystem** | T-REX identity standard native to the RWA-focused chain |
 | **Testnet tooling** | Robust faucet + explorer + RPC (`testnet.hsk.xyz`, Chain ID 133) |
-| **Financial focus** | HashKey's institutional backing matches CoverFi's institutional target market |
+| **Financial focus** | Mantle's institutional backing matches Strata's institutional target market |
 
 ---
 
 ## 🏆 Judging Criteria Alignment
 
 <details>
-<summary><strong>📋 Click to see how CoverFi maps to every evaluation dimension</strong></summary>
+<summary><strong>📋 Click to see how Strata maps to every evaluation dimension</strong></summary>
 
 <br/>
 
 ### ✅ Innovation
 > *Is the project solving a novel problem? Does it push the boundary of what's possible?*
 
-**CoverFi is the world's first on-chain CDS for ERC-3643 RWA tokens.** All existing DeFi insurance protocols cover smart contract bugs — not issuer credit default. This is an entirely unaddressed $12B+ market. Zero direct competitors in this hackathon.
+**Strata is the world's first on-chain CDS for ERC-3643 RWA tokens.** All existing DeFi insurance protocols cover smart contract bugs — not issuer credit default. This is an entirely unaddressed $12B+ market. Zero direct competitors in this hackathon.
 
 ---
 
@@ -342,10 +378,10 @@ HashKey Chain is purpose-built for compliant financial infrastructure — making
 
 ---
 
-### ✅ HashKey Chain Integration
-> *Deep use of HashKey Chain capabilities*
+### ✅ Mantle Integration
+> *Deep use of Mantle capabilities*
 
-**All 12 contracts deployed natively on HashKey Testnet (Chain ID 133).** Frontend wired to HashKey RPC. Leverages HashKey's regulated environment for ERC-3643 identity compliance. Architecture designed for HashKey's institutional user base.
+**All 12 contracts deployed natively on Mantle Testnet (Chain ID 133).** Frontend wired to Mantle RPC. Leverages Mantle's regulated environment for ERC-3643 identity compliance. Architecture designed for Mantle's institutional user base.
 
 ---
 
@@ -379,21 +415,21 @@ npm run compile
 # Run full test suite (416 tests)
 npm run test
 
-# Deploy to HashKey Chain Testnet
+# Deploy to Mantle Testnet
 npm run deploy:hashkey
 
 # Seed demo data (3-TX flow: register → coverage → default → payout)
 npm run demo:hashkey
 ```
 
-**Prerequisites:** Node.js 18+, Hardhat, wallet with HSK testnet tokens ([faucet](https://faucet.hsk.xyz))
+**Prerequisites:** Node.js 18+, Hardhat, wallet with MNT testnet tokens ([faucet](https://faucet.hsk.xyz))
 
 ---
 
 ## 📍 Deployed Contracts
 
 <details>
-<summary><strong>🔗 HashKey Chain Testnet — Chain ID 133 — All 16 contracts</strong></summary>
+<summary><strong>🔗 Mantle Testnet — Chain ID 133 — All 16 contracts</strong></summary>
 
 <br/>
 
@@ -426,11 +462,11 @@ npm run demo:hashkey
 gitGraph
    commit id: "✅ Core contracts (12)"
    commit id: "✅ 416 tests passing"
-   commit id: "✅ HashKey Testnet deploy"
+   commit id: "✅ Mantle Testnet deploy"
    commit id: "✅ 10-page dApp live"
    branch mainnet
    checkout mainnet
-   commit id: "🔜 HashKey Mainnet launch"
+   commit id: "🔜 Mantle Mainnet launch"
    commit id: "🔜 Real issuer onboarding"
    commit id: "🔜 Chainlink PoR integration"
    commit id: "🔜 Governance token (CVR)"
@@ -440,19 +476,19 @@ gitGraph
 | Phase | Milestone | Status |
 |-------|-----------|--------|
 | 🟢 **v1.0** | Smart contracts + full test suite | ✅ Complete |
-| 🟢 **v1.1** | HashKey Testnet deployment | ✅ Complete |
+| 🟢 **v1.1** | Mantle Testnet deployment | ✅ Complete |
 | 🟢 **v1.2** | 10-page dApp with public stats | ✅ Complete |
-| 🟡 **v2.0** | HashKey Mainnet + real issuer onboarding | 🔜 Post-hackathon |
+| 🟡 **v2.0** | Mantle Mainnet + real issuer onboarding | 🔜 Post-hackathon |
 | 🟡 **v2.1** | Chainlink Proof of Reserve integration | 🔜 Q3 2026 |
 | 🔵 **v3.0** | Governance (CVR token), cross-chain | 🔜 Q4 2026 |
 
 ---
 
-## 🧠 Why CoverFi Stands Out
+## 🧠 Why Strata Stands Out
 
 <div align="center">
 
-| Dimension | Every Other DeFi Project | CoverFi |
+| Dimension | Every Other DeFi Project | Strata |
 |-----------|-------------------------|---------|
 | What's insured | Smart contract bugs | **Issuer credit default** |
 | Token standard | Generic ERC-20/721 | **ERC-3643 compliance-native** |
@@ -468,18 +504,18 @@ gitGraph
 
 ## 📄 License
 
-MIT © 2026 CoverFi Protocol
+MIT © 2026 Strata Protocol
 
 <div align="center">
 <br/>
 
-**⬡ CoverFi — Protecting the Tokenized Economy**
+**⬡ Strata — Protecting the Tokenized Economy**
 
 *The first protocol to bring institutional-grade credit default protection to the on-chain RWA ecosystem*
 
 <br/>
 
-[![Built on HashKey](https://img.shields.io/badge/Built_on-HashKey_Chain-F0B90B?style=flat-square)](https://www.hashkey.com)
+[![Built on Mantle](https://img.shields.io/badge/Built_on-Mantle_Chain-F0B90B?style=flat-square)](https://www.hashkey.com)
 [![ERC-3643](https://img.shields.io/badge/ERC--3643-Compliant-7C4DFF?style=flat-square)](https://erc3643.org)
 [![Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?style=flat-square&logo=vercel)](https://coverfi-protocol.vercel.app)
 

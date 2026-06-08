@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "./libraries/ABDKMath64x64.sol";
+import "./strata/StrataTypes.sol";
 
 /**
  * @title IRSOracle — Issuer Reputation Score Oracle
@@ -11,7 +12,7 @@ import "./libraries/ABDKMath64x64.sol";
  *
  *         Premium formula: premium_bps = 1600 × e^(-0.001386 × IRS)
  */
-contract IRSOracle is Ownable {
+contract IRSOracle is Ownable2Step {
     // ─── Structs ─────────────────────────────────────────────────────
     struct ScoreComponents {
         uint256 navPunctuality;       // max 250
@@ -67,6 +68,11 @@ contract IRSOracle is Ownable {
     address public payoutEngine;
     address public keeper;
 
+    // ─── Strata AI arm ───────────────────────────────────────────────
+    address public strataAgent;                 // StrataAIAgent, the only AI-score writer
+    mapping(address => uint16) public aiScore;  // AI underwriter's score per issuer
+    mapping(address => bool) public aiScored;   // whether an AI score has been set
+
     // ─── Events ──────────────────────────────────────────────────────
     event ScoreUpdated(address indexed tokenAddress, uint256 oldScore, uint256 newScore, string dimension);
     event EarlyWarningFired(address indexed tokenAddress, uint256 newScore, uint256 dropAmount, uint256 blockNumber);
@@ -74,10 +80,17 @@ contract IRSOracle is Ownable {
     event TWASCacheUpdated(address indexed tokenAddress, uint256 newTWAS, uint256 timestamp);
     event CoverageRatioUpdated(address indexed tokenAddress, uint256 newRatioBPS);
     event ScoreInitialized(address indexed tokenAddress, uint256 initialScore);
+    event AIScoreSubmitted(address indexed tokenAddress, uint16 score);
+    event StrataAgentUpdated(address indexed agent);
 
     // ─── Modifiers ───────────────────────────────────────────────────
     modifier onlyKeeper() {
         require(msg.sender == keeper || msg.sender == owner(), "IRSOracle: not keeper");
+        _;
+    }
+
+    modifier onlyAgent() {
+        require(msg.sender == strataAgent, "IRSOracle: not strata agent");
         _;
     }
 
@@ -95,6 +108,11 @@ contract IRSOracle is Ownable {
 
     function setKeeper(address _keeper) external onlyOwner {
         keeper = _keeper;
+    }
+
+    function setStrataAgent(address _agent) external onlyOwner {
+        strataAgent = _agent;
+        emit StrataAgentUpdated(_agent);
     }
 
     // ─── Score Initialization ────────────────────────────────────────
@@ -225,28 +243,75 @@ contract IRSOracle is Ownable {
      * @return premiumBPS Premium rate in basis points (400-1600)
      */
     function getPremiumRateBPS(address tokenAddress) external view returns (uint256 premiumBPS) {
-        uint256 irs = scores[tokenAddress].totalScore;
+        return staticPremiumBps(scores[tokenAddress].totalScore);
+    }
 
-        if (irs == 0) return MAX_PREMIUM_BPS;
-        if (irs >= MAX_SCORE) return MIN_PREMIUM_BPS;
+    /**
+     * @notice Pure premium formula: premium_bps = 1600 × e^(-0.001386 × score),
+     *         clamped to [400, 1600]. This is the STATIC ("human rulebook") arm
+     *         of the Strata Turing benchmark.
+     */
+    function staticPremiumBps(uint256 score) public pure returns (uint256 premiumBPS) {
+        if (score == 0) return MAX_PREMIUM_BPS;
+        if (score >= MAX_SCORE) return MIN_PREMIUM_BPS;
 
-        // Compute -0.001386 × IRS using ABDKMath64x64
-        // -lambda × IRS = -(ln(4)/1000) × IRS = -1.3862944 × IRS / 1000
-        // We compute: -1386 × IRS / 1000000 in fixed point
+        // -lambda × score = -(ln(4)/1000) × score = -1386 × score / 1000000 (fixed point)
         int128 negLambdaIRS = ABDKMath64x64.mul(
             ABDKMath64x64.fromInt(-1386),
-            ABDKMath64x64.divu(irs, 1000000)
+            ABDKMath64x64.divu(score, 1000000)
         );
-
-        // e^(-lambda × IRS)
         int128 expResult = ABDKMath64x64.exp(negLambdaIRS);
-
-        // 1600 × e^(...)
         premiumBPS = ABDKMath64x64.mulu(expResult, MAX_PREMIUM_BPS);
 
-        // Clamp to valid range
         if (premiumBPS < MIN_PREMIUM_BPS) premiumBPS = MIN_PREMIUM_BPS;
         if (premiumBPS > MAX_PREMIUM_BPS) premiumBPS = MAX_PREMIUM_BPS;
+    }
+
+    // ─── Strata: Static Arm (pure score from raw signals) ────────────
+
+    /**
+     * @notice Deterministic on-chain "human rulebook" score from raw issuer signals.
+     *         Maps 5 signals to weighted dimensions (250/250/300/150/50), capped 1000.
+     *         Intentionally IGNORES offChainSentiment — the static rulebook is blind to
+     *         soft signals; the AI agent uses them, which is why the AI flags earlier.
+     */
+    function computeStaticScore(IssuerSignals memory s) public pure returns (uint16) {
+        uint256 nav = (uint256(s.navPunctuality) * MAX_NAV) / 1000;
+        uint256 att = (uint256(s.attestationConsistency) * MAX_ATTESTATION) / 1000;
+        uint256 rep = (uint256(s.repaymentReliability) * MAX_REPAYMENT) / 1000;
+        uint256 colRatio = s.collateralRatioBps > 10000 ? 10000 : uint256(s.collateralRatioBps);
+        uint256 col = (colRatio * MAX_COLLATERAL) / 10000;
+        uint256 act = (uint256(s.activityScore) * MAX_ACTIVITY) / 1000;
+        uint256 total = nav + att + rep + col + act;
+        if (total > MAX_SCORE) total = MAX_SCORE;
+        return uint16(total);
+    }
+
+    // ─── Strata: AI Arm (agent-submitted score) ──────────────────────
+
+    /**
+     * @notice AI underwriter writes its score. Causally drives the effective premium.
+     *         Restricted to the StrataAIAgent contract.
+     */
+    function setAIScore(address tokenAddress, uint16 score) external onlyAgent {
+        require(score <= MAX_SCORE, "IRSOracle: score too high");
+        aiScore[tokenAddress] = score;
+        aiScored[tokenAddress] = true;
+        emit AIScoreSubmitted(tokenAddress, score);
+    }
+
+    function getAIScore(address tokenAddress) external view returns (uint16) {
+        return aiScore[tokenAddress];
+    }
+
+    /**
+     * @notice Effective premium charged: uses the AI score when present, else static.
+     */
+    function getEffectivePremiumBPS(address tokenAddress) external view returns (uint256) {
+        if (aiScored[tokenAddress]) {
+            return staticPremiumBps(aiScore[tokenAddress]);
+        }
+        return staticPremiumBps(scores[tokenAddress].totalScore);
     }
 
     // ─── Oracle Getters ──────────────────────────────────────────────

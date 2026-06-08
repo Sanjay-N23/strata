@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  *         OBSERVATION → ACTIVE → MONITORING → DEFAULTED → WIND_DOWN → CLOSED
  *         Supports two-tier onboarding: Standard (60d) and Fast Track (14d).
  */
-contract IssuerRegistry is Ownable, ReentrancyGuard {
+contract IssuerRegistry is Ownable2Step, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     // ─── Enums ───────────────────────────────────────────────────────
@@ -43,8 +43,10 @@ contract IssuerRegistry is Ownable, ReentrancyGuard {
         uint256 challengeBond;
     }
 
-    // ─── Constants ───────────────────────────────────────────────────
-    uint256 public constant BLOCKS_PER_DAY = 28800;    // ~3s per block
+    // ─── Constants & Configurables ──────────────────────────────────
+    /// @notice Blocks-per-day estimate. Settable by owner because L2 block
+    ///         times can change. Defaults to ~3s/block on HashKey Chain.
+    uint256 public blocksPerDay = 28800;
     uint256 public constant STANDARD_OBSERVATION = 60;  // days
     uint256 public constant FAST_OBSERVATION = 14;      // days
     uint256 public constant STANDARD_ATTESTATIONS = 3;
@@ -97,6 +99,14 @@ contract IssuerRegistry is Ownable, ReentrancyGuard {
         payoutEngine = _engine;
     }
 
+    /// @notice Update the blocks-per-day estimate. Required if HashKey Chain
+    ///         changes its block time. Affects observation/wind-down timing
+    ///         only for issuers registered AFTER the change.
+    function setBlocksPerDay(uint256 _blocksPerDay) external onlyOwner {
+        require(_blocksPerDay > 0, "IssuerRegistry: zero bpd");
+        blocksPerDay = _blocksPerDay;
+    }
+
     // ─── Registration ────────────────────────────────────────────────
 
     /**
@@ -120,7 +130,7 @@ contract IssuerRegistry is Ownable, ReentrancyGuard {
             observationDays = FAST_OBSERVATION;
         }
 
-        uint256 observationEndBlock = block.number + (observationDays * BLOCKS_PER_DAY);
+        uint256 observationEndBlock = block.number + (observationDays * blocksPerDay);
 
         issuers[tokenAddress] = IssuerProfile({
             tokenAddress: tokenAddress,

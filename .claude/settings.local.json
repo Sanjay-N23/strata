@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "mcp__Claude_Preview__preview_start",
-      "Bash(npx hardhat:*)"
+      "Bash(npx hardhat:*)",
+      "Bash(npm run:*)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

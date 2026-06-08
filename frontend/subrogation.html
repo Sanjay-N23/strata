@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CoverFi — Subrogation Claims</title>
+  <title>Strata — Subrogation Claims</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='8,8 16,8 20,14 16,20 8,20 4,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,8 24,8 28,14 24,20 16,20 12,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,5 22,14 16,23 10,14' fill='%23F0B90B'/><circle cx='16' cy='13' r='1.5' fill='white'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
 /* ============================================================
-   CoverFi Subrogation Claims — Claymorphism Design
+   Strata Subrogation Claims — Claymorphism Design
    ============================================================ */
 
 :root {
@@ -675,6 +675,22 @@ code, pre { font-family: var(--font-mono); }
   </style>
 </head>
 <body>
+<!-- COVERFI MAINNET PHASE 1 BANNER -->
+<div id="cfMainnetBanner" style="
+  position:fixed;top:0;left:0;right:0;z-index:99999;
+  background:linear-gradient(90deg,#fbbf24,#f59e0b);
+  color:#1f2937;font-weight:600;font-size:13px;
+  padding:8px 16px;text-align:center;
+  border-bottom:1px solid #d97706;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+">
+  ⚠️ MAINNET — PHASE 1 DEPLOYMENT · Coverage purchase activates in Phase 2 once issuer onboarding completes ·
+  <a href="https://explorer.mantle.xyz" target="_blank" rel="noopener" style="color:#1f2937;text-decoration:underline;">View on Blockscout</a>
+</div>
+<style>body{padding-top:36px !important;}</style>
+<!-- END BANNER -->
+
 
 <!-- Abstract SVG Background Blobs -->
 <div class="bg-blobs" aria-hidden="true">
@@ -709,7 +725,7 @@ code, pre { font-family: var(--font-mono); }
      ============================================================ -->
 <nav class="dash-nav" aria-label="Main navigation">
   <div class="dash-nav-inner">
-    <a href="index.html" class="nav-logo" aria-label="CoverFi home">
+    <a href="index.html" class="nav-logo" aria-label="Strata home">
       <svg width="36" height="36" viewBox="0 0 32 32" fill="none" aria-hidden="true">
         <polygon points="10,9 16,9 19,13 16,17 10,17 7,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
         <polygon points="16,9 22,9 25,13 22,17 16,17 13,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
@@ -728,7 +744,7 @@ code, pre { font-family: var(--font-mono); }
     </div>
 
     <div class="nav-actions">
-      <div class="badge-testnet"><span class="dot"></span> HashKey Testnet</div>
+      <div class="badge-testnet"><span class="dot"></span> Mantle Testnet</div>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
         <svg class="icon-sun" width="18" aria-hidden="true" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         <svg class="icon-moon" width="18" aria-hidden="true" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -885,7 +901,7 @@ code, pre { font-family: var(--font-mono); }
           <div class="recovery-step-num">3</div>
           <div class="recovery-step-content">
             <h4>Foundation Initiates Recovery</h4>
-            <p>The CoverFi Foundation, as the NFT holder, initiates legal recovery proceedings against the defaulted issuer. The SubrogationNFT provides cryptographic proof of the default event and amounts owed.</p>
+            <p>The Strata Foundation, as the NFT holder, initiates legal recovery proceedings against the defaulted issuer. The SubrogationNFT provides cryptographic proof of the default event and amounts owed.</p>
           </div>
         </div>
 
@@ -918,7 +934,7 @@ function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
 (function() { setTheme(getTheme()); })();
 
 // ---- Constants ----
-var BSC_TESTNET_RPC = 'https://testnet.hsk.xyz';
+var BSC_TESTNET_RPC = 'https://rpc.sepolia.mantle.xyz';
 var BSC_TESTNET_CHAIN_ID = 133;
 var BSCSCAN_URL = 'https://testnet-explorer.hsk.xyz';
 
@@ -1145,7 +1161,7 @@ function renderClaims(claims) {
 
 // ---- Start Recovery (placeholder) ----
 function startRecovery(tokenId) {
-  alert('Recovery process for SubrogationNFT #' + tokenId + ' would be initiated by the CoverFi Foundation. This triggers a legal recovery workflow against the defaulted issuer.\n\nThis feature requires Foundation multisig authorization.');
+  alert('Recovery process for SubrogationNFT #' + tokenId + ' would be initiated by the Strata Foundation. This triggers a legal recovery workflow against the defaulted issuer.\n\nThis feature requires Foundation multisig authorization.');
 }
 
 // ---- Auto-load on page ready ----
