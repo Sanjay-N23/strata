@@ -2,6 +2,7 @@ import { ethers } from "hardhat";
 import * as fs from "fs";
 import * as path from "path";
 import { scoreIssuer } from "../agent/pdModel";
+import { deploymentFilename } from "./deployHelpers";
 
 /**
  * Live local demo: replays the USDC–SVB depeg on the running node, then settles
@@ -10,7 +11,8 @@ import { scoreIssuer } from "../agent/pdModel";
  */
 async function main() {
   const [owner] = await ethers.getSigners();
-  const dep = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "deployments", "localhost.json"), "utf8")).contracts;
+  const fname = deploymentFilename((await ethers.provider.getNetwork()).chainId);
+  const dep = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "deployments", fname), "utf8")).contracts;
   const dataset = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "agent", "data", "usdc_svb.json"), "utf8"));
   const issuer = process.env.ISSUER_ADDRESS || "0x90F79bf6EB2c4f870365E785982E1f101E93b906"; // fresh issuer key
 
