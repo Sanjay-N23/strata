@@ -1,7 +1,7 @@
 {
-  "network": "hardhat",
+  "network": "localhost",
   "chainId": 31337,
-  "deployedAt": "2026-06-08T04:42:09.612Z",
+  "deployedAt": "2026-06-08T09:47:45.892Z",
   "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
   "foundation": "0xce220d9eD9527f9997c8045844210637F3A42fb3",
   "contracts": {
