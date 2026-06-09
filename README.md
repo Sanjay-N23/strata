@@ -55,9 +55,23 @@ NETWORK=mantleSepolia ISSUER_ADDRESS=0x... npx ts-node agent/index.ts
 
 **New Strata components:** [`contracts/strata/`](./contracts/strata) · [`agent/`](./agent) · [`frontend/console.html`](./frontend/console.html) · [demo script](./STRATA_DEMO.md)
 
+### 🟢 Live on Mantle Sepolia (chainId 5003)
+
+19 contracts deployed & wired; the USDC–SVB benchmark is **seeded on-chain** → `TuringBenchmark.tally()` returns **AI 1 · static 0 · avg lead +3 epochs**, agent reputation **1/1**.
+
+| Contract | Address |
+|---|---|
+| **StrataAIAgent** (AI-powered on-chain fn) | [`0xDecE5A5faEBc87E1060C55FA879bE0A645796670`](https://explorer.sepolia.mantle.xyz/address/0xDecE5A5faEBc87E1060C55FA879bE0A645796670) |
+| **TuringBenchmark** | [`0xDd10c1252795456aC6fb71f5ACfE5ACAB9B43304`](https://explorer.sepolia.mantle.xyz/address/0xDd10c1252795456aC6fb71f5ACfE5ACAB9B43304) |
+| IRSOracle | [`0xa4ECEB47F80a32D7176C23e4993cDa4d2337Fc3A`](https://explorer.sepolia.mantle.xyz/address/0xa4ECEB47F80a32D7176C23e4993cDa4d2337Fc3A) |
+| ReplayOracle | [`0xF66ebe1f553E4D79c89C31E4b4732ADdb8079d6e`](https://explorer.sepolia.mantle.xyz/address/0xF66ebe1f553E4D79c89C31E4b4732ADdb8079d6e) |
+| DefaultOracle | [`0x1Ca7B678BDf1deCe9964c5178C01AB9312F2664D`](https://explorer.sepolia.mantle.xyz/address/0x1Ca7B678BDf1deCe9964c5178C01AB9312F2664D) |
+
+Full set in [`deployments/mantleSepolia.json`](./deployments/mantleSepolia.json). **966 tests passing** (unit + integration) + 14 Playwright e2e.
+
 > The sections below document the underlying protocol (12 contracts, dual-tranche pool, ERC-3643
-> compliance, SubrogationNFT) that the AI layer underwrites. *Some legacy figures/links below predate the
-> Mantle migration; live addresses are published after the Mantle Sepolia deploy.*
+> compliance, SubrogationNFT) that the AI layer underwrites. *Some legacy figures below predate the
+> Mantle migration.*
 
 ---
 
