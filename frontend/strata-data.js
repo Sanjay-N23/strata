@@ -93,26 +93,39 @@
   // ---------- issuer leaderboard ----------
   // Seed = AI-computed credit book. The USDC row is the live SVB replay subject.
   // (Leaderboard is provenance 'ai'/'replay'; only tally + reputation are on-chain.)
+  function clampD(x, lo, hi) { return SC.clamp ? SC.clamp(x, lo, hi) : Math.max(lo, Math.min(hi, x)); }
+  function synthComponents(irs) {
+    return {
+      nav: Math.round(clampD(irs + 10, 0, 1000)),
+      att: Math.round(clampD(irs - 15, 0, 1000)),
+      rep: Math.round(clampD(irs + 25, 0, 1000)),
+      col: Math.round(clampD(irs * 12, 0, 12000)),
+      act: Math.round(clampD(irs - 60, 0, 1000)),
+      sent: Math.round(clampD(irs + 5, 0, 1000))
+    };
+  }
   function usdcRow() {
     var D = (SC.DATA && SC.DATA.length) ? SC.DATA[SC.DATA.length - 1] : { ai: 640, pd: 3600, prem: 660, col: 9950 };
     var spark = (SC.DATA || []).map(function (d) { return d.ai; });
-    return { token: '0xA0b8…6eB48', label: 'USDC · Circle', sector: 'Stablecoin / T-bill',
+    return { id: 'usdc', token: '0xA0b8…6eB48', label: 'USDC · Circle', sector: 'Stablecoin / T-bill',
       irs: D.ai, pd: D.pd, premium: D.prem, bond: 5.0, delta7d: -18.4, recency: 0.2,
-      exposure: 4200000, spark: spark, source: 'replay' };
+      exposure: 4200000, spark: spark, source: 'replay',
+      components: { nav: D.nav, att: D.att, rep: D.rep, col: D.col, act: D.act, sent: D.sent } };
   }
   function seedIssuers() {
     var rows = [
-      { token: '0x7f2C…91Ae', label: 'Maple · BlueChip', sector: 'Private credit', irs: 812, bond: 7.5, delta7d: 1.2, recency: 0.4, exposure: 9100000 },
-      { token: '0x3De1…77b0', label: 'Centrifuge · Anemoy', sector: 'T-bill fund', irs: 774, bond: 6.0, delta7d: 0.6, recency: 1.1, exposure: 6300000 },
-      { token: '0x91F7…2c4d', label: 'Goldfinch · Prime', sector: 'Fund of funds', irs: 690, bond: 5.5, delta7d: -2.1, recency: 0.8, exposure: 5400000 },
-      { token: '0xB104…dE22', label: 'Clearpool · Auralis', sector: 'Institutional', irs: 540, bond: 5.0, delta7d: -6.8, recency: 2.3, exposure: 2200000 },
-      { token: '0x55aa…0F19', label: 'Ondo · OUSG', sector: 'Treasuries', irs: 858, bond: 8.0, delta7d: 0.3, recency: 0.5, exposure: 12500000 }
+      { id: 'maple',      token: '0x7f2C…91Ae', label: 'Maple · BlueChip', sector: 'Private credit', irs: 812, bond: 7.5, delta7d: 1.2, recency: 0.4, exposure: 9100000 },
+      { id: 'centrifuge', token: '0x3De1…77b0', label: 'Centrifuge · Anemoy', sector: 'T-bill fund', irs: 774, bond: 6.0, delta7d: 0.6, recency: 1.1, exposure: 6300000 },
+      { id: 'goldfinch',  token: '0x91F7…2c4d', label: 'Goldfinch · Prime', sector: 'Fund of funds', irs: 690, bond: 5.5, delta7d: -2.1, recency: 0.8, exposure: 5400000 },
+      { id: 'clearpool',  token: '0xB104…dE22', label: 'Clearpool · Auralis', sector: 'Institutional', irs: 540, bond: 5.0, delta7d: -6.8, recency: 2.3, exposure: 2200000 },
+      { id: 'ondo',       token: '0x55aa…0F19', label: 'Ondo · OUSG', sector: 'Treasuries', irs: 858, bond: 8.0, delta7d: 0.3, recency: 0.5, exposure: 12500000 }
     ];
     rows.forEach(function (r) {
       r.pd = Math.round(10000 * (1 - r.irs / 1000));
       r.premium = SC.premiumBps ? SC.premiumBps(r.irs) : 800;
       r.source = 'ai';
       r.spark = mkSpark(r.irs, r.delta7d);
+      r.components = synthComponents(r.irs);
     });
     rows.unshift(usdcRow());
     return rows;
@@ -138,6 +151,10 @@
     return _issuers;
   }
   function getIssuerScore(token) { return mem['score.' + token]; } // single source of truth
+  function getIssuer(id) {
+    var list = getIssuers();
+    return list.filter(function (r) { return r.id === id; })[0] || list[0];
+  }
 
   // ---------- KPI roll-up ----------
   function getKPIs(tally) {
@@ -158,7 +175,7 @@
   window.StrataData = {
     on: on, emit: emit,
     loadEthers: loadEthers, healthCheck: healthCheck, health: function () { return health; },
-    getTally: getTally, getIssuers: getIssuers, getIssuerScore: getIssuerScore, getKPIs: getKPIs,
+    getTally: getTally, getIssuers: getIssuers, getIssuer: getIssuer, getIssuerScore: getIssuerScore, getKPIs: getKPIs,
     fmtUSD: function (n) {
       if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
       if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';

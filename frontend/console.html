@@ -262,8 +262,9 @@
     async function loadTally(btn){
       var el = $('liveTally');
       if(btn) btn.textContent='Loading…';
-      el.textContent='reading…';
+      el.className='v stx-skel'; el.textContent='reading tally…';
       var t = await window.StrataData.getTally();
+      el.className='v';
       if(t){
         el.textContent = 'AI '+t.ai+' · static '+t.st+' · avg lead '+t.avg;
         if(t.source==='chain'){
@@ -275,6 +276,13 @@
       }
       if(btn) btn.textContent='Load live tally';
     }
+    // surface RPC health on the live card via data-layer state events
+    window.StrataData.on('state', function(s){
+      if(s.scope!=='tally') return;
+      var el=$('liveTally');
+      if(s.state==='stale') el.textContent='stale cache · '+el.textContent.replace(/^stale cache · /,'');
+      else if(s.state==='error') el.textContent='RPC error — using replay';
+    });
     $('loadLive').addEventListener('click', function(){ loadTally(this); });
 
     // react to global Live/Replay toggle

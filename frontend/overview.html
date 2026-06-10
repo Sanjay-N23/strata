@@ -63,7 +63,7 @@
             <div class="stx-feed" id="feed"></div>
           </div>
           <div class="stx-card">
-            <div class="stx-card-h"><h3>Turing Benchmark</h3><span class="stx-prov-badge chain" id="benchProv">on-chain</span></div>
+            <div class="stx-card-h"><h3>Turing Benchmark</h3><span class="stx-prov-badge replay" id="benchProv">replay</span></div>
             <div class="stx-kv"><span class="k">AI wins / static</span><span class="v" id="bAi">1 / 0</span></div>
             <div class="stx-kv"><span class="k">Avg lead</span><span class="v" id="bLead">+3 epochs</span></div>
             <div class="stx-kv"><span class="k">Agent reputation</span><span class="v">1 / 1</span></div>
@@ -129,7 +129,7 @@
       });
       $('lbBody').innerHTML = rows.map(function(r){
         var deltaCls = r.delta7d>=0?'up':'down';
-        return '<tr class="clickable" data-token="'+r.token+'">'+
+        return '<tr class="clickable" data-id="'+r.id+'">'+
           '<td><div style="font-weight:600">'+r.label+'</div><div class="hint" style="margin:0;font-size:.72rem">'+r.sector+'</div></td>'+
           '<td class="num stx-score '+scoreCls(r.irs)+'">'+r.irs+'</td>'+
           '<td class="num">'+(r.pd/100).toFixed(1)+'%</td>'+
@@ -151,7 +151,7 @@
       });
     });
     $('lbBody').addEventListener('click', function(e){
-      var tr=e.target.closest('tr[data-token]'); if(tr) window.location.href='issuers.html';
+      var tr=e.target.closest('tr[data-id]'); if(tr) window.location.href='issuer.html?id='+tr.getAttribute('data-id');
     });
 
     // ---------- risk-map scatter ----------
@@ -174,10 +174,14 @@
       issuers.forEach(function(r){
         var cx=X(r.irs), cy=Y(r.recency), rad=Math.max(7,Math.min(26,Math.sqrt(r.exposure/1e6)*6));
         var col = r.irs>=600?'var(--green)':(r.irs>=300?'var(--amber)':'var(--red)');
-        g += '<circle cx="'+cx+'" cy="'+cy+'" r="'+rad+'" fill="'+col+'" fill-opacity="0.16" stroke="'+col+'" stroke-width="1.6"/>';
-        g += '<text x="'+cx+'" y="'+(cy-rad-4)+'" text-anchor="middle" class="axl" fill="var(--text2)" style="font-size:9px">'+r.label.split(' · ')[0]+'</text>';
+        g += '<circle cx="'+cx+'" cy="'+cy+'" r="'+rad+'" fill="'+col+'" fill-opacity="0.16" stroke="'+col+'" stroke-width="1.6" data-id="'+r.id+'" style="cursor:pointer"/>';
+        g += '<text x="'+cx+'" y="'+(cy-rad-4)+'" text-anchor="middle" class="axl" fill="var(--text2)" style="font-size:9px;pointer-events:none">'+r.label.split(' · ')[0]+'</text>';
       });
       $('scatter').innerHTML=g;
+      $('scatter').addEventListener('click',function(e){
+        var id=e.target.getAttribute && e.target.getAttribute('data-id');
+        if(id) window.location.href='issuer.html?id='+id;
+      });
     }
 
     // ---------- live feed ----------
@@ -195,11 +199,38 @@
       }).join('');
     }
 
+    // ---------- skeleton / states ----------
+    function skelKPIs(){
+      $('kpis').innerHTML = new Array(6).fill(0).map(function(){
+        return '<div class="stx-kpi"><div class="k stx-skel">loading metric</div><div class="v stx-skel">0000</div><div class="d stx-skel">loading</div></div>';
+      }).join('');
+    }
+    function skelRows(){
+      $('lbBody').innerHTML = new Array(6).fill(0).map(function(){
+        return '<tr><td><div class="stx-skel" style="width:60%">Issuer name</div></td><td><span class="stx-skel">000</span></td>'+
+          '<td><span class="stx-skel">00%</span></td><td><span class="stx-skel">000</span></td><td><span class="stx-skel">0%</span></td>'+
+          '<td><span class="stx-skel">0.0</span></td><td><span class="stx-skel" style="display:inline-block;width:60px;height:14px"></span></td></tr>';
+      }).join('');
+    }
+    function benchSkel(){ $('bAi').className='v stx-skel'; $('bAi').textContent='0 / 0'; $('bLead').className='v stx-skel'; $('bLead').textContent='+0'; }
+    function benchDone(){ $('bAi').className='v'; $('bLead').className='v'; }
+
+    // react to data-layer state events (loading/ok/empty/error/stale)
+    D.on('state', function(s){
+      if(s.scope!=='tally') return;
+      var b=$('benchProv');
+      if(s.state==='ok'){ benchDone(); b.className='stx-prov-badge chain'; b.textContent='on-chain'; }
+      else if(s.state==='stale'){ benchDone(); b.className='stx-prov-badge replay'; b.textContent='stale cache'; }
+      else if(s.state==='error'){ benchDone(); b.className='stx-prov-badge'; b.textContent='RPC error · using replay'; $('bAi').textContent='1 / 0'; $('bLead').textContent='+3 epochs'; }
+      else if(s.state==='empty'){ benchDone(); b.className='stx-prov-badge'; b.textContent='not configured'; }
+    });
+
     // ---------- live/replay reaction ----------
     window.Strata.onMode(function(m){
       if(m==='live'){
+        benchSkel();
         D.getTally().then(function(t){
-          renderKPIs(t);
+          renderKPIs(t || null);
           if(t && t.source==='chain'){ $('lbProv').className='stx-prov-badge chain'; $('lbProv').textContent='live + AI'; }
         });
       } else {
@@ -208,11 +239,14 @@
       }
     });
 
-    // ---------- boot ----------
-    renderKPIs(null);
-    renderTable();
-    renderScatter();
-    renderFeed();
+    // ---------- boot (skeleton → content) ----------
+    skelKPIs(); skelRows();
+    setTimeout(function(){
+      renderKPIs(null);
+      renderTable();
+      renderScatter();
+      renderFeed();
+    }, 480);
   })();
   </script>
 </body>

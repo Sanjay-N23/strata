@@ -275,6 +275,47 @@ body[data-mode="replay"] .stx-replay-banner{display:flex}
 /* sparkline */
 .spark{display:inline-block;vertical-align:middle}
 
+/* ---------- issuer profile ---------- */
+.stx-idhero{display:flex;gap:20px;align-items:center;flex-wrap:wrap;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px}
+.stx-bigscore{width:118px;height:118px;border-radius:16px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;flex:none;border:1px solid var(--border)}
+.stx-bigscore .n{font-family:var(--mono);font-weight:700;font-size:2.6rem;line-height:1}
+.stx-bigscore .l{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:4px}
+.stx-bigscore.s-ok{background:var(--green-dim)} .stx-bigscore.s-ok .n{color:var(--green)}
+.stx-bigscore.s-warn{background:var(--amber-dim)} .stx-bigscore.s-warn .n{color:var(--amber)}
+.stx-bigscore.s-bad{background:var(--red-dim)} .stx-bigscore.s-bad .n{color:var(--red)}
+.stx-idmeta{flex:1;min-width:220px}
+.stx-idmeta h1{font-family:var(--head);font-weight:800;font-size:1.5rem;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.stx-idmeta .sector{color:var(--text2);font-size:.9rem;margin:2px 0 8px}
+.stx-idmeta .addr{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+.stx-outlook{font-family:var(--mono);font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:6px}
+.stx-outlook.up{background:var(--green-dim);color:var(--green)} .stx-outlook.down{background:var(--red-dim);color:var(--red)}
+
+/* tabs */
+.stx-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:18px;overflow-x:auto}
+.stx-tab{border:none;background:none;cursor:pointer;font-family:var(--main);font-weight:600;font-size:.88rem;
+  color:var(--text2);padding:11px 14px;border-bottom:2px solid transparent;white-space:nowrap}
+.stx-tab:hover{color:var(--text)}
+.stx-tab.active{color:var(--text);border-bottom-color:var(--gold)}
+.stx-panel{display:none} .stx-panel.active{display:block}
+
+/* driver sliders */
+.stx-driver{display:grid;grid-template-columns:120px 1fr 56px;align-items:center;gap:12px;padding:9px 0}
+.stx-driver .dl{font-size:.82rem;color:var(--text2)}
+.stx-driver input[type=range]{width:100%;accent-color:var(--ai)}
+.stx-driver .dv{font-family:var(--mono);font-weight:600;font-size:.82rem;text-align:right}
+.stx-rescore{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.stx-rescore .b{font-family:var(--mono)} .stx-rescore .b .k{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stx-rescore .b .v{font-size:1.4rem;font-weight:700}
+
+/* credit badges */
+.stx-cbadges{display:flex;gap:8px;flex-wrap:wrap}
+.stx-cbadge{border:1px solid var(--border);border-radius:9px;padding:8px 12px;min-width:92px}
+.stx-cbadge .k{font-size:.64rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.stx-cbadge .v{font-family:var(--mono);font-weight:700;font-size:1.05rem;margin-top:2px}
+.stx-cbadge.ok .v{color:var(--green)} .stx-cbadge.warn .v{color:var(--amber)}
+
 /* ---------- responsive ---------- */
 @media(max-width:1100px){
   .stx-kpis{grid-template-columns:repeat(3,1fr)}
