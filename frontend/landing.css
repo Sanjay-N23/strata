@@ -125,6 +125,17 @@
 .ld-proof-readout .b .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .ld-proof-readout .b .v{font-size:1.5rem;font-weight:700}
 
+/* ---------- spine: lime green scroll ribbon threading the dark sections ---------- */
+.ld-spine{position:relative;background:var(--bg)}
+.ld-spine .ld-section{background:transparent;position:relative;z-index:1}
+.ld-spine-svg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.ld-ribbon-bg{fill:none;stroke:rgba(194,248,79,.12);stroke-width:3}
+.ld-ribbon{fill:none;stroke:#C2F84F;stroke-width:3.5;stroke-linecap:round}
+@media (min-width:861px){ .ld-ribbon{filter:drop-shadow(0 0 7px rgba(194,248,79,.45))} }
+.ld-wp{transition:opacity .3s ease}
+.ld-proof-head{padding-top:116px;padding-bottom:60px}
+.ld-proof-head .ld-proof-readout{position:static;transform:none;justify-content:center;margin-top:18px}
+
 /* ---------- hover-expand gallery ---------- */
 .ld-gallery{display:flex;gap:10px;height:440px;margin-top:34px}
 .ld-strip{position:relative;flex:1 1 0;min-width:54px;border-radius:18px;overflow:hidden;cursor:pointer;

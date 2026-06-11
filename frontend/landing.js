@@ -110,26 +110,54 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
   }
 
-  // ---------- Turing-proof scroll-draw ----------
-  function initProof() {
-    var sec = $('#ldProof'), ai = $('#ldProofAI'), readout = $('#ldProofLead');
-    if (!sec || !ai) return;
-    var len = 0; try { len = ai.getTotalLength(); } catch (e) { len = 2000; }
-    ai.style.strokeDasharray = len;
-    if (reduce) { ai.style.strokeDashoffset = 0; if (readout) readout.textContent = '+' + SC.aiLead; return; }
-    ai.style.strokeDashoffset = len;
+  // ---------- spine: lime green scroll ribbon ----------
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function apexCount(H) { return Math.max(4, Math.round(H / 520)); }
+  function ribbonPath(W, H) {
+    var segs = apexCount(H), midX = W * 0.5, ya = H / segs, d = 'M ' + midX.toFixed(1) + ' 0';
+    for (var i = 1; i <= segs; i++) {
+      var nx = (i % 2 === 1) ? W * 0.76 : W * 0.24, y0 = ya * (i - 1), y1 = ya * i;
+      d += ' C ' + nx.toFixed(1) + ' ' + (y0 + ya * 0.5).toFixed(1) + ', ' + nx.toFixed(1) + ' ' + (y1 - ya * 0.5).toFixed(1) + ', ' + midX.toFixed(1) + ' ' + y1.toFixed(1);
+    }
+    return d;
+  }
+  function initSpine() {
+    var spine = $('#ldSpine'), svg = $('#ldSpineSvg'), ribbon = $('#ldRibbon'), bg = $('#ldRibbonBg');
+    if (!spine || !ribbon || !svg) return;
+    var len = 0, dots = [];
+    function build() {
+      var W = spine.clientWidth, H = spine.clientHeight;
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+      svg.setAttribute('width', W); svg.setAttribute('height', H);
+      var d = ribbonPath(W, H);
+      ribbon.setAttribute('d', d); bg.setAttribute('d', d);
+      try { len = ribbon.getTotalLength(); } catch (e) { len = H * 1.4; }
+      ribbon.style.strokeDasharray = len;
+      ribbon.style.strokeDashoffset = reduce ? 0 : len;
+      dots.forEach(function (c) { if (c.parentNode) c.parentNode.removeChild(c); }); dots = [];
+      var segs = apexCount(H);
+      for (var i = 1; i < segs; i++) {
+        var pt; try { pt = ribbon.getPointAtLength(len * (i / segs)); } catch (e) { pt = { x: W / 2, y: H * i / segs }; }
+        var c = document.createElementNS(SVGNS, 'circle');
+        c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y); c.setAttribute('r', 5);
+        c.setAttribute('fill', '#C2F84F'); c.setAttribute('class', 'ld-wp');
+        c.style.opacity = reduce ? 1 : 0.15; c._frac = i / segs;
+        svg.appendChild(c); dots.push(c);
+      }
+    }
+    function onScroll() {
+      if (reduce) return;
+      var r = spine.getBoundingClientRect(), vh = window.innerHeight;
+      var total = r.height - vh * 0.5;
+      var p = total > 0 ? Math.max(0, Math.min(1, (vh * 0.55 - r.top) / total)) : 0;
+      ribbon.style.strokeDashoffset = len * (1 - p);
+      dots.forEach(function (c) { c.style.opacity = p >= c._frac ? 1 : 0.15; });
+    }
+    build(); onScroll();
     var ticking = false;
-    var update = function () {
-      ticking = false;
-      var r = sec.getBoundingClientRect(), vh = window.innerHeight;
-      // progress: 0 when section top hits viewport top, 1 near the end
-      var total = r.height - vh;
-      var p = total > 0 ? Math.max(0, Math.min(1, -r.top / total)) : 0;
-      ai.style.strokeDashoffset = len * (1 - p);
-      if (readout) readout.textContent = '+' + Math.round(p * SC.aiLead);
-    };
-    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-    update();
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(function () { ticking = false; onScroll(); }); } }, { passive: true });
+    var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { build(); onScroll(); }, 150); });
+    setTimeout(function () { build(); onScroll(); }, 700); // recompute after fonts/iframes settle
   }
 
   // ---------- hover-expand gallery ----------
@@ -169,6 +197,6 @@
     box.innerHTML = ev.map(function (e) { return '<div class="row"><span class="ts">' + e[0] + '</span><span class="msg">' + e[1] + '</span></div>'; }).join('');
   }
 
-  function init() { initNav(); initReveal(); initCounts(); initHero(); initProof(); initGallery(); initFeed(); }
+  function init() { initNav(); initReveal(); initCounts(); initHero(); initSpine(); initGallery(); initFeed(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

@@ -82,26 +82,25 @@
     </div>
   </section>
 
-  <!-- ===================== THE PROOF (dark, scroll-draw) ===================== -->
-  <section class="ld-proof" id="ldProof" data-theme="dark">
-    <div class="ld-proof-sticky">
-      <svg class="ld-proof-svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <line x1="40" y1="420" x2="1160" y2="420" stroke="var(--red)" stroke-width="2" stroke-dasharray="7 6"/>
-        <text x="1150" y="408" text-anchor="end" fill="var(--red)" font-family="var(--mono)" font-size="16">distress threshold</text>
-        <path d="M40,130 C300,125 600,128 860,150 C980,170 1060,360 1160,470" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="3 5" opacity="0.7"/>
-        <text x="900" y="120" fill="var(--muted)" font-family="var(--mono)" font-size="15">static rulebook</text>
-        <path id="ldProofAI" d="M40,140 C260,150 460,210 600,320 C700,400 760,470 860,500 C960,520 1080,470 1160,430" fill="none" stroke="var(--ai)" stroke-width="4.5" stroke-linecap="round"/>
-        <text x="120" y="150" fill="var(--ai)" font-family="var(--mono)" font-size="16">AI underwriter</text>
-      </svg>
-      <span class="ld-eyebrow">The Turing Test · on-chain</span>
-      <h2>The AI flagged the SVB depeg <b>3 epochs</b> before the rulebook.</h2>
-      <p class="note">Scroll — watch the AI cross into distress while the static arm stays calm.</p>
-      <div class="ld-proof-readout">
-        <div class="b"><div class="k">AI early-warning</div><div class="v" style="color:var(--ai)">+<span id="ldProofLead">0</span></div></div>
-        <div class="b"><div class="k">Static rulebook</div><div class="v" style="color:var(--muted)">+0</div></div>
+  <!-- ===================== SPINE — lime ribbon threading the dark story sections ===================== -->
+  <div class="ld-spine" id="ldSpine" data-theme="dark">
+    <svg class="ld-spine-svg" id="ldSpineSvg" aria-hidden="true" preserveAspectRatio="none">
+      <path class="ld-ribbon-bg" id="ldRibbonBg"></path>
+      <path class="ld-ribbon" id="ldRibbon"></path>
+    </svg>
+
+    <!-- The Turing proof — the ribbon's opening waypoint -->
+    <section class="ld-section ld-proof-head" id="proof">
+      <div class="ld-wrap ld-reveal" style="text-align:center">
+        <span class="ld-eyebrow">The Turing Test · on-chain</span>
+        <h2 class="ld-h2" style="max-width:18ch;margin:12px auto 8px">The AI flagged the SVB depeg <span class="ac">3 epochs</span> before the rulebook.</h2>
+        <p class="ld-lead" style="margin:0 auto">Follow the ribbon — every layer of the desk, from the proof down to the human gate.</p>
+        <div class="ld-proof-readout">
+          <div class="b"><div class="k">AI early-warning</div><div class="v" style="color:#C2F84F">+3</div></div>
+          <div class="b"><div class="k">Static rulebook</div><div class="v" style="color:var(--muted)">+0</div></div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
   <!-- ===================== INSIDE THE DESK (dark, hover gallery) ===================== -->
   <section class="ld-section" id="desk" data-theme="dark">
@@ -172,6 +171,7 @@
       </div>
     </div>
   </section>
+  </div><!-- /ld-spine -->
 
   <!-- ===================== CTA (light) ===================== -->
   <section class="ld-section ld-cta" data-theme="light">
