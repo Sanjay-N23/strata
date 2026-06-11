@@ -139,7 +139,11 @@
     var activate = function (s) {
       strips.forEach(function (x) { x.classList.toggle('active', x === s); });
       var fr = $('iframe.frame', s);
-      if (fr && !fr.src && fr.getAttribute('data-src')) fr.src = fr.getAttribute('data-src');
+      if (fr && !fr.src && fr.getAttribute('data-src')) {
+        var sc = +(fr.getAttribute('data-scroll') || 0);
+        if (sc) fr.addEventListener('load', function () { try { fr.contentWindow.scrollTo(0, sc); } catch (e) {} });
+        fr.src = fr.getAttribute('data-src'); // lazy-load on first activation
+      }
     };
     strips.forEach(function (s, i) {
       s.addEventListener('mouseenter', function () { if (!('ontouchstart' in window)) activate(s); });

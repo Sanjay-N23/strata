@@ -186,6 +186,9 @@
   }
 
   function init() {
+    // Embed mode (?embed=1): strip the chrome so the page can be used as a clean
+    // live preview inside an <iframe> (landing "Inside the desk" gallery).
+    try { if (new URLSearchParams(location.search).has('embed')) { document.documentElement.classList.add('stx-embed'); return; } } catch (e) {}
     renderSide();
     renderTop();
     syncModeUI();

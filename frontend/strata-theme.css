@@ -128,6 +128,11 @@ body[data-mode="replay"] .stx-content{box-shadow:inset 0 3px 0 var(--amber)}
 body[data-mode="replay"] .stx-replay-banner{display:flex}
 .stx-replay-banner svg{width:14px;height:14px;flex:none}
 
+/* embed mode — chrome-less page for landing gallery iframe previews */
+.stx-embed .stx-side,.stx-embed .stx-top,.stx-embed .stx-replay-banner{display:none!important}
+.stx-embed .stx-content{margin-left:0!important;box-shadow:none!important}
+.stx-embed .stx-main{max-width:none;padding-top:20px}
+
 /* ---------- Page header ---------- */
 .stx-pagehead{margin:6px 0 22px}
 .stx-eyebrow{font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--gold);
