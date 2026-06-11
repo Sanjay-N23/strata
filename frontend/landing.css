@@ -57,10 +57,11 @@
 .ld-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.74rem;font-weight:600;
   color:var(--text2);border:1px solid var(--border);border-radius:999px;padding:5px 13px;background:var(--surface)}
 .ld-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--green-dim)}
-.ld-h1{font-family:var(--head);font-weight:800;font-size:clamp(2.3rem,5.4vw,4rem);line-height:1.02;
-  letter-spacing:-.03em;margin:18px 0 16px}
+.ld-h1{font-family:var(--head);font-weight:800;font-size:clamp(2.3rem,5.4vw,4rem);line-height:1.1;
+  letter-spacing:-.03em;margin:18px 0 16px;padding-bottom:.04em}
 .ld-h1 .ac{font-style:italic;background:linear-gradient(100deg,var(--ai),var(--gold));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  padding:0 .1em .08em 0;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .ld-sub{color:var(--text2);font-size:1.12rem;max-width:540px;line-height:1.55}
 .ld-cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
 .ld-chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
