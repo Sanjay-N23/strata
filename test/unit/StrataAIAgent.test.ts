@@ -488,4 +488,25 @@ describe("StrataAIAgent", function () {
       await expect(agent.submitScore(issuer.address, 1, 0, Z, 0)).to.not.be.reverted;
     });
   });
+
+  // ════════════════════════════════════════════════════════════════════
+  // M18 · onlyGuardian revert arms (branch completeness)
+  //   pauseAgent's unauthorized arm is covered in M14; these close the
+  //   remaining onlyGuardian revert branches (unpause / setAgentOperator /
+  //   setGuardian) so the contract reaches 100% branch coverage.
+  // ════════════════════════════════════════════════════════════════════
+  describe("M18 · onlyGuardian revert arms", function () {
+    it("unpauseAgent rejects a non-guardian", async function () {
+      const { agent, other } = await loadFixture(fx);
+      await expect(agent.connect(other).unpauseAgent()).to.be.revertedWith("Strata: not guardian");
+    });
+    it("setAgentOperator rejects a non-guardian", async function () {
+      const { agent, other, newOp } = await loadFixture(fx);
+      await expect(agent.connect(other).setAgentOperator(newOp.address)).to.be.revertedWith("Strata: not guardian");
+    });
+    it("setGuardian rejects a non-guardian", async function () {
+      const { agent, other, g1 } = await loadFixture(fx);
+      await expect(agent.connect(other).setGuardian(g1.address)).to.be.revertedWith("Strata: not guardian");
+    });
+  });
 });
