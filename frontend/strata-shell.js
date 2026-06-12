@@ -25,8 +25,8 @@
   var NAV = [
     { id: 'overview',   label: 'Overview',     href: 'overview.html', icon: 'grid' },
     { id: 'underwriter',label: 'Underwriter',  href: 'console.html',  icon: 'cpu' },
-    { id: 'issuers',    label: 'Issuers',      href: 'issuers.html',  icon: 'building', tag: 'v1' },
-    { id: 'capital',    label: 'Capital',      href: 'pool.html',     icon: 'layers',   tag: 'v1' },
+    { id: 'issuers',    label: 'Issuers',      href: 'issuers.html',  icon: 'building' },
+    { id: 'capital',    label: 'Capital',      href: 'pool.html',     icon: 'layers' },
     { id: 'governance', label: 'Governance',   href: 'governance.html', icon: 'shield' },
     { id: 'incidents',  label: 'Incidents',    href: 'incidents.html',  icon: 'alert' }
   ];
