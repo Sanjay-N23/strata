@@ -3,1622 +3,208 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Strata — On-Chain Credit Protection for RWA Tokens</title>
-  <meta name="description" content="Strata Protocol — Decentralized credit default coverage for RWA token holders on Mantle. Algorithmic premiums, community-funded pools, instant payouts.">
-  <meta name="keywords" content="Strata, DeFi, insurance, RWA, Mantle, credit default swap, ERC-3643">
-  <meta property="og:title" content="Strata — Cover Your Positions">
-  <meta property="og:description" content="On-chain credit default coverage for ERC-3643 RWA tokens">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Strata Protocol">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='8,8 16,8 20,14 16,20 8,20 4,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,8 24,8 28,14 24,20 16,20 12,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,5 22,14 16,23 10,14' fill='%23F0B90B'/><circle cx='16' cy='13' r='1.5' fill='white'/></svg>">
+  <title>Strata — The Autonomous AI Underwriting Desk for RWA Credit Risk</title>
+  <meta name="description" content="Strata is an autonomous AI underwriting desk for RWA credit risk on Mantle. An AI agent re-underwrites issuers every epoch and proves on-chain it flags distress earlier than the static rulebook — replayed against the real USDC–SVB depeg.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='5' y='20' width='22' height='4' rx='1' fill='%23F0B90B'/><rect x='7' y='14' width='18' height='4' rx='1' fill='%235B8DEF'/><rect x='9' y='8' width='14' height='4' rx='1' fill='%2316C784'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://rpc.sepolia.mantle.xyz">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-/* ============================================================
-   Strata — Marketing Landing Page Styles
-   ============================================================ */
-
-/* ---------- THEME VARIABLES ---------- */
-:root {
-  --bg-primary: #FFF8F0;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f5f6f8;
-  --text-primary: #1a1d24;
-  --text-secondary: #4b5060;
-  --text-muted: #6b7280;
-  --border-color: #eceef2;
-  --shadow-color: rgba(0,0,0,0.08);
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
-  --shadow-md: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
-  --shadow-lg: 0 4px 12px rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.08);
-  --shadow-xl: 0 8px 24px rgba(0,0,0,0.08), 0 24px 60px rgba(0,0,0,0.1);
-  --scrollbar-bg: #f0f0f0;
-  --scrollbar-thumb: #ccc;
-  --nav-bg-scrolled: rgba(255,255,255,0.92);
-  --form-bg: rgba(0,0,0,0.03);
-  --form-border: #dfe2e8;
-  --overlay-bg: rgba(0,0,0,0.4);
-  --code-bg: rgba(0,0,0,0.03);
-}
-
-/* Brand colors (theme-agnostic) */
-:root {
-  --gold: #F0B90B;
-  --gold-light: #FFD443;
-  --gold-dim: rgba(240,185,11,0.12);
-  --color-coverage: #E8760A;
-  --color-coverage-end: #FF9533;
-  --color-pool: #1E7BFF;
-  --color-pool-end: #5DA3FF;
-  --color-verify: #8B5CF6;
-  --color-verify-end: #A78BFA;
-  --color-payout: #10B981;
-  --color-payout-end: #34D399;
-  --color-success: #10B981;
-  --color-success-dim: rgba(16,185,129,0.12);
-  --color-danger: #EF4444;
-  --color-danger-dim: rgba(239,68,68,0.12);
-  --color-warning: #F0B90B;
-  --color-warning-dim: rgba(240,185,11,0.12);
-  --font-heading: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-pill: 999px;
-  --spring: cubic-bezier(0.4, 1.35, 0.5, 0.97);
-  --ease-smooth: cubic-bezier(0.39, 0.575, 0.565, 1);
-  --motion: 1;
-  --nav-height: 72px;
-  --container-max: 1200px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :root { --motion: 0; }
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0.01ms !important; transition-duration: 0.01ms !important; }
-  .reveal, .reveal-left, .reveal-right, .reveal-scale { opacity: 1 !important; transform: none !important; }
-  .hero-entrance .hero-badge,
-  .hero-entrance h1,
-  .hero-entrance .hero-subtitle,
-  .hero-entrance .hero-actions,
-  .hero-entrance .hero-illustration,
-  .hero-entrance .trust-strip { opacity: 1 !important; transform: none !important; }
-}
-
-/* ---------- RESET ---------- */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; font-size: 16px; }
-body {
-  font-family: var(--font-main); font-size: 1rem; line-height: 1.6;
-  color: var(--text-primary); background: var(--bg-primary);
-  min-height: 100vh; -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; overflow-x: hidden;
-}
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--scrollbar-bg); }
-::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
-* { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-bg); }
-img, svg { display: block; max-width: 100%; }
-a { color: var(--gold); text-decoration: none; transition: color 0.25s; }
-a:hover { color: var(--gold-light); }
-h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; color: var(--text-primary); }
-code, pre { font-family: var(--font-mono); }
-.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-.container { max-width: var(--container-max); margin: 0 auto; padding: 0 1.5rem; }
-
-/* ---------- BUTTONS ---------- */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-  font-family: var(--font-main); font-size: 0.9375rem; font-weight: 600; line-height: 1;
-  padding: 0.875rem 1.75rem; border-radius: var(--radius-pill); border: none;
-  cursor: pointer; position: relative; overflow: hidden; text-decoration: none;
-  transition: transform calc(var(--motion) * 0.25s) var(--spring),
-              box-shadow calc(var(--motion) * 0.25s) var(--spring),
-              background calc(var(--motion) * 0.25s) var(--ease-smooth);
-}
-.btn::after {
-  content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
-}
-.btn:hover::after { animation: btn-shimmer 0.6s ease-out forwards; }
-@keyframes btn-shimmer { 0% { left: -100%; } 100% { left: 150%; } }
-.btn:active { transform: scale(0.97); }
-.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
-
-.btn-primary {
-  background: linear-gradient(135deg, #F0B90B 0%, #FFD443 100%);
-  color: #0a0a0a; box-shadow: 0 4px 16px rgba(240,185,11,0.3);
-}
-.btn-primary:hover { transform: scale(calc(1 + var(--motion) * 0.04)); box-shadow: 0 6px 28px rgba(240,185,11,0.45); color: #0a0a0a; }
-
-/* Pulsing glow on CTA */
-.btn-glow { animation: btn-pulse calc(var(--motion) * 2s) ease-in-out infinite; }
-@keyframes btn-pulse {
-  0%, 100% { box-shadow: 0 4px 16px rgba(240,185,11,0.3); }
-  50% { box-shadow: 0 4px 32px rgba(240,185,11,0.6), 0 0 60px rgba(240,185,11,0.2); }
-}
-
-.btn-secondary {
-  background: transparent; color: #1a1d24;
-  border: 1.5px solid rgba(0,0,0,0.15);
-}
-.btn-secondary:hover { border-color: #6b7180; background: rgba(0,0,0,0.04); transform: scale(calc(1 + var(--motion) * 0.03)); color: #1a1d24; }
-.btn-sm { padding: 0.625rem 1.25rem; font-size: 0.8125rem; }
-
-/* ---------- BADGES ---------- */
-.badge {
-  display: inline-flex; align-items: center; gap: 0.35rem;
-  padding: 0.3rem 0.75rem; border-radius: var(--radius-pill);
-  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.02em;
-}
-.badge-gold { background: var(--gold-dim); color: var(--gold); }
-.badge-green { background: var(--color-success-dim); color: var(--color-success); }
-
-/* ---------- STATUS DOTS with VISIBLE PULSE ---------- */
-.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.dot-green { background: var(--color-success); animation: pulse-green calc(var(--motion) * 1.5s) ease-in-out infinite; }
-
-@keyframes pulse-green {
-  0%, 100% { box-shadow: 0 0 4px rgba(16,185,129,0.4); transform: scale(1); }
-  50% { box-shadow: 0 0 16px rgba(16,185,129,0.9), 0 0 30px rgba(16,185,129,0.3); transform: scale(1.3); }
-}
-
-/* ---------- SCROLL REVEAL ---------- */
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.reveal-left { transform: translateX(-30px); }
-.reveal-left.visible { transform: translateX(0); }
-.reveal-right { transform: translateX(30px); }
-.reveal-right.visible { transform: translateX(0); }
-.reveal-scale { transform: scale(0.95); }
-.reveal-scale.visible { transform: scale(1); }
-
-/* Staggered delays for children */
-.stagger > *:nth-child(1) { transition-delay: 0s; }
-.stagger > *:nth-child(2) { transition-delay: 0.1s; }
-.stagger > *:nth-child(3) { transition-delay: 0.15s; }
-.stagger > *:nth-child(4) { transition-delay: 0.2s; }
-.stagger > *:nth-child(5) { transition-delay: 0.3s; }
-.stagger > *:nth-child(6) { transition-delay: 0.4s; }
-
-/* ---------- HERO ENTRANCE ANIMATION ---------- */
-.hero-entrance .hero-badge {
-  opacity: 0; transform: translateY(-20px);
-  animation: hero-badge-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards;
-}
-.hero-entrance h1 {
-  opacity: 0; transform: translateY(30px);
-  animation: hero-fade-up 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.25s forwards;
-}
-.hero-entrance .hero-subtitle {
-  opacity: 0;
-  animation: hero-fade-in 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.45s forwards;
-}
-.hero-entrance .hero-actions {
-  opacity: 0; transform: translateY(20px);
-  animation: hero-fade-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
-}
-.hero-entrance .hero-illustration {
-  opacity: 0; transform: translateY(20px);
-  animation: hero-fade-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.7s forwards;
-}
-.hero-entrance .trust-strip {
-  opacity: 0;
-  animation: hero-fade-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.85s forwards;
-}
-
-@keyframes hero-badge-in {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes hero-fade-up {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes hero-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ---------- FLOATING BOB ---------- */
-@keyframes float-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
-}
-@keyframes float-bob-slow {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-12px) rotate(3deg); }
-}
-@keyframes float-bob-reverse {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(12px) rotate(-2deg); }
-}
-
-/* ---------- NAVIGATION ---------- */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 0 1.5rem; background: transparent;
-  transition: background 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease;
-}
-.nav.scrolled {
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  box-shadow: none;
-}
-.nav-inner {
-  max-width: var(--container-max); margin: 0 auto;
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  height: var(--nav-height);
-}
-.nav-links { justify-self: center; }
-.nav-inner > .nav-actions { justify-self: end; }
-.nav-logo { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; --logo-hex: #2D3436; --logo-dot: white; }
-.nav-logo svg { width: 36px; height: 36px; }
-.nav-logo-text { font-size: 1.25rem; font-weight: 900; color: var(--text-primary); letter-spacing: -0.03em; }
-.nav-logo .accent { color: var(--gold); }
-[data-theme="dark"] .nav-logo { --logo-hex: rgba(255,255,255,0.5); --logo-dot: white; }
-.nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
-.nav-links a, .nav-feature-link {
-  color: #636E72; font-size: 0.9375rem; font-weight: 600; text-decoration: none;
-  padding: 0.5rem 1rem; border: none; background: none; border-radius: 0;
-  transition: color 0.2s;
-}
-.nav-links a:hover, .nav-links a.active,
-.nav-feature-link:hover, .nav-feature-link.active { color: #F0B90B; }
-
-.nav-actions { display: flex; align-items: center; gap: 0.75rem; }
-
-.nav-toggle { display: none; background: none; border: none; color: var(--text-primary); cursor: pointer; padding: 0.5rem; }
-
-@media (max-width: 768px) {
-  .nav-links { display: none; }
-  .nav-toggle { display: flex; }
-  .nav-links.open {
-    display: flex; flex-direction: column; position: absolute;
-    top: var(--nav-height); left: 0; right: 0;
-    background: var(--nav-bg-scrolled); backdrop-filter: blur(24px);
-    padding: 1.5rem; gap: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--shadow-md);
-  }
-}
-
-/* ---------- HERO ---------- */
-.hero {
-  min-height: auto; display: flex; align-items: center; justify-content: center;
-  text-align: center; position: relative; overflow: hidden;
-  padding: 5rem 1.5rem 2.5rem; background: #FFF8F0;
-}
-.hero::before {
-  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(ellipse 600px 600px at 70% 30%, rgba(240, 185, 11, 0.08), transparent);
-  pointer-events: none; z-index: 1;
-}
-
-.hero-orb {
-  position: absolute; border-radius: 50%; filter: blur(80px);
-  pointer-events: none; will-change: transform;
-}
-.hero-orb-1 {
-  width: 500px; height: 500px; top: -10%; left: -5%;
-  background: radial-gradient(circle, rgba(240,185,11,0.15) 0%, transparent 70%);
-  animation: orb-float-1 calc(var(--motion) * 20s) ease-in-out infinite;
-}
-.hero-orb-2 {
-  width: 400px; height: 400px; bottom: -10%; right: -5%;
-  background: radial-gradient(circle, rgba(30,123,255,0.1) 0%, transparent 70%);
-  animation: orb-float-2 calc(var(--motion) * 25s) ease-in-out infinite;
-}
-.hero-orb-3 {
-  width: 300px; height: 300px; top: 40%; right: 15%;
-  background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
-  animation: orb-float-1 calc(var(--motion) * 18s) ease-in-out infinite reverse;
-}
-@keyframes orb-float-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(40px, -50px) scale(1.1); }
-  66% { transform: translate(-30px, 30px) scale(0.9); }
-}
-@keyframes orb-float-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-50px, -40px) scale(1.12); }
-}
-
-.hero-float {
-  position: absolute; pointer-events: none; will-change: transform; border-radius: var(--radius-lg);
-}
-.hero-float-1 {
-  width: 100px; height: 100px; top: 20%; left: 8%;
-  background: linear-gradient(135deg, rgba(240,185,11,0.12), rgba(255,149,51,0.06));
-  animation: float-bob-slow calc(var(--motion) * 6s) ease-in-out infinite;
-}
-.hero-float-2 {
-  width: 70px; height: 70px; bottom: 30%; right: 10%; border-radius: 50%;
-  background: linear-gradient(135deg, rgba(30,123,255,0.15), rgba(93,163,255,0.06));
-  animation: float-bob calc(var(--motion) * 5s) ease-in-out infinite;
-}
-.hero-float-3 {
-  width: 50px; height: 50px; top: 50%; right: 22%;
-  background: linear-gradient(135deg, rgba(139,92,246,0.15), transparent);
-  animation: float-bob-reverse calc(var(--motion) * 7s) ease-in-out infinite;
-}
-.hero-float-4 {
-  width: 80px; height: 80px; bottom: 20%; left: 18%; border-radius: 50%;
-  background: linear-gradient(135deg, rgba(16,185,129,0.12), transparent);
-  animation: float-bob-slow calc(var(--motion) * 8s) ease-in-out infinite 1s;
-}
-
-.hero-content { position: relative; z-index: 2; max-width: 800px; }
-
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.5rem 1.25rem; background: var(--gold-dim);
-  border: 1px solid rgba(240,185,11,0.2); border-radius: var(--radius-pill);
-  color: var(--gold); font-size: 0.8125rem; font-weight: 600;
-  margin-bottom: 1.25rem; letter-spacing: 0.03em;
-}
-
-.hero h1 {
-  font-size: clamp(3rem, 10vw, 7rem); font-weight: 900; line-height: 1.0;
-  letter-spacing: -0.05em; margin-bottom: 1rem; color: #1a1d24;
-  position: relative;
-}
-/* Gold shimmer sweep on "Cover Your" text */
-.hero h1 .shimmer-text {
-  position: relative;
-  display: inline-block;
-  background: linear-gradient(90deg, #1a1d24 0%, #1a1d24 40%, #F0B90B 50%, #FFD443 55%, #1a1d24 65%, #1a1d24 100%);
-  background-size: 250% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gold-shimmer-sweep calc(var(--motion) * 4s) ease-in-out infinite;
-}
-[data-theme="dark"] .hero h1 .shimmer-text {
-  background: linear-gradient(90deg, #ffffff 0%, #ffffff 40%, #F0B90B 50%, #FFD443 55%, #ffffff 65%, #ffffff 100%);
-  background-size: 250% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gold-shimmer-sweep calc(var(--motion) * 4s) ease-in-out infinite;
-}
-@keyframes gold-shimmer-sweep {
-  0% { background-position: 100% center; }
-  100% { background-position: -50% center; }
-}
-.hero h1 .highlight {
-  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 30%, #FFA500 60%, var(--gold) 100%);
-  background-size: 300% auto;
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 0 40px rgba(240,185,11,0.3), 0 0 80px rgba(240,185,11,0.15);
-  animation: shimmer-text calc(var(--motion) * 3s) linear infinite;
-  text-shadow: none;
-  filter: drop-shadow(0 0 30px rgba(240,185,11,0.3));
-}
-@keyframes shimmer-text {
-  0% { background-position: 0% center; }
-  100% { background-position: 300% center; }
-}
-
-.hero-subtitle {
-  font-size: clamp(1.125rem, 2.5vw, 1.375rem); color: #4b5060; max-width: 520px;
-  margin: 0 auto 2.5rem; line-height: 1.6;
-}
-
-.hero-actions {
-  display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap;
-}
-
-/* Hero illustration */
-.hero-illustration {
-  margin-top: 2rem; display: flex; justify-content: center; align-items: center;
-}
-.hero-illustration svg {
-  width: 220px; height: 200px; max-width: 60vw;
-  animation: float-bob calc(var(--motion) * 6s) ease-in-out infinite;
-}
-
-.trust-strip {
-  display: flex; align-items: center; justify-content: center; gap: 1.5rem;
-  margin-top: 1.25rem;
-}
-.trust-item {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.4rem 1rem; background: rgba(0,0,0,0.03);
-  border: 1px solid rgba(0,0,0,0.08); border-radius: var(--radius-pill);
-  font-size: 0.875rem; font-weight: 600; color: #4b5060;
-}
-
-/* fade-up is now handled by hero-entrance keyframes */
-
-/* ---------- STATS BAR ---------- */
-.stats-section { background: transparent; padding: clamp(1.5rem, 4vw, 2.5rem) 1.5rem; position: relative; z-index: 2; border-top: none; border-bottom: none; }
-.stats-grid { max-width: var(--container-max); margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-.stat-card {
-  background: #ffffff; color: #2D3436; border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 16px; padding: 1.25rem 1.25rem;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  transition: transform calc(var(--motion) * 0.25s) var(--spring), box-shadow calc(var(--motion) * 0.25s) var(--spring);
-}
-.stat-card:hover { transform: translateY(calc(var(--motion) * -4px)) scale(1.01); box-shadow: var(--shadow-lg); }
-.stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
-.stat-icon {
-  width: 44px; height: 44px; border-radius: var(--radius-md);
-  display: flex; align-items: center; justify-content: center;
-}
-.stat-icon.animated { animation: float-bob calc(var(--motion) * 4s) ease-in-out infinite; }
-.stat-icon-gold { background: linear-gradient(135deg, rgba(240,185,11,0.2), rgba(255,212,67,0.1)); color: var(--gold); box-shadow: 0 4px 12px rgba(240,185,11,0.15); }
-.stat-icon-blue { background: linear-gradient(135deg, rgba(30,123,255,0.2), rgba(93,163,255,0.1)); color: var(--color-pool); box-shadow: 0 4px 12px rgba(30,123,255,0.15); }
-.stat-icon-green { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(52,211,153,0.1)); color: var(--color-payout); box-shadow: 0 4px 12px rgba(16,185,129,0.15); }
-.stat-icon-purple { background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(167,139,250,0.1)); color: var(--color-verify); box-shadow: 0 4px 12px rgba(139,92,246,0.15); }
-.stat-change { font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 0.2rem; }
-.stat-change.up { color: var(--color-success); }
-.stat-change.down { color: var(--color-danger); }
-.stat-label { font-size: 0.75rem; color: #636E72; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.35rem; }
-.stat-value { font-size: 2rem; font-weight: 900; color: #2D3436; letter-spacing: -0.02em; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-
-@media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 540px) { .stats-grid { grid-template-columns: 1fr; } }
-
-/* ---------- HOW IT WORKS ---------- */
-.how-section {
-  background: #F5F6F8; padding: clamp(1.5rem, 4vw, 2.5rem) 1.5rem;
-  position: relative; overflow: hidden;
-}
-.section-header { text-align: center; margin-bottom: 2rem; }
-.section-header h2 { font-size: clamp(2.25rem, 6vw, 3.5rem); font-weight: 900; margin-bottom: 0.75rem; color: #1a1d24; }
-.section-header p { font-size: 1.125rem; color: #6b7180; max-width: 560px; margin: 0 auto; }
-
-.how-grid-wrap { position: relative; }
-
-.how-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem; position: relative; z-index: 1;
-}
-.how-card {
-  background: #ffffff; color: #2D3436; border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 16px; padding: 1.25rem 1.25rem; text-align: center;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  transition: transform calc(var(--motion) * 0.3s) var(--spring), box-shadow calc(var(--motion) * 0.3s) var(--spring);
-  position: relative; overflow: hidden;
-}
-.how-card::before {
-  display: none;
-}
-.how-card:hover { transform: translateY(calc(var(--motion) * -4px)) scale(1.03); box-shadow: 0 8px 24px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.06); }
-.how-card .step-number {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 48px; height: 48px; border-radius: 50%;
-  background: linear-gradient(135deg, #F0B90B 0%, #FFD443 100%);
-  color: #0a0a0a; font-size: 1.125rem; font-weight: 800; margin-bottom: 1.25rem;
-  box-shadow: 0 4px 12px rgba(240,185,11,0.3);
-}
-.how-card .step-icon {
-  width: 64px; height: 64px; margin: 0 auto 1.25rem; border-radius: var(--radius-xl);
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(240,185,11,0.12); color: #C89A09;
-}
-.how-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: #2D3436; }
-.how-card p { font-size: 0.8125rem; color: #636E72; line-height: 1.6; }
-
-@media (max-width: 1024px) { .how-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 540px) { .how-grid { grid-template-columns: 1fr; } }
-
-/* ---------- FEATURES (MetaMask-style panes) ---------- */
-.features-section {
-  background: transparent; padding: clamp(2rem, 5vw, 3.5rem) 1.5rem;
-  position: relative; z-index: 2; border-top: none;
-}
-.feature-panes {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
-  max-width: var(--container-max); margin: 0 auto; padding: 0;
-  align-items: stretch;
-}
-.feature-pane {
-  min-height: 220px; border-radius: 24px; padding: 1.5rem;
-  position: relative; overflow: visible; cursor: pointer;
-  transition: transform 0.3s var(--spring), box-shadow 0.3s var(--spring);
-  text-decoration: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-}
-.feature-pane:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-}
-.feature-pane h3 {
-  font-family: var(--font-display); font-size: 2.5rem; font-weight: 900;
-  color: #ffffff !important; margin-bottom: 0.25rem; letter-spacing: -0.03em;
-}
-.feature-pane .pane-subtitle {
-  color: rgba(255,255,255,0.85); font-size: 0.9375rem; margin-bottom: 0;
-}
-.feature-pane p, .feature-pane span { color: rgba(255,255,255,0.85); }
-.pane-coverage  { background: linear-gradient(135deg, #E8760A 0%, #F59E0B 100%); border: none; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-.pane-pool      { background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%); border: none; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-.pane-verify    { background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%); border: none; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-.pane-payout    { background: linear-gradient(135deg, #059669 0%, #10B981 100%); border: none; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-
-.feature-pane .pane-text { flex: 1; min-width: 0; z-index: 1; }
-.pane-mockup {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 1.25rem;
-  width: 180px;
-  min-height: 140px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  flex-shrink: 0;
-  animation: card-illustration-float 4s ease-in-out infinite;
-  z-index: 2;
-  transition: transform 0.4s var(--spring), box-shadow 0.4s var(--spring);
-  transform-style: preserve-3d;
-}
-.feature-pane:hover .pane-mockup {
-  animation-play-state: paused;
-  transform: perspective(800px) rotateY(-8deg) rotateX(4deg) scale(1.05);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-}
-.pane-mockup .mockup-label {
-  font-size: 0.625rem; text-transform: uppercase; color: #636E72; letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 700;
-}
-.pane-mockup .mockup-bar {
-  height: 4px; border-radius: 2px; margin-bottom: 0.5rem;
-}
-.pane-mockup .mockup-title {
-  font-size: 0.875rem; color: #2D3436; font-weight: 700; margin-bottom: 0.15rem;
-}
-.pane-mockup .mockup-amount {
-  font-weight: 800; font-size: 1rem; margin-bottom: 0.5rem;
-}
-.pane-mockup .mockup-status {
-  font-size: 0.75rem; color: #00C853; font-weight: 600; display: flex; align-items: center; gap: 4px;
-}
-.pane-mockup .mockup-status .dot {
-  width: 6px; height: 6px; border-radius: 50%; display: inline-block;
-}
-.pane-mockup .mockup-bars-row {
-  display: flex; gap: 4px; margin-bottom: 0.5rem;
-}
-.pane-mockup .mockup-bars-row .bar {
-  height: 28px; border-radius: 3px;
-}
-.pane-mockup .mockup-small {
-  font-size: 0.625rem; color: #636E72; margin-bottom: 0.15rem;
-}
-.pane-mockup .mockup-score {
-  display: flex; align-items: baseline; gap: 2px; margin-bottom: 0.5rem;
-}
-.pane-mockup .mockup-score .big {
-  font-size: 1.5rem; font-weight: 900; color: #2D3436;
-}
-.pane-mockup .mockup-score .of {
-  font-size: 0.75rem; color: #999;
-}
-.pane-mockup .mockup-dim-bar {
-  height: 4px; border-radius: 2px; background: #e5e7eb; margin-bottom: 4px; position: relative; overflow: hidden;
-}
-.pane-mockup .mockup-dim-bar .fill {
-  position: absolute; top: 0; left: 0; height: 100%; border-radius: 2px;
-}
-.pane-mockup .mockup-dim-label {
-  font-size: 0.5rem; color: #636E72; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px;
-}
-.pane-mockup .mockup-badge {
-  display: inline-block; font-size: 0.6rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; color: #fff;
-}
-.pane-mockup .mockup-divider {
-  border: none; border-top: 1px solid #e5e7eb; margin: 0.4rem 0;
-}
-.pane-mockup .mockup-tiny {
-  font-size: 0.55rem; color: #636E72;
-}
-@keyframes card-illustration-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-@media (max-width: 768px) {
-  .feature-panes { grid-template-columns: 1fr; }
-  .feature-pane { min-height: 220px; flex-direction: column; align-items: flex-start; }
-  .pane-mockup { margin: 1rem auto 0; }
-}
-@media (max-width: 540px) { .feature-panes { grid-template-columns: 1fr; } }
-
-/* ---------- SECURITY SECTION ---------- */
-.security-section {
-  background: #FEF9E7; padding: clamp(2rem, 5vw, 3.5rem) 1.5rem;
-  border-top: none;
-}
-.security-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 1.5rem;
-}
-.security-item {
-  display: flex; flex-direction: column; align-items: center; gap: 0.75rem; color: #2D3436;
-  padding: 1.25rem 1.25rem; background: #ffffff; border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  text-align: center; min-height: 140px;
-  transition: transform 0.3s var(--spring), box-shadow 0.3s var(--spring);
-}
-.security-item:hover {
-  transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-}
-.security-item .security-icon {
-  width: 56px; height: 56px; border-radius: 50%;
-  background: rgba(240,185,11,0.08);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.security-item h4 { font-size: 1rem; font-weight: 700; color: #1a1d24; margin: 0; }
-.security-item p { font-size: 0.8125rem; color: #6b7180; line-height: 1.5; margin: 0; }
-.security-item span { font-size: 0.9375rem; font-weight: 600; color: #1a1d24; }
-@media (max-width: 768px) { .security-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 540px) { .security-grid { grid-template-columns: 1fr; } }
-
-/* ---------- SECTION ILLUSTRATIONS ---------- */
-.section-illustration { display: flex; justify-content: center; margin-bottom: 2rem; }
-.section-illustration img { border-radius: 16px; }
-.section-illustration svg { animation: float-bob-slow calc(var(--motion) * 6s) ease-in-out infinite; }
-[data-theme="dark"] .section-illustration img { filter: drop-shadow(0 4px 20px rgba(240,185,11,0.15)); }
-
-/* ---------- FOOTER ---------- */
-.footer {
-  background: #12141A; border-top: none;
-  padding: clamp(2rem, 5vw, 3.5rem) 1.5rem 1.5rem; position: relative;
-}
-.footer::before {
-  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: 100%; max-width: 600px; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(240,185,11,0.3), transparent);
-}
-.footer-inner { max-width: var(--container-max); margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; }
-.footer-brand p { font-size: 0.875rem; color: rgba(255,255,255,0.7); margin-top: 0.75rem; max-width: 280px; line-height: 1.6; }
-.footer h5 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); font-weight: 600; margin-bottom: 1rem; }
-.footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
-.footer-links a { color: rgba(255,255,255,0.7); font-size: 0.875rem; font-weight: 400; transition: color 0.25s; }
-.footer-links a:hover { color: #ffffff; }
-.footer-link-placeholder { opacity: 0.5; cursor: default; pointer-events: none; }
-.footer-bottom {
-  max-width: var(--container-max); margin: 2rem auto 0; padding-top: 1.5rem;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 0.75rem; color: rgba(255,255,255,0.5);
-}
-.footer-social { display: flex; gap: 1rem; }
-.footer-social a { color: rgba(255,255,255,0.5); font-size: 1.125rem; transition: all 0.2s var(--spring); display: inline-flex; }
-.footer-social a:hover { color: var(--gold); transform: scale(1.2); }
-.footer .nav-logo-text { color: #ffffff; }
-
-/* ---------- SMOOTH SECTION TRANSITIONS ---------- */
-.hero, .stats-section, .protocol-stats-section, .how-section, .features-section, .security-section {
-  position: relative;
-}
-.stats-section::before {
-  content: ''; position: absolute; top: -1px; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.04), transparent);
-}
-.protocol-stats-section::after,
-.how-section::after,
-.features-section::after,
-.security-section::after {
-  content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.03), transparent);
-}
-
-@media (max-width: 768px) {
-  .footer-inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
-  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
-  .trust-strip { flex-wrap: wrap; gap: 0.75rem; }
-  .hero h1 { font-size: clamp(2.5rem, 8vw, 4rem); }
-}
-@media (max-width: 480px) {
-  .footer-inner { grid-template-columns: 1fr; }
-}
-/* ---------- THEME TOGGLE ---------- */
-.theme-toggle {
-  width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1);
-  background: transparent; cursor: pointer; display: flex; align-items: center;
-  justify-content: center; position: relative; transition: all 0.3s;
-  color: #636E72;
-}
-.theme-toggle:hover { border-color: #F0B90B; color: #F0B90B; }
-.theme-toggle .icon-sun, .theme-toggle .icon-moon { position: absolute; transition: opacity 0.3s, transform 0.3s; }
-
-/* Light mode: show moon, hide sun */
-.icon-sun { opacity: 0; transform: scale(0.5) rotate(-90deg); }
-.icon-moon { opacity: 1; transform: scale(1); }
-
-/* Dark mode: show sun, hide moon */
-[data-theme="dark"] .icon-sun { opacity: 1; transform: scale(1); }
-[data-theme="dark"] .icon-moon { opacity: 0; transform: scale(0.5) rotate(90deg); }
-[data-theme="dark"] .theme-toggle { border-color: rgba(255,255,255,0.15); color: #B2BEC3; }
-[data-theme="dark"] .theme-toggle:hover { border-color: #F0B90B; color: #F0B90B; }
-
-/* ---------- DARK MODE OVERRIDES ---------- */
-[data-theme="dark"] {
-  --bg-primary: #0f1118;
-  --text-primary: #ffffff;
-}
-[data-theme="dark"] body { background: #0f1118; color: #e0e0e0; }
-[data-theme="dark"] ::selection { background: rgba(240,185,11,0.3); color: #ffffff; }
-[data-theme="dark"] ::-moz-selection { background: rgba(240,185,11,0.3); color: #ffffff; }
-
-/* Nav */
-[data-theme="dark"] .nav { background: rgba(15,17,24,0.95); border-bottom-color: rgba(255,255,255,0.06); }
-[data-theme="dark"] .nav-toggle { color: #ffffff; }
-[data-theme="dark"] .nav-logo-text { color: #ffffff; }
-[data-theme="dark"] .nav-links a, [data-theme="dark"] .nav-feature-link { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .nav-links a:hover, [data-theme="dark"] .nav-feature-link:hover { color: #F0B90B; }
-[data-theme="dark"] .nav-links a.active, [data-theme="dark"] .nav-feature-link.active { color: #F0B90B; }
-
-/* Hero */
-[data-theme="dark"] .hero { background: #0f1118; }
-[data-theme="dark"] .hero::before { background: radial-gradient(ellipse 600px 600px at 70% 30%, rgba(240,185,11,0.08), transparent); }
-[data-theme="dark"] .hero h1 { color: #ffffff; }
-[data-theme="dark"] .hero-subtitle { color: rgba(255,255,255,0.6); }
-[data-theme="dark"] .hero-badge { background: rgba(240,185,11,0.12); color: #F0B90B; border-color: rgba(240,185,11,0.2); }
-[data-theme="dark"] .trust-item { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
-
-/* Stats */
-[data-theme="dark"] .stats-section { background: #1a1d24; }
-[data-theme="dark"] .stat-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.06); }
-[data-theme="dark"] .stat-label { color: rgba(255,255,255,0.5); }
-[data-theme="dark"] .stat-value { color: #ffffff; }
-
-/* How It Works */
-[data-theme="dark"] .how-section { background: #12141a; }
-[data-theme="dark"] .section-header h2 { color: #ffffff; }
-[data-theme="dark"] .section-header p { color: rgba(255,255,255,0.5); }
-[data-theme="dark"] .how-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
-[data-theme="dark"] .how-card h4 { color: #ffffff; }
-[data-theme="dark"] .how-card p { color: rgba(255,255,255,0.6); }
-[data-theme="dark"] .how-card .step-icon { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .how-card .step-number { background: #F0B90B; color: #0f1118; }
-
-/* Features */
-[data-theme="dark"] .features-section { background: #0f1118; }
-[data-theme="dark"] .features-section .section-header h2 { color: #ffffff; }
-[data-theme="dark"] .features-section .section-header p { color: rgba(255,255,255,0.5); }
-
-/* Security */
-[data-theme="dark"] .security-section { background: #1a1d24; }
-[data-theme="dark"] .security-section .section-header h2 { color: #ffffff; }
-[data-theme="dark"] .security-section .section-header p { color: rgba(255,255,255,0.5); }
-[data-theme="dark"] .security-item { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
-[data-theme="dark"] .security-item h4 { color: #ffffff; }
-[data-theme="dark"] .security-item p, [data-theme="dark"] .security-item span { color: rgba(255,255,255,0.6); }
-[data-theme="dark"] .security-item .security-icon { background: rgba(240,185,11,0.1); }
-
-/* Footer */
-[data-theme="dark"] .footer { background: #0a0c10; }
-[data-theme="dark"] .footer-heading { color: rgba(255,255,255,0.5); }
-[data-theme="dark"] .footer a { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .footer-bottom { border-top-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); }
-
-/* Buttons on dark */
-[data-theme="dark"] .btn-secondary { color: #ffffff; border-color: rgba(255,255,255,0.2); }
-[data-theme="dark"] .btn-secondary:hover { border-color: #F0B90B; color: #F0B90B; background: rgba(240,185,11,0.08); }
-
-/* Wave dividers */
-[data-theme="dark"] .wave-divider path { fill: #12141a; }
-
-/* ---------- PROTOCOL STATS SECTION ---------- */
-.protocol-stats-section {
-  background: #FEF9E7;
-  padding: clamp(2rem, 5vw, 3.5rem) 1.5rem;
-  position: relative;
-  overflow: hidden;
-}
-.protocol-stats-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(ellipse 800px 400px at 50% 50%, rgba(240,185,11,0.08), transparent);
-  pointer-events: none;
-}
-.protocol-stats-grid {
-  max-width: var(--container-max);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  text-align: center;
-}
-.protocol-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.35rem;
-}
-.protocol-stat-number {
-  font-family: var(--font-heading);
-  font-size: 3.5rem;
-  font-weight: 900;
-  color: #D4A00A;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-.protocol-stat-label {
-  font-family: var(--font-main);
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-top: 0.25rem;
-}
-.protocol-stat-sub {
-  font-family: var(--font-main);
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-.hackathon-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: 1.5rem auto 0;
-  padding: 0.6rem 1.5rem;
-  background: rgba(240,185,11,0.12);
-  border: 1px solid rgba(240,185,11,0.25);
-  border-radius: var(--radius-pill);
-  font-family: var(--font-main);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #B8860B;
-  width: fit-content;
-}
-.hackathon-badge svg {
-  flex-shrink: 0;
-}
-
-/* Protocol stats — responsive */
-@media (max-width: 1024px) {
-  .protocol-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
-  .protocol-stat-number { font-size: 3rem; }
-}
-@media (max-width: 480px) {
-  .protocol-stats-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-  .protocol-stats-section { padding: 3rem 1.25rem; }
-  .protocol-stat-number { font-size: 2.5rem; }
-}
-
-/* Protocol stats — dark mode */
-[data-theme="dark"] .protocol-stats-section {
-  background: #1a1710;
-}
-[data-theme="dark"] .protocol-stats-section::before {
-  background: radial-gradient(ellipse 800px 400px at 50% 50%, rgba(240,185,11,0.06), transparent);
-}
-[data-theme="dark"] .protocol-stat-number {
-  color: #F0B90B;
-}
-[data-theme="dark"] .protocol-stat-label {
-  color: #e0e0e0;
-}
-[data-theme="dark"] .protocol-stat-sub {
-  color: rgba(255,255,255,0.45);
-}
-[data-theme="dark"] .hackathon-badge {
-  background: rgba(240,185,11,0.1);
-  border-color: rgba(240,185,11,0.2);
-  color: #F0B90B;
-}
-/* ---------- SKIP LINK ---------- */
-.skip-link { position: absolute; top: -100%; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 0.75rem 1.5rem; background: #F0B90B; color: #1a1d24; border-radius: 0 0 8px 8px; font-weight: 600; text-decoration: none; }
-.skip-link:focus { top: 0; }
-
-/* ---------- FOCUS VISIBLE ---------- */
-:focus-visible { outline: 2px solid #F0B90B; outline-offset: 2px; }
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #F0B90B; outline-offset: 2px; }
-  </style>
+  <link rel="stylesheet" href="strata-theme.css">
+  <link rel="stylesheet" href="landing.css">
 </head>
-<body>
+<body class="ld-body" data-theme="light">
 
-
-<a href="#main-content" class="skip-link">Skip to main content</a>
-
-<!-- SVG gradient definitions -->
-<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
-  <defs>
-    <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#E8760A"/><stop offset="100%" stop-color="#FF9533"/>
-    </linearGradient>
-    <linearGradient id="diamondGrad" x1="0.5" y1="0" x2="0.5" y2="1">
-      <stop offset="0%" stop-color="#F0B90B"/><stop offset="100%" stop-color="#E8760A"/>
-    </linearGradient>
-    <linearGradient id="hexLeftGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#636E72"/><stop offset="100%" stop-color="#8B95A5"/>
-    </linearGradient>
-    <linearGradient id="hexRightGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#00B894"/><stop offset="100%" stop-color="#2EC4B6"/>
-    </linearGradient>
-    <linearGradient id="coverageGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#E8760A"/><stop offset="100%" stop-color="#FF9533"/>
-    </linearGradient>
-    <linearGradient id="poolGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1E7BFF"/><stop offset="100%" stop-color="#5DA3FF"/>
-    </linearGradient>
-    <linearGradient id="verifyGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#A78BFA"/>
-    </linearGradient>
-    <linearGradient id="payoutGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#34D399"/>
-    </linearGradient>
-    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#F0B90B"/><stop offset="100%" stop-color="#FFD443"/>
-    </linearGradient>
-    <linearGradient id="dangerGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#EF4444"/><stop offset="100%" stop-color="#F87171"/>
-    </linearGradient>
-    <linearGradient id="shieldGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#F0B90B"/><stop offset="100%" stop-color="#E8760A"/>
-    </linearGradient>
-  </defs>
-</svg>
-
-<!-- ============================================================
-     NAVIGATION
-     ============================================================ -->
-<nav class="nav" id="nav" aria-label="Main navigation">
-  <div class="nav-inner">
-    <a href="#hero" class="nav-logo" aria-label="Strata home">
-      <svg width="36" height="36" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <polygon points="10,9 16,9 19,13 16,17 10,17 7,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
-        <polygon points="16,9 22,9 25,13 22,17 16,17 13,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
-        <polygon points="16,7 20.5,13 16,19 11.5,13" fill="var(--logo-diamond, var(--gold))"/>
-        <circle cx="16" cy="12.5" r="1" fill="var(--logo-dot, white)" opacity="0.85"/>
-      </svg>
-      <span class="nav-logo-text">Cover<span class="accent">Fi</span></span>
-    </a>
-
-    <ul class="nav-links" id="navLinks">
-      <li><a href="dashboard.html" class="nav-feature-link">Dashboard</a></li>
-      <li><a href="issuers.html" class="nav-feature-link">Issuers</a></li>
-      <li><a href="pool.html" class="nav-feature-link">Pool</a></li>
-      <li><a href="coverage.html" class="nav-feature-link">Coverage</a></li>
-      <li><a href="subrogation.html" class="nav-feature-link">Subrogation</a></li>
-      <li><a href="stats.html" class="nav-feature-link">Stats</a></li>
-    </ul>
-
-    <div class="nav-actions">
-      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
-        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-    </div>
-
-    <button class="nav-toggle" id="navToggle" onclick="toggleNav()" aria-label="Toggle navigation menu">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-    </button>
-  </div>
-</nav>
-
-<!-- ============================================================
-     HERO
-     ============================================================ -->
-<main id="main-content">
-<section class="hero" id="hero">
-  <div class="hero-orb hero-orb-1"></div>
-  <div class="hero-orb hero-orb-2"></div>
-  <div class="hero-orb hero-orb-3"></div>
-
-  <div class="hero-float hero-float-1"></div>
-  <div class="hero-float hero-float-2"></div>
-  <div class="hero-float hero-float-3"></div>
-  <div class="hero-float hero-float-4"></div>
-
-  <div class="hero-content hero-entrance">
-    <h1><span class="shimmer-text">Cover Your</span><br><span class="highlight">Positions.</span></h1>
-
-    <p class="hero-subtitle">
-      Decentralized credit protection for the $26.6B RWA token market.
-      Algorithmic premiums. Community-funded pools. Instant payouts.
-    </p>
-
-    <div class="hero-actions">
-      <a href="dashboard.html" class="btn btn-primary btn-glow">Launch App</a>
-      <a href="dashboard.html#pool" class="btn btn-secondary">Provide Liquidity</a>
-    </div>
-
-    <!-- LARGE Hero Shield Illustration -->
-    <div class="hero-illustration" aria-hidden="true">
-      <svg width="220" height="200" viewBox="0 0 220 200" fill="none">
-        <path d="M110 10L30 50v60c0 50 80 75 80 75s80-25 80-75V50L110 10z" fill="url(#shieldGrad)" opacity="0.12" stroke="url(#shieldGrad)" stroke-width="1.5"/>
-        <path d="M110 25L45 58v50c0 42 65 63 65 63s65-21 65-63V58L110 25z" fill="url(#shieldGrad)" opacity="0.08"/>
-        <path d="M110 45L65 68v35c0 30 45 45 45 45s45-15 45-45V68L110 45z" fill="url(#goldGrad)" opacity="0.15" stroke="url(#goldGrad)" stroke-width="1"/>
-        <path d="M88 100l15 15 30-35" stroke="url(#goldGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.8">
-          <animate attributeName="stroke-dashoffset" from="80" to="0" dur="1.5s" fill="freeze" calcMode="spline" keySplines="0.4 1.35 0.5 0.97"/>
-          <set attributeName="stroke-dasharray" to="80"/>
-        </path>
-        <circle r="3" fill="#F0B90B" opacity="0.6">
-          <animateMotion dur="8s" repeatCount="indefinite" path="M110,30 A80,80 0 1,1 109.9,30"/>
-        </circle>
-        <circle r="2" fill="#1E7BFF" opacity="0.5">
-          <animateMotion dur="12s" repeatCount="indefinite" path="M110,20 A90,90 0 1,0 110.1,20"/>
-        </circle>
-        <circle r="2.5" fill="#10B981" opacity="0.5">
-          <animateMotion dur="10s" repeatCount="indefinite" path="M110,40 A70,70 0 1,1 109.9,40"/>
-        </circle>
-        <circle cx="110" cy="95" r="25" stroke="url(#goldGrad)" stroke-width="0.5" fill="none" opacity="0.3">
-          <animate attributeName="r" values="25;45;25" dur="3s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.3;0;0.3" dur="3s" repeatCount="indefinite"/>
-        </circle>
-        <circle cx="110" cy="95" r="35" stroke="url(#goldGrad)" stroke-width="0.5" fill="none" opacity="0.2">
-          <animate attributeName="r" values="35;55;35" dur="3s" repeatCount="indefinite" begin="1s"/>
-          <animate attributeName="opacity" values="0.2;0;0.2" dur="3s" repeatCount="indefinite" begin="1s"/>
-        </circle>
-      </svg>
-    </div>
-
-    <div class="trust-strip stagger">
-      <div class="trust-item reveal">
-        <svg width="16" height="16" viewBox="0 0 32 32" fill="none"><path d="M16 2L4 9v14l12 7 12-7V9L16 2z" fill="url(#goldGrad)"/></svg>
-        Built on Mantle
-      </div>
-      <div class="trust-item reveal">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="url(#payoutGrad)"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        ERC-3643 Compliant
-      </div>
-      <div class="trust-item reveal">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="3" fill="url(#verifyGrad)"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="url(#verifyGrad)" stroke-width="2"/></svg>
-        Soulbound Certs
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     STATS BAR
-     ============================================================ -->
-<div class="stats-section">
-  <div class="stats-grid stagger">
-    <div class="stat-card reveal">
-      <div class="stat-card-header">
-        <div class="stat-icon stat-icon-gold animated">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="url(#goldGrad)" opacity="0.9"/><path d="M12 6v12M8 10h8M8 14h8" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </div>
-        <span class="stat-change up">+12.4% &#9650;</span>
-      </div>
-      <div class="stat-label">Total Value Locked</div>
-      <div class="stat-value" data-count="124500" data-prefix="$" data-suffix="">$0</div>
-    </div>
-
-    <div class="stat-card reveal">
-      <div class="stat-card-header">
-        <div class="stat-icon stat-icon-blue animated" style="animation-delay:0.5s">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" fill="url(#poolGrad)"/><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" fill="url(#poolGrad)" opacity="0.7"/></svg>
-        </div>
-        <span class="stat-change up">+1 &#9650;</span>
-      </div>
-      <div class="stat-label">Active Issuers</div>
-      <div class="stat-value" data-count="3" data-prefix="" data-suffix="">0</div>
-    </div>
-
-    <div class="stat-card reveal">
-      <div class="stat-card-header">
-        <div class="stat-icon stat-icon-green animated" style="animation-delay:1s">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="url(#payoutGrad)"/><path d="M9 12l2 2 4-4" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <span class="stat-change up">+8.7% &#9650;</span>
-      </div>
-      <div class="stat-label">Coverage Written</div>
-      <div class="stat-value" data-count="89200" data-prefix="$" data-suffix="">$0</div>
-    </div>
-
-    <div class="stat-card reveal">
-      <div class="stat-card-header">
-        <div class="stat-icon stat-icon-purple animated" style="animation-delay:1.5s">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="url(#verifyGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <span class="stat-change down">-3.2% &#9660;</span>
-      </div>
-      <div class="stat-label">Payouts Executed</div>
-      <div class="stat-value" data-count="15000" data-prefix="$" data-suffix="">$0</div>
-    </div>
-  </div>
-</div>
-
-<!-- ============================================================
-     PROTOCOL STATS / SOCIAL PROOF
-     ============================================================ -->
-<section class="protocol-stats-section">
-  <div class="container">
-    <div class="protocol-stats-grid">
-      <div class="protocol-stat reveal">
-        <span class="protocol-stat-number" data-count="12">0</span>
-        <span class="protocol-stat-label">Smart Contracts</span>
-        <span class="protocol-stat-sub">Fully auditable on-chain</span>
-      </div>
-      <div class="protocol-stat reveal">
-        <span class="protocol-stat-number" data-count="356">0</span>
-        <span class="protocol-stat-label">Tests Passing</span>
-        <span class="protocol-stat-sub">100% coverage</span>
-      </div>
-      <div class="protocol-stat reveal">
-        <span class="protocol-stat-number" data-count="5">0</span>
-        <span class="protocol-stat-label">Risk Dimensions</span>
-        <span class="protocol-stat-sub">Behavioral credit scoring</span>
-      </div>
-      <div class="protocol-stat reveal">
-        <span class="protocol-stat-number" data-count="25">0</span>
-        <span class="protocol-stat-label">On-Chain Transactions</span>
-        <span class="protocol-stat-sub">Live on Mantle Testnet</span>
-      </div>
-    </div>
-    <div class="hackathon-badge reveal">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#F0B90B"/></svg>
-      Built for the Mantle Hackathon 2026
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     HOW IT WORKS
-     ============================================================ -->
-<section class="how-section" id="how-it-works">
-  <div class="container">
-    <div class="section-header reveal">
-      <h2>How Strata Works</h2>
-      <p>Six steps from registration to payout. Fully on-chain, fully transparent.</p>
-    </div>
-
-    <div class="section-illustration reveal">
-      <img src="svg/undraw_certification_i2m0.svg" alt="Certification Process" loading="lazy" style="width: 240px; height: auto;" />
-    </div>
-
-    <div class="how-grid-wrap">
-      <div class="how-grid stagger">
-        <div class="how-card reveal">
-          <div class="step-number">1</div>
-          <div class="step-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="14" height="20" rx="3" fill="#1E7BFF" opacity="0.15"/><path d="M9 10h6M9 14h6M9 18h4" stroke="#1E7BFF" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </div>
-          <h4>Issuer Registers</h4>
-          <p>RWA issuers post a 5% bond and get attested by 3 independent verifiers.</p>
-        </div>
-
-        <div class="how-card reveal">
-          <div class="step-number">2</div>
-          <div class="step-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <h4>IRS Score Calculated</h4>
-          <p>5-dimensional risk score across NAV, attestation, repayment, collateral, and activity.</p>
-        </div>
-
-        <div class="how-card reveal">
-          <div class="step-number">3</div>
-          <div class="step-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="#10B981" opacity="0.15"/><path d="M9 12l2 2 4-4" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <h4>Coverage Purchased</h4>
-          <p>Token holders buy protection. Premium set algorithmically: 1600 &times; e<sup>(-0.001386 &times; IRS)</sup>.</p>
-        </div>
-
-        <div class="how-card reveal">
-          <div class="step-number">4</div>
-          <div class="step-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="3" fill="#E8760A" opacity="0.15"/><path d="M16 7V5a4 4 0 00-8 0v2" stroke="#E8760A" stroke-width="2"/></svg>
-          </div>
-          <h4>LPs Provide Liquidity</h4>
-          <p>Senior (70%) and junior (30%) tranches earn yield from premiums. Junior absorbs first-loss.</p>
-        </div>
-
-        <div class="how-card reveal">
-          <div class="step-number">5</div>
-          <div class="step-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#EF4444" opacity="0.15"/><path d="M12 9v4M12 17h.01" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <h4>Default Detected</h4>
-          <p>2-of-3 trusted attestors confirm default. Oracle triggers payout engine automatically.</p>
-        </div>
-
-        <div class="how-card reveal">
-          <div class="step-number">6</div>
-          <div class="step-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="#F0B90B" stroke-width="2.5" stroke-linecap="round"/></svg>
-          </div>
-          <h4>Payout Executed</h4>
-          <p>USDT sent to verified ERC-3643 holders. SubrogationNFT minted for Foundation recovery.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     FEATURES
-     ============================================================ -->
-<div class="features-section" id="features">
-  <div class="section-header reveal">
-    <h2>Why Strata?</h2>
-    <p>Four pillars of on-chain credit protection for RWA tokens.</p>
-  </div>
-  <div class="feature-panes stagger">
-
-    <!-- Pane 1: Coverage (Orange) -->
-    <a class="feature-pane pane-coverage reveal" href="dashboard.html#purchase">
-      <div class="pane-text">
-        <h3>Coverage</h3>
-        <p class="pane-subtitle">Protect your RWA positions with on-chain credit default coverage for tokenized receivables.</p>
-      </div>
-      <div class="pane-mockup">
-        <div class="mockup-label">PROTECTION</div>
-        <div class="mockup-bar" style="width:80%; background:#E8760A;"></div>
-        <div class="mockup-title">TradeFlow Finance</div>
-        <div class="mockup-amount" style="color:#E8760A;">$15,000 USDT</div>
-        <div class="mockup-status"><span class="dot" style="background:#10B981;"></span> Active</div>
-      </div>
-    </a>
-
-    <!-- Pane 2: Liquidity Pools (Blue) -->
-    <a class="feature-pane pane-pool reveal" href="dashboard.html#pool">
-      <div class="pane-text">
-        <h3>Earn</h3>
-        <p class="pane-subtitle">Provide liquidity across senior and junior tranches to earn risk-adjusted yield.</p>
-      </div>
-      <div class="pane-mockup" style="animation-delay: -1s;">
-        <div class="mockup-label">POOL YIELD</div>
-        <div class="mockup-bars-row">
-          <div class="bar" style="flex:7; background:#1E7BFF;"></div>
-          <div class="bar" style="flex:3; background:#8B5CF6;"></div>
-        </div>
-        <div class="mockup-small">Senior: 70% &nbsp; Junior: 30%</div>
-        <div class="mockup-amount" style="color:#1E7BFF;">4.2% APY</div>
-        <svg width="100" height="24" viewBox="0 0 100 24" style="display:block; margin-top:0.25rem;">
-          <polyline points="5,20 25,14 45,16 65,10 85,4" stroke="#1E7BFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="85" cy="4" r="3" fill="#1E7BFF"/>
-        </svg>
-      </div>
-    </a>
-
-    <!-- Pane 3: Verification (Purple) -->
-    <a class="feature-pane pane-verify reveal" href="dashboard.html#irs">
-      <div class="pane-text">
-        <h3>Verified</h3>
-        <p class="pane-subtitle">2-of-3 attestor network computes on-chain Issuer Risk Scores for every token.</p>
-      </div>
-      <div class="pane-mockup" style="animation-delay: -2s;">
-        <div class="mockup-label">IRS SCORE</div>
-        <div class="mockup-score">
-          <span class="big" style="color:#8B5CF6;">600</span>
-          <span class="of">/ 1000</span>
-        </div>
-        <div class="mockup-dim-label">NAV</div>
-        <div class="mockup-dim-bar"><div class="fill" style="width:72%; background:#8B5CF6;"></div></div>
-        <div class="mockup-dim-label">ATT</div>
-        <div class="mockup-dim-bar"><div class="fill" style="width:55%; background:#A78BFA;"></div></div>
-        <div class="mockup-dim-label">REP</div>
-        <div class="mockup-dim-bar"><div class="fill" style="width:85%; background:#8B5CF6;"></div></div>
-      </div>
-    </a>
-
-    <!-- Pane 4: Payouts (Green) -->
-    <a class="feature-pane pane-payout reveal" href="dashboard.html#events">
-      <div class="pane-text">
-        <h3>Instant Payouts</h3>
-        <p class="pane-subtitle">Automatic claims disbursed to verified coverage holders upon oracle confirmation.</p>
-      </div>
-      <div class="pane-mockup" style="animation-delay: -3s;">
-        <div class="mockup-label">CLAIM #247</div>
-        <div class="mockup-amount" style="color:#10B981; font-size:1.1rem;">$15,000</div>
-        <div class="mockup-small">USDT Disbursed</div>
-        <span class="mockup-badge" style="background:#10B981;">Confirmed</span>
-        <hr class="mockup-divider">
-        <div class="mockup-tiny">SubrogationNFT #1</div>
-      </div>
-    </a>
-
-  </div>
-</div>
-
-<!-- ============================================================
-     SECURITY
-     ============================================================ -->
-<section class="security-section" id="security">
-  <div class="container" style="text-align:center">
-    <div class="section-header reveal">
-      <h2>Security First</h2>
-      <p>Built with auditable smart contracts. Every transaction is on-chain and verifiable.</p>
-    </div>
-    <div class="reveal" style="margin-bottom: 1.5rem;">
-      <img src="svg/undraw_fingerprint_kdwq.svg" alt="Security" loading="lazy" style="width: 200px; height: auto; opacity: 0.8; margin: 0 auto;" />
-    </div>
-    <div class="security-grid stagger">
-      <div class="security-item reveal">
-        <div class="security-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-        </div>
-        <h4>ERC-3643 Compliant</h4>
-        <p>Identity-verified token transfers with on-chain compliance checks built into every transaction.</p>
-      </div>
-      <div class="security-item reveal">
-        <div class="security-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1E7BFF" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        </div>
-        <h4>Soulbound NFTs</h4>
-        <p>Non-transferable certificates prove issuer verification status and coverage eligibility.</p>
-      </div>
-      <div class="security-item reveal">
-        <div class="security-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <h4>On-Chain Oracle</h4>
-        <p>Real-time risk scoring and default detection powered by decentralized oracle networks.</p>
-      </div>
-      <div class="security-item reveal">
-        <div class="security-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F0B90B" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-        </div>
-        <h4>2-of-3 Attestation</h4>
-        <p>Multi-sig verification ensures no single point of failure in default confirmation.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-</main>
-
-<!-- ============================================================
-     FOOTER
-     ============================================================ -->
-<footer class="footer">
-  <div class="footer-inner stagger">
-    <div class="footer-brand reveal">
-      <a href="#hero" class="nav-logo" style="margin-bottom:0.5rem">
-        <svg class="coverfi-logo-svg" width="28" height="28" viewBox="0 0 32 32" fill="none">
-          <polygon points="10,5 16,5 19,10 16,15 10,15 7,10" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.4"/>
-          <polygon points="16,5 22,5 25,10 22,15 16,15 13,10" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.4"/>
-          <polygon points="16,3 20,10 16,17 12,10" fill="var(--logo-diamond, var(--gold))"/>
-          <circle cx="16" cy="9.5" r="1" fill="white" opacity="0.85"/>
-        </svg>
-        <span class="nav-logo-text" style="font-size:1.125rem">Cover<span class="accent">Fi</span></span>
+  <nav class="ld-nav">
+    <div class="ld-wrap">
+      <a class="ld-brand" href="index.html">
+        <svg viewBox="0 0 32 32"><rect x="5" y="20" width="22" height="4" rx="1" fill="#F0B90B"/><rect x="7" y="14" width="18" height="4" rx="1" fill="#5B8DEF"/><rect x="9" y="8" width="14" height="4" rx="1" fill="#16C784"/></svg>
+        Strata
       </a>
-      <p>Decentralized credit protection for RWA token issuers on Mantle. Built for the Mantle Hackathon 2026.</p>
+      <div class="ld-navlinks">
+        <a href="#proof">The proof</a>
+        <a href="#desk">Inside the desk</a>
+        <a href="#how">How it works</a>
+        <a href="#what">Why Strata</a>
+      </div>
+      <div class="ld-nav-r">
+        <a class="ld-btn" href="https://github.com/Sanjay-N23/strata" target="_blank" rel="noopener">GitHub</a>
+        <a class="ld-btn gold" href="overview.html">Launch App <span class="ld-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <button class="ld-burger" aria-label="Menu"><span></span></button>
+      </div>
     </div>
-    <div class="reveal">
-      <h5>Protocol</h5>
-      <ul class="footer-links">
-        <li><a href="dashboard.html">Dashboard</a></li>
-        <li><a href="dashboard.html#issuers">Issuers</a></li>
-        <li><a href="dashboard.html#pool">Insurance Pool</a></li>
-        <li><a href="dashboard.html#purchase">Get Covered</a></li>
-        <li><a href="register.html">Register Token</a></li>
-        <li><a href="attestor.html">For Attestors</a></li>
-      </ul>
+  </nav>
+  <div class="ld-drawer">
+    <a href="#proof">The proof</a>
+    <a href="#desk">Inside the desk</a>
+    <a href="#how">How it works</a>
+    <a href="#what">Why Strata</a>
+    <a href="https://github.com/Sanjay-N23/strata" target="_blank" rel="noopener">GitHub</a>
+    <a href="overview.html">Launch App →</a>
+  </div>
+
+  <!-- ===================== HERO (light) ===================== -->
+  <header class="ld-section ld-hero">
+    <div class="ld-wrap ld-hero-grid">
+      <div class="ld-reveal">
+        <span class="ld-badge"><span class="dot"></span> Live on Mantle Sepolia · AI × RWA</span>
+        <h1 class="ld-h1">The autonomous <span class="ac">AI underwriting desk</span> for RWA credit risk.</h1>
+        <p class="ld-sub">An AI agent re-underwrites real-world-asset issuers every epoch, prices risk, and acts on-chain — while humans keep the legal gate. It proves, on-chain, that it flags distress earlier than the static rulebook.</p>
+        <div class="ld-cta-row">
+          <a class="ld-btn gold lg" href="overview.html">Launch the console <span class="ld-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <button class="ld-btn lg" data-watch>▶ Watch the Turing proof</button>
+        </div>
+        <div class="ld-chips ld-stagger">
+          <span class="ld-chip"><b data-count="5003">0</b> chainId · Mantle Sepolia</span>
+          <span class="ld-chip"><b data-count="15">0</b> contracts live</span>
+          <span class="ld-chip">AI <b data-count="3" data-suffix=" epochs">0</b> earlier</span>
+          <span class="ld-chip"><b data-count="966">0</b> tests green</span>
+        </div>
+      </div>
+
+      <div class="ld-herofig ld-reveal" id="ldHerofig" data-watch>
+        <div class="cap"><span class="t">AI Underwriter · USDC–SVB replay</span><span class="live">● REPLAY</span></div>
+        <svg class="ld-herochart" id="ldHeroChart" viewBox="0 0 560 240" preserveAspectRatio="none" role="img" aria-label="AI vs static credit score replay"></svg>
+        <div class="legend"><span><i style="background:var(--ai)"></i>AI score</span><span><i style="background:var(--muted)"></i>Static rulebook</span><span><i style="background:var(--red)"></i>distress 300</span></div>
+        <div class="ld-cursor" id="ldCursor"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch</div>
+      </div>
     </div>
-    <div class="reveal">
-      <h5>Developers</h5>
-      <ul class="footer-links">
-        <li><a href="https://testnet-explorer.hsk.xyz/address/0xce220d9eD9527f9997c8045844210637F3A42fb3" target="_blank" rel="noopener">Smart Contracts</a></li>
-        <li><a href="https://github.com/Sanjay-N23/coverfi-protocol#readme" target="_blank" rel="noopener">Documentation</a></li>
-        <li><a href="https://github.com/Sanjay-N23/coverfi-protocol" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="https://testnet-explorer.hsk.xyz" target="_blank" rel="noopener">MantleScan</a></li>
-      </ul>
+  </header>
+
+  <!-- ===================== TRUST (light) ===================== -->
+  <section class="ld-trust">
+    <div class="ld-wrap">
+      <div class="lbl">Built on open standards &amp; live infrastructure</div>
+      <div class="ld-marq">
+        <div class="ld-marq-track">
+          <span>Mantle</span><span>ERC-3643</span><span>ERC-8004</span><span>Z.AI GLM-4.6</span><span>Chainlink</span><span>ERC-5192 SBT</span><span>USDC · Circle</span>
+          <span>Mantle</span><span>ERC-3643</span><span>ERC-8004</span><span>Z.AI GLM-4.6</span><span>Chainlink</span><span>ERC-5192 SBT</span><span>USDC · Circle</span>
+        </div>
+      </div>
     </div>
-    <div class="reveal">
-      <h5>Resources</h5>
-      <ul class="footer-links">
-        <li><a href="https://github.com/Sanjay-N23/coverfi-protocol/blob/main/Proposal/Strata_Proposal.md" target="_blank" rel="noopener">Whitepaper</a></li>
-        <li><a href="https://github.com/Sanjay-N23/coverfi-protocol/tree/main/test" target="_blank" rel="noopener">Security Audits</a></li>
-        <li><a href="https://github.com/Sanjay-N23/coverfi-protocol/issues" target="_blank" rel="noopener">Bug Bounty</a></li>
-        <li><a href="https://github.com/Sanjay-N23/coverfi-protocol" target="_blank" rel="noopener">Brand Kit</a></li>
-      </ul>
+  </section>
+
+  <!-- ===================== SPINE — lime ribbon threading the dark story sections ===================== -->
+  <div class="ld-spine" id="ldSpine" data-theme="dark">
+    <svg class="ld-spine-svg" id="ldSpineSvg" aria-hidden="true" preserveAspectRatio="none">
+      <path class="ld-ribbon-bg" id="ldRibbonBg"></path>
+      <path class="ld-ribbon" id="ldRibbon"></path>
+    </svg>
+
+    <!-- The Turing proof — the ribbon's opening waypoint -->
+    <section class="ld-section ld-proof-head" id="proof">
+      <div class="ld-wrap ld-reveal" style="text-align:center">
+        <span class="ld-eyebrow">The Turing Test · on-chain</span>
+        <h2 class="ld-h2" style="max-width:18ch;margin:12px auto 8px">The AI flagged the SVB depeg <span class="ac">3 epochs</span> before the rulebook.</h2>
+        <p class="ld-lead" style="margin:0 auto">Follow the ribbon — every layer of the desk, from the proof down to the human gate.</p>
+        <div class="ld-proof-readout">
+          <div class="b"><div class="k">AI early-warning</div><div class="v" style="color:#C2F84F">+3</div></div>
+          <div class="b"><div class="k">Static rulebook</div><div class="v" style="color:var(--muted)">+0</div></div>
+        </div>
+      </div>
+    </section>
+
+  <!-- ===================== INSIDE THE DESK (dark, hover gallery) ===================== -->
+  <section class="ld-section" id="desk" data-theme="dark">
+    <div class="ld-wrap">
+      <div class="ld-reveal">
+        <span class="ld-eyebrow">Inside the desk</span>
+        <h2 class="ld-h2">One terminal. <span class="ac">Every layer</span> of the credit book.</h2>
+        <p class="ld-lead">Hover a panel to open a live preview of the actual app — not screenshots.</p>
+      </div>
+      <div class="ld-gallery ld-reveal">
+        <div class="ld-strip active">
+          <iframe class="frame" data-src="overview.html?embed=1" data-scroll="250" title="Overview" tabindex="-1" scrolling="no"></iframe>
+          <div class="veil"></div><span class="open">open ↗</span>
+          <div class="meta"><span class="vlabel">Overview</span><div class="h">Command center</div><div class="d">KPIs, issuer leaderboard, portfolio risk map, live feed.</div></div>
+        </div>
+        <div class="ld-strip">
+          <iframe class="frame" data-src="console.html?embed=1" data-scroll="200" title="Console" tabindex="-1" scrolling="no"></iframe>
+          <div class="veil"></div><span class="open">open ↗</span>
+          <div class="meta"><span class="vlabel">Underwriter</span><div class="h">AI Underwriter console</div><div class="d">Turing scoreboard, replay chart, autonomy boundary.</div></div>
+        </div>
+        <div class="ld-strip">
+          <iframe class="frame" data-src="issuer.html?id=usdc&embed=1" data-scroll="60" title="Issuer" tabindex="-1" scrolling="no"></iframe>
+          <div class="veil"></div><span class="open">open ↗</span>
+          <div class="meta"><span class="vlabel">Issuer</span><div class="h">Issuer profile</div><div class="d">Big IRS score, live re-underwriting sliders, PD curve.</div></div>
+        </div>
+        <div class="ld-strip">
+          <div class="veil" style="background:var(--surface2);opacity:1"></div>
+          <div class="meta"><span class="vlabel">Governance</span><div class="h">Policy engine</div><div class="d">Rules table, 2-of-3 approval queue, pre-action simulation — shipping next.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HOW IT WORKS (dark) ===================== -->
+  <section class="ld-section" id="how" data-theme="dark">
+    <div class="ld-wrap">
+      <div class="ld-reveal">
+        <span class="ld-eyebrow">How it works</span>
+        <h2 class="ld-h2">Signals in. <span class="ac">Priced risk</span> out. Humans on the gate.</h2>
+      </div>
+      <div class="ld-steps ld-stagger">
+        <div class="ld-step"><div class="n">01</div><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h3>Read the signals</h3><p>NAV, attestations, repayment, collateral, activity — and off-chain sentiment the rulebook ignores.</p></div>
+        <div class="ld-step"><div class="n">02</div><div class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></div><h3>AI re-underwrites</h3><p>A hybrid PD scorecard + Z.AI memo reprices the IRS every epoch and emits an early-warning.</p></div>
+        <div class="ld-step"><div class="n">03</div><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>Autonomy gate</h3><p>Reversible actions auto-execute; a default proposal halts for a 2-of-3 human quorum.</p></div>
+        <div class="ld-step"><div class="n">04</div><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div><h3>Compliant payout</h3><p>ERC-3643 verification on every payout; senior/junior tranches absorb loss in order.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== WHY STRATA (dark→light) ===================== -->
+  <section class="ld-section" id="what" data-theme="dark">
+    <div class="ld-wrap">
+      <div class="ld-reveal">
+        <span class="ld-eyebrow">Why Strata</span>
+        <h2 class="ld-h2">A credit desk that <span class="ac">never sleeps</span> — and proves its calls.</h2>
+      </div>
+      <div class="ld-feat-grid ld-reveal">
+        <div class="ld-feat-cards">
+          <div class="ld-feat"><h3>Mandatory <span class="ac">issuer bond</span></h3><p>5% of token mcap posted as USDT first-loss — skin in the game before the pool is ever touched.</p></div>
+          <div class="ld-feat"><h3>The <span class="ac">IRS</span> credit score</h3><p>A 0–1000 behavioral score across 5 dimensions; premium decays exponentially with it.</p></div>
+          <div class="ld-feat"><h3>Compliance-native <span class="ac">payout</span></h3><p>Every payout checks ERC-3643 <code>isVerified()</code> &amp; <code>!isFrozen()</code> — RWA-legal by construction.</p></div>
+          <div class="ld-feat"><h3>The <span class="ac">AI underwriter</span></h3><p>An ERC-8004 agent whose reputation accrues only from correct, timely, on-chain calls.</p></div>
+        </div>
+        <div class="ld-fadelist">
+          <div class="hd">What the agent did · USDC replay</div>
+          <div class="ld-fadescroll" id="ldFeed"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  </div><!-- /ld-spine -->
+
+  <!-- ===================== CTA (light) ===================== -->
+  <section class="ld-section ld-cta" data-theme="light">
+    <div class="ld-wrap ld-reveal">
+      <span class="ld-eyebrow">Ready when you are</span>
+      <h2>See the AI beat the rulebook — live.</h2>
+      <p class="ld-lead" style="margin:0 auto">Open the console, play the SVB replay, and read the same benchmark straight off Mantle Sepolia.</p>
+      <div class="ld-cta-row">
+        <a class="ld-btn gold lg" href="overview.html">Launch the console <span class="ld-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="ld-btn lg" href="console.html">AI Underwriter console</a>
+        <a class="ld-btn lg" href="https://explorer.sepolia.mantle.xyz" target="_blank" rel="noopener">Live on Explorer ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="ld-foot" data-theme="light">
+    <div class="ld-wrap">
+      <span>Strata Protocol · The Turing Test Hackathon 2026 · Mantle Network</span>
+      <span><a href="overview.html">App</a> · <a href="https://github.com/Sanjay-N23/strata" target="_blank" rel="noopener">GitHub</a> · <a href="https://explorer.sepolia.mantle.xyz" target="_blank" rel="noopener">Explorer</a></span>
+    </div>
+  </footer>
+
+  <!-- hero popover (clip-path reveal) -->
+  <div class="ld-pop" id="ldPop" data-theme="dark">
+    <div class="ld-pop-bg"></div>
+    <div class="ld-pop-panel">
+      <button class="ld-pop-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <svg id="ldPopChart" viewBox="0 0 1040 560" preserveAspectRatio="xMidYMid meet" role="img" aria-label="AI vs static replay, expanded"></svg>
     </div>
   </div>
-  <div class="footer-bottom">
-    <span>&copy; 2026 Strata &mdash; Mantle Hackathon</span>
-    <div class="footer-social">
-      <a href="https://x.com/StrataProtocol" target="_blank" rel="noopener" aria-label="Follow us on X (Twitter)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-      <a href="https://github.com/Sanjay-N23/coverfi-protocol" target="_blank" rel="noopener" aria-label="View on GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a>
-      <a href="https://github.com/Sanjay-N23/coverfi-protocol/discussions" target="_blank" rel="noopener" aria-label="Join our Discord"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg></a>
-    </div>
-  </div>
-</footer>
 
-<!-- ============================================================
-     JAVASCRIPT
-     ============================================================ -->
-<script>
-// ---- Theme toggle ----
-function getTheme() { return localStorage.getItem('coverfi-theme') || 'light'; }
-function setTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('coverfi-theme', theme);
-}
-function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
-// Apply saved theme immediately
-(function() { setTheme(getTheme()); })();
-
-// ---- Reduced motion ----
-const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-// ---- NAV scroll ----
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 50);
-}, { passive: true });
-
-// ---- Mobile nav toggle ----
-function toggleNav() {
-  document.getElementById('navLinks').classList.toggle('open');
-}
-
-// ---- Scroll Reveal ----
-if (!REDUCED) {
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-
-  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-} else {
-  // If reduced motion, make everything visible immediately
-  document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
-}
-
-// ---- Count-up Animation ----
-function animateCount(el, target, prefix, suffix) {
-  prefix = prefix || '';
-  suffix = suffix || '';
-  if (REDUCED) { el.textContent = prefix + target.toLocaleString() + suffix; return; }
-  let current = 0;
-  const increment = target / 60;
-  const timer = setInterval(() => {
-    current += increment;
-    if (current >= target) { current = target; clearInterval(timer); }
-    el.textContent = prefix + Math.floor(current).toLocaleString() + suffix;
-  }, 16);
-}
-
-// Observe stat values for count-up
-const statCountObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const el = entry.target;
-      const target = parseInt(el.dataset.count);
-      const prefix = el.dataset.prefix || '';
-      const suffix = el.dataset.suffix || '';
-      if (target) animateCount(el, target, prefix, suffix);
-      statCountObserver.unobserve(el);
-    }
-  });
-}, { threshold: 0.5 });
-
-document.querySelectorAll('.stat-value[data-count]').forEach(el => {
-  statCountObserver.observe(el);
-});
-
-// ---- Protocol stats count-up animation ----
-const protocolCountObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const el = entry.target;
-      const target = parseInt(el.dataset.count);
-      if (!target) return;
-      let current = 0;
-      const duration = 1200;
-      const startTime = performance.now();
-      function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-      function tick(now) {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        current = Math.floor(easeOutCubic(progress) * target);
-        el.textContent = current.toLocaleString();
-        if (progress < 1) requestAnimationFrame(tick);
-        else el.textContent = target.toLocaleString();
-      }
-      requestAnimationFrame(tick);
-      protocolCountObserver.unobserve(el);
-    }
-  });
-}, { threshold: 0.3 });
-
-document.querySelectorAll('.protocol-stat-number[data-count]').forEach(el => {
-  protocolCountObserver.observe(el);
-});
-
-// ---- Smooth scroll (only for hash links) ----
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', (e) => {
-    e.preventDefault();
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) {
-      window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
-      history.pushState(null, '', a.getAttribute('href'));
-    }
-    document.getElementById('navLinks').classList.remove('open');
-  });
-});
-
-// ---- Close mobile nav on outside click ----
-document.addEventListener('click', (e) => {
-  const navLinks = document.getElementById('navLinks');
-  const toggle = document.getElementById('navToggle');
-  if (navLinks.classList.contains('open') && !navLinks.contains(e.target) && !toggle.contains(e.target)) {
-    navLinks.classList.remove('open');
-  }
-});
-
-// ---- Scroll spy ----
-const navSections = ['hero', 'how-it-works', 'features', 'security'];
-const navSpyObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      document.querySelectorAll('.nav-links a[href^="#"]').forEach(a => a.classList.remove('active'));
-      const id = entry.target.id;
-      const link = document.querySelector('.nav-links a[href="#' + id + '"]');
-      if (link) link.classList.add('active');
-    }
-  });
-}, { threshold: 0.3, rootMargin: '-80px 0px 0px 0px' });
-navSections.forEach(id => {
-  const el = document.getElementById(id);
-  if (el) navSpyObserver.observe(el);
-});
-
-// ---- 3D tilt on cards ----
-document.querySelectorAll('.feature-pane, .how-card, .stat-card').forEach(card => {
-  card.addEventListener('mousemove', (e) => {
-    if (REDUCED) return;
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    card.style.transform = 'perspective(800px) rotateX(' + (-y * 6) + 'deg) rotateY(' + (x * 6) + 'deg) translateY(-4px) scale(1.01)';
-  });
-  card.addEventListener('mouseleave', () => { card.style.transform = ''; });
-});
-
-// ---- Interactive mouse-follow tilt on mockup cards ----
-document.querySelectorAll('.feature-pane').forEach(pane => {
-  const mockup = pane.querySelector('.pane-mockup');
-  if (!mockup) return;
-
-  pane.addEventListener('mousemove', (e) => {
-    const rect = pane.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -10;
-    const rotateY = ((x - centerX) / centerX) * 10;
-    mockup.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-    mockup.style.boxShadow = '0 20px 40px rgba(0,0,0,0.2)';
-  });
-
-  pane.addEventListener('mouseleave', () => {
-    mockup.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale(1)';
-    mockup.style.boxShadow = '';
-  });
-});
-
-// ---- Pause CSS animations when elements are off-screen ----
-const animObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    entry.target.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused';
-  });
-});
-document.querySelectorAll('[style*="animation"], .bg-blob, .hero-orb, .hero-float, .stat-icon.animated, .pane-mockup, .hero-illustration svg, .section-illustration svg, .dot-green').forEach(el => animObserver.observe(el));
-</script>
+  <script src="strata-config.js"></script>
+  <script src="strata-scoring.js"></script>
+  <script src="landing.js"></script>
 </body>
 </html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Strata — Issuer Profile</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='5' y='20' width='22' height='4' rx='1' fill='%23F0B90B'/><rect x='7' y='14' width='18' height='4' rx='1' fill='%235B8DEF'/><rect x='9' y='8' width='14' height='4' rx='1' fill='%2316C784'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="strata-theme.css">
+</head>
+<body data-page="issuers" data-mode="replay" data-theme="dark">
+  <aside class="stx-side" id="stxSide"></aside>
+  <div class="stx-content">
+    <header class="stx-top" id="stxTop"></header>
+
+    <main class="stx-main">
+      <div style="margin:2px 0 14px"><a href="overview.html" style="font-size:.82rem;color:var(--muted)">← Overview / Leaderboard</a></div>
+
+      <!-- identity hero -->
+      <div class="stx-idhero">
+        <div class="stx-bigscore" id="bigScore"><div class="n" id="bsNum">—</div><div class="l">IRS</div></div>
+        <div class="stx-idmeta">
+          <h1 id="issName">Issuer <span class="stx-prov-badge ai" id="issProv">AI-computed</span></h1>
+          <div class="sector" id="issSector">—</div>
+          <div class="addr" id="issAddr">—</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+          <div class="spark" id="heroSpark"></div>
+          <div class="stx-outlook" id="outlook">—</div>
+        </div>
+      </div>
+
+      <!-- tabs -->
+      <div class="stx-tabs" id="tabs">
+        <button class="stx-tab active" data-tab="overview">Overview</button>
+        <button class="stx-tab" data-tab="history">PD &amp; Score history</button>
+        <button class="stx-tab" data-tab="bond">Bond &amp; Collateral</button>
+        <button class="stx-tab" data-tab="exposure">Exposure</button>
+        <button class="stx-tab" data-tab="events">Events</button>
+      </div>
+
+      <!-- OVERVIEW -->
+      <section class="stx-panel active" data-panel="overview">
+        <div class="stx-kpis" id="issKpis" style="grid-template-columns:repeat(6,1fr)"></div>
+        <div class="stx-grid g-2">
+          <div class="stx-card">
+            <div class="stx-card-h"><h3>Signal Drivers</h3><span class="tag">override to re-underwrite</span></div>
+            <p class="hint">Adjust the issuer's signals and watch the IRS and premium reprice live — the same five dimensions the on-chain rulebook scores.</p>
+            <div id="drivers"></div>
+            <div class="stx-rescore">
+              <div class="b"><div class="k">Re-scored IRS</div><div class="v stx-score" id="reIRS">—</div></div>
+              <div class="b"><div class="k">PD</div><div class="v" id="rePD">—</div></div>
+              <div class="b"><div class="k">Premium</div><div class="v" id="rePrem">—</div></div>
+              <div style="margin-left:auto;align-self:center"><button class="stx-btn" id="resetDrv">Reset</button></div>
+            </div>
+          </div>
+          <div>
+            <div class="stx-card" style="margin-bottom:16px">
+              <div class="stx-card-h"><h3>PD Term Structure</h3><span class="tag">probability of default by tenor</span></div>
+              <svg class="stx-chart" id="pdCurve" viewBox="0 0 360 180" style="height:180px" role="img" aria-label="PD by tenor"></svg>
+            </div>
+            <div class="stx-card">
+              <div class="stx-card-h"><h3>Credit Quality</h3></div>
+              <div class="stx-cbadges" id="cbadges"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HISTORY -->
+      <section class="stx-panel" data-panel="history">
+        <div class="stx-card">
+          <div class="stx-card-h"><h3>Score History</h3><span class="stx-prov-badge replay" id="histProv">replay</span></div>
+          <p class="hint">IRS over the last 9 underwriting epochs. The red line is the distress threshold (300).</p>
+          <svg class="stx-chart" id="histChart" viewBox="0 0 720 240" style="height:240px" role="img" aria-label="Score history"></svg>
+        </div>
+      </section>
+
+      <!-- BOND -->
+      <section class="stx-panel" data-panel="bond">
+        <div class="stx-grid g-2">
+          <div class="stx-card">
+            <div class="stx-card-h"><h3>Issuer Bond (first-loss)</h3></div>
+            <div class="stx-kv"><span class="k">Bond posted</span><span class="v" id="bBond">—</span></div>
+            <div class="stx-kv"><span class="k">% of token mcap</span><span class="v" id="bBondPct">—</span></div>
+            <div class="stx-kv"><span class="k">Status</span><span class="v" style="color:var(--green)">ACTIVE</span></div>
+            <p class="hint" style="margin-top:12px">A mandatory USDT first-loss bond absorbs the initial shortfall before the insurance pool is ever touched.</p>
+          </div>
+          <div class="stx-card">
+            <div class="stx-card-h"><h3>Collateral</h3></div>
+            <div class="stx-kv"><span class="k">Collateral ratio</span><span class="v" id="bCol">—</span></div>
+            <div class="stx-kv"><span class="k">Coverage cap</span><span class="v" id="bCap">—</span></div>
+            <div class="stx-kv"><span class="k">Compliance</span><span class="v">ERC-3643 · isVerified ✓</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPOSURE -->
+      <section class="stx-panel" data-panel="exposure">
+        <div class="stx-card">
+          <div class="stx-card-h"><h3>Exposure</h3></div>
+          <div class="stx-kv"><span class="k">Total exposure</span><span class="v" id="eTotal">—</span></div>
+          <div class="stx-kv"><span class="k">Senior tranche (70%)</span><span class="v" id="eSr">—</span></div>
+          <div class="stx-kv"><span class="k">Junior tranche (30%)</span><span class="v" id="eJr">—</span></div>
+          <div class="stx-kv"><span class="k">Concentration of book</span><span class="v" id="eConc">—</span></div>
+        </div>
+      </section>
+
+      <!-- EVENTS -->
+      <section class="stx-panel" data-panel="events">
+        <div class="stx-card">
+          <div class="stx-card-h"><h3>Event Log</h3><span class="tag">what / who / when</span></div>
+          <div class="stx-feed" id="issFeed"></div>
+        </div>
+      </section>
+
+      <div class="stx-foot">Strata Protocol · Issuer profile · figures are AI-computed unless badged on-chain.</div>
+    </main>
+  </div>
+
+  <script src="strata-config.js"></script>
+  <script src="strata-scoring.js"></script>
+  <script src="strata-data.js"></script>
+  <script src="strata-shell.js"></script>
+  <script>
+  (function(){
+    var D = window.StrataData, SC = window.StrataScoring;
+    var $ = function(id){ return document.getElementById(id); };
+    var params = new URLSearchParams(location.search);
+    var iss = D.getIssuer(params.get('id') || 'usdc');
+    var c = iss.components;
+
+    function scoreCls(v){ return 's-'+(v>=600?'ok':(v>=300?'warn':'bad')); }
+    function sparkSvg(arr,w,h){
+      w=w||90;h=h||26;var max=Math.max.apply(null,arr),min=Math.min.apply(null,arr),rng=(max-min)||1;
+      var pts=arr.map(function(v,i){return (i/(arr.length-1)*w).toFixed(1)+','+(h-((v-min)/rng)*h).toFixed(1);}).join(' ');
+      var up=arr[arr.length-1]>=arr[0];
+      return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><polyline points="'+pts+'" fill="none" stroke="'+(up?'var(--green)':'var(--red)')+'" stroke-width="1.8"/></svg>';
+    }
+
+    // ----- hero -----
+    function renderHero(){
+      $('bigScore').className='stx-bigscore '+scoreCls(iss.irs);
+      $('bsNum').textContent=iss.irs;
+      $('issName').childNodes[0].nodeValue = iss.label+' ';
+      $('issProv').className='stx-prov-badge '+(iss.source==='replay'?'replay':'ai');
+      $('issProv').textContent = iss.source==='replay'?'replay · USDC–SVB':'AI-computed';
+      $('issSector').textContent=iss.sector;
+      $('issAddr').textContent='token '+iss.token+' · Mantle Sepolia';
+      $('heroSpark').innerHTML=sparkSvg(iss.spark,120,30);
+      var up=iss.delta7d>=0;
+      var o=$('outlook'); o.className='stx-outlook '+(up?'up':'down');
+      o.textContent=(up?'▲ ':'▼ ')+(up?'+':'')+iss.delta7d+' / 7d';
+    }
+
+    // ----- KPIs -----
+    function renderKpis(){
+      var updated = iss.recency<1 ? Math.round(iss.recency*24)+'h ago' : iss.recency.toFixed(1)+'d ago';
+      var tiles=[
+        {k:'IRS score', v:iss.irs, cls:scoreCls(iss.irs)},
+        {k:'PD', v:(iss.pd/100).toFixed(1)+'%'},
+        {k:'Premium', v:iss.premium+' bps'},
+        {k:'Issuer bond', v:iss.bond.toFixed(1)+'%'},
+        {k:'Exposure', v:D.fmtUSD(iss.exposure)},
+        {k:'Updated', v:updated}
+      ];
+      $('issKpis').innerHTML=tiles.map(function(t){
+        return '<div class="stx-kpi"><div class="k">'+t.k+'</div><div class="v '+(t.cls?'stx-score '+t.cls:'')+'">'+t.v+'</div></div>';
+      }).join('');
+    }
+
+    // ----- driver sliders (override → re-score) -----
+    var DRV=[
+      {key:'nav',label:'NAV punctuality',max:1000},
+      {key:'att',label:'Attestation',max:1000},
+      {key:'rep',label:'Repayment',max:1000},
+      {key:'col',label:'Collateral (bps)',max:12000},
+      {key:'act',label:'Activity',max:1000}
+    ];
+    var live={nav:c.nav,att:c.att,rep:c.rep,col:c.col,act:c.act};
+    function renderDrivers(){
+      $('drivers').innerHTML=DRV.map(function(d){
+        return '<div class="stx-driver"><span class="dl">'+d.label+'</span>'+
+          '<input type="range" min="0" max="'+d.max+'" value="'+live[d.key]+'" data-k="'+d.key+'"/>'+
+          '<span class="dv" id="dv_'+d.key+'">'+live[d.key]+'</span></div>';
+      }).join('');
+      $('drivers').querySelectorAll('input').forEach(function(inp){
+        inp.addEventListener('input',function(){
+          live[inp.getAttribute('data-k')]=+inp.value;
+          $('dv_'+inp.getAttribute('data-k')).textContent=inp.value;
+          rescore();
+        });
+      });
+    }
+    function rescore(){
+      var irs=SC.staticScore(live), prem=SC.premiumBps(irs), pd=(1-irs/1000)*100;
+      var el=$('reIRS'); el.textContent=irs; el.className='v stx-score '+scoreCls(irs);
+      $('rePD').textContent=pd.toFixed(1)+'%';
+      $('rePrem').textContent=prem+' bps';
+    }
+    $('resetDrv').addEventListener('click',function(){ live={nav:c.nav,att:c.att,rep:c.rep,col:c.col,act:c.act}; renderDrivers(); rescore(); });
+
+    // ----- PD term structure -----
+    function renderPdCurve(){
+      var tenors=['1m','3m','6m','1y','3y','5y'], factors=[0.35,0.55,0.75,1.0,1.35,1.65];
+      var basePd=iss.pd; // bps at 1y
+      var vals=factors.map(function(f){ return Math.min(10000, basePd*f); });
+      var P={x0:34,y0:14,w:312,h:128};
+      var maxPd=Math.max.apply(null,vals)*1.1||1000;
+      var X=function(i){ return P.x0 + i/(tenors.length-1)*P.w; };
+      var Y=function(v){ return P.y0 + (1-v/maxPd)*P.h; };
+      var g='';
+      [0,0.25,0.5,0.75,1].forEach(function(t){
+        var y=P.y0+t*P.h, v=Math.round(maxPd*(1-t)/100);
+        g+='<line class="grid" x1="'+P.x0+'" y1="'+y+'" x2="'+(P.x0+P.w)+'" y2="'+y+'"/>';
+        g+='<text class="axl" x="4" y="'+(y+3)+'">'+v+'%</text>';
+      });
+      tenors.forEach(function(t,i){ g+='<text class="axl" text-anchor="middle" x="'+X(i)+'" y="'+(P.y0+P.h+16)+'">'+t+'</text>'; });
+      var line=vals.map(function(v,i){ return X(i)+','+Y(v); }).join(' ');
+      g+='<polyline class="ln-pd" style="opacity:1;stroke-width:2.4" points="'+line+'"/>';
+      vals.forEach(function(v,i){ g+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="3.2" fill="var(--red)"/>'; });
+      $('pdCurve').innerHTML=g;
+    }
+
+    // ----- credit badges -----
+    function renderBadges(){
+      var defRate = (iss.irs>=700?'<0.5%':(iss.irs>=500?'1.8%':'4.6%'));
+      var defCls = iss.irs>=700?'ok':(iss.irs>=500?'warn':'warn');
+      var badges=[
+        {k:'Issuer bond', v:iss.bond.toFixed(1)+'%', cls:'ok'},
+        {k:'Repayment', v:(c.rep/10).toFixed(0)+'%', cls:c.rep>=700?'ok':'warn'},
+        {k:'Default rate', v:defRate, cls:defCls},
+        {k:'Attestations', v:'2 / 3', cls:'ok'},
+        {k:'Collateral', v:(c.col/100).toFixed(0)+'%', cls:c.col>=10000?'ok':'warn'}
+      ];
+      $('cbadges').innerHTML=badges.map(function(b){
+        return '<div class="stx-cbadge '+b.cls+'"><div class="k">'+b.k+'</div><div class="v">'+b.v+'</div></div>';
+      }).join('');
+    }
+
+    // ----- history chart -----
+    function renderHistory(){
+      var arr=iss.spark, ALARM=SC.ALARM;
+      var P={x0:40,y0:12,w:660,h:200};
+      var X=function(i){ return P.x0 + i/(arr.length-1)*P.w; };
+      var Y=function(v){ return P.y0 + (1-v/1000)*P.h; };
+      var g='';
+      [0,250,500,750,1000].forEach(function(v){ var y=Y(v); g+='<line class="grid" x1="'+P.x0+'" y1="'+y+'" x2="'+(P.x0+P.w)+'" y2="'+y+'"/><text class="axl" x="6" y="'+(y+3)+'">'+v+'</text>'; });
+      arr.forEach(function(v,i){ g+='<text class="axl" text-anchor="middle" x="'+X(i)+'" y="236">e'+i+'</text>'; });
+      g+='<line class="thr" x1="'+P.x0+'" y1="'+Y(ALARM)+'" x2="'+(P.x0+P.w)+'" y2="'+Y(ALARM)+'"/>';
+      g+='<polyline class="ln-ai" points="'+arr.map(function(v,i){return X(i)+','+Y(v);}).join(' ')+'"/>';
+      arr.forEach(function(v,i){ g+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="3" fill="var(--ai)"/>'; });
+      $('histChart').innerHTML=g;
+      $('histProv').className='stx-prov-badge '+(iss.source==='replay'?'replay':'ai');
+      $('histProv').textContent=iss.source==='replay'?'replay':'AI-computed';
+    }
+
+    // ----- bond / exposure / events -----
+    function renderRest(){
+      $('bBond').textContent=D.fmtUSD(iss.exposure*iss.bond/100);
+      $('bBondPct').textContent=iss.bond.toFixed(1)+'%';
+      $('bCol').textContent=(c.col/100).toFixed(0)+'%';
+      $('bCap').textContent=D.fmtUSD(iss.exposure*0.8);
+      $('eTotal').textContent=D.fmtUSD(iss.exposure);
+      $('eSr').textContent=D.fmtUSD(iss.exposure*0.7);
+      $('eJr').textContent=D.fmtUSD(iss.exposure*0.3);
+      var total=D.getKPIs(null).tvl;
+      $('eConc').textContent=(iss.exposure/total*100).toFixed(1)+'%';
+      var ev = iss.source==='replay' ? [
+        {t:'now', m:'<b>AI</b> proposed COLLATERAL_SHORTFALL — awaiting 2-of-3'},
+        {t:'14m', m:'<b>AI</b> repriced to '+iss.premium+' bps · PD '+(iss.pd/100).toFixed(0)+'%'},
+        {t:'1h', m:'Sentiment alarm: dropped below 350'},
+        {t:'1d', m:'IRS '+(iss.irs+18)+' → '+iss.irs+' (sentiment-driven)'}
+      ] : [
+        {t:'3h', m:'<b>AI</b> re-underwrote: IRS '+iss.irs+' ('+(iss.delta7d>=0?'+':'')+iss.delta7d+'/7d)'},
+        {t:'1d', m:'Premium held at '+iss.premium+' bps'},
+        {t:'4d', m:'Issuer bond '+iss.bond.toFixed(1)+'% verified'},
+        {t:'6d', m:'Attestation 2-of-3 refreshed'}
+      ];
+      $('issFeed').innerHTML=ev.map(function(e){ return '<div class="row"><span class="ts">'+e.t+'</span><span class="msg">'+e.m+'</span></div>'; }).join('');
+    }
+
+    // ----- tabs -----
+    $('tabs').addEventListener('click',function(e){
+      var b=e.target.closest('.stx-tab'); if(!b) return;
+      $('tabs').querySelectorAll('.stx-tab').forEach(function(t){ t.classList.toggle('active', t===b); });
+      var name=b.getAttribute('data-tab');
+      document.querySelectorAll('.stx-panel').forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-panel')===name); });
+    });
+
+    // ----- boot -----
+    renderHero(); renderKpis(); renderDrivers(); rescore(); renderPdCurve(); renderBadges(); renderHistory(); renderRest();
+  })();
+  </script>
+</body>
+</html>

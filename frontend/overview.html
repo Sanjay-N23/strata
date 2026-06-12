@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Strata — Overview</title>
+  <meta name="description" content="Strata command center — RWA credit-risk book at a glance: bonded value, pool TVL, issuer leaderboard, portfolio risk map, and the live AI underwriting feed on Mantle.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='5' y='20' width='22' height='4' rx='1' fill='%23F0B90B'/><rect x='7' y='14' width='18' height='4' rx='1' fill='%235B8DEF'/><rect x='9' y='8' width='14' height='4' rx='1' fill='%2316C784'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="strata-theme.css">
+</head>
+<body data-page="overview" data-mode="replay" data-theme="dark">
+  <aside class="stx-side" id="stxSide"></aside>
+  <div class="stx-content">
+    <header class="stx-top" id="stxTop"></header>
+
+    <main class="stx-main">
+      <div class="stx-pagehead">
+        <div class="stx-eyebrow">Command Center · AI × RWA · Mantle</div>
+        <h1>Overview</h1>
+        <p>The whole credit book at a glance — bonded first-loss, pool capital, the issuer leaderboard, and where every issuer sits on the risk map. The AI underwriter reprices continuously; humans keep the legal gate.</p>
+      </div>
+
+      <!-- KPI strip -->
+      <div class="stx-kpis" id="kpis"></div>
+
+      <!-- main + rail -->
+      <div class="stx-grid g-main">
+        <div>
+          <!-- Risk map -->
+          <div class="stx-card" style="margin-bottom:16px">
+            <div class="stx-card-h"><h3>Portfolio Risk Map</h3><span class="tag">IRS × recency · bubble = exposure</span></div>
+            <p class="hint">Each issuer plotted by credit score (right = safer) and how recently it was re-underwritten (top = fresh). Left of the red line is the distress zone (IRS &lt; 300).</p>
+            <svg class="stx-chart" id="scatter" viewBox="0 0 720 300" style="height:300px" role="img" aria-label="Scatter of issuers by IRS score and recency"></svg>
+          </div>
+
+          <!-- Leaderboard -->
+          <div class="stx-card">
+            <div class="stx-card-h"><h3>Issuer Leaderboard</h3><span class="stx-prov-badge ai" id="lbProv">AI-computed</span></div>
+            <p class="hint">Click a column to sort. Click a row to open the issuer. Premiums priced off the IRS score.</p>
+            <div style="overflow-x:auto">
+              <table class="stx-table" id="lbTable">
+                <thead><tr>
+                  <th data-k="label">Issuer <span class="ar"></span></th>
+                  <th data-k="irs">IRS <span class="ar"></span></th>
+                  <th data-k="pd">PD <span class="ar"></span></th>
+                  <th data-k="premium">Premium <span class="ar"></span></th>
+                  <th data-k="bond">Bond <span class="ar"></span></th>
+                  <th data-k="delta7d">7d Δ <span class="ar"></span></th>
+                  <th>Trend</th>
+                </tr></thead>
+                <tbody id="lbBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- right rail -->
+        <div class="rail">
+          <div class="stx-card" style="margin-bottom:16px">
+            <div class="stx-card-h"><h3>Live Feed</h3><span class="stx-prov-badge replay">replay</span></div>
+            <div class="stx-feed" id="feed"></div>
+          </div>
+          <div class="stx-card">
+            <div class="stx-card-h"><h3>Turing Benchmark</h3><span class="stx-prov-badge replay" id="benchProv">replay</span></div>
+            <div class="stx-kv"><span class="k">AI wins / static</span><span class="v" id="bAi">1 / 0</span></div>
+            <div class="stx-kv"><span class="k">Avg lead</span><span class="v" id="bLead">+3 epochs</span></div>
+            <div class="stx-kv"><span class="k">Agent reputation</span><span class="v">1 / 1</span></div>
+            <div style="margin-top:12px">
+              <a class="stx-btn ai" href="console.html">Open AI Underwriter →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stx-foot">
+        Strata Protocol · The Turing Test Hackathon 2026 · Mantle Network · Leaderboard figures are AI-computed; benchmark tally + reputation are read on-chain.
+      </div>
+    </main>
+  </div>
+
+  <script src="strata-config.js"></script>
+  <script src="strata-scoring.js"></script>
+  <script src="strata-data.js"></script>
+  <script src="strata-shell.js"></script>
+  <script>
+  (function(){
+    var D = window.StrataData, SC = window.StrataScoring;
+    var $ = function(id){ return document.getElementById(id); };
+    var issuers = D.getIssuers();
+
+    // ---------- KPIs ----------
+    function provDot(src){ return '<span class="stx-prov-badge '+src+'" style="border:none;padding:0;font-size:.6rem">'+(src==='chain'?'on-chain':(src==='replay'?'replay':'AI'))+'</span>'; }
+    function renderKPIs(tally){
+      var k = D.getKPIs(tally);
+      var tiles = [
+        { k:'Bonded first-loss', v:D.fmtUSD(k.bonded), d:'5–8% of mcap', s:k.bondedSource },
+        { k:'Pool TVL', v:D.fmtUSD(k.tvl), d:'sr 70 / jr 30', s:k.tvlSource },
+        { k:'Active issuers', v:k.issuers, d:'on the book', s:'ai' },
+        { k:'AI wins', v:k.aiWins, d:'vs static rulebook', s:k.aiWinsSource, up:true },
+        { k:'Avg lead', v:(k.avgLead>=0?'+':'')+k.avgLead, d:'epochs early', s:k.avgLeadSource, up:true },
+        { k:'Open claims', v:k.openClaims, d:'awaiting 2-of-3', s:'ai' }
+      ];
+      $('kpis').innerHTML = tiles.map(function(t){
+        return '<div class="stx-kpi"><div class="k">'+t.k+'</div><div class="v">'+t.v+'</div>'+
+          '<div class="d'+(t.up?' up':'')+'">'+t.d+' · '+provDot(t.s)+'</div></div>';
+      }).join('');
+      $('bAi').textContent = k.aiWins+' / '+(tally?tally.st:0);
+      $('bLead').textContent = (k.avgLead>=0?'+':'')+k.avgLead+' epochs';
+    }
+
+    // ---------- sparkline ----------
+    function spark(arr){
+      var w=64,h=18,max=Math.max.apply(null,arr),min=Math.min.apply(null,arr),rng=(max-min)||1;
+      var pts=arr.map(function(v,i){ return (i/(arr.length-1)*w).toFixed(1)+','+(h-((v-min)/rng)*h).toFixed(1); }).join(' ');
+      var up = arr[arr.length-1]>=arr[0];
+      return '<svg class="spark" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><polyline points="'+pts+'" fill="none" stroke="'+(up?'var(--green)':'var(--red)')+'" stroke-width="1.6"/></svg>';
+    }
+
+    // ---------- leaderboard ----------
+    var sortK='irs', sortDir=-1;
+    function scoreCls(v){ return 's-'+(v>=600?'ok':(v>=300?'warn':'bad')); }
+    function renderTable(){
+      var rows = issuers.slice().sort(function(a,b){
+        var x=a[sortK],y=b[sortK];
+        if(typeof x==='string') return sortDir*x.localeCompare(y);
+        return sortDir*(x-y);
+      });
+      $('lbBody').innerHTML = rows.map(function(r){
+        var deltaCls = r.delta7d>=0?'up':'down';
+        return '<tr class="clickable" data-id="'+r.id+'">'+
+          '<td><div style="font-weight:600">'+r.label+'</div><div class="hint" style="margin:0;font-size:.72rem">'+r.sector+'</div></td>'+
+          '<td class="num stx-score '+scoreCls(r.irs)+'">'+r.irs+'</td>'+
+          '<td class="num">'+(r.pd/100).toFixed(1)+'%</td>'+
+          '<td class="num">'+r.premium+' bps</td>'+
+          '<td class="num">'+r.bond.toFixed(1)+'%</td>'+
+          '<td class="num" style="color:var(--'+(r.delta7d>=0?'green':'red')+')">'+(r.delta7d>=0?'+':'')+r.delta7d+'</td>'+
+          '<td>'+spark(r.spark)+'</td></tr>';
+      }).join('');
+      // header arrows
+      $('lbTable').querySelectorAll('thead th[data-k]').forEach(function(th){
+        var ar=th.querySelector('.ar'); ar.textContent = th.getAttribute('data-k')===sortK ? (sortDir<0?'▼':'▲') : '';
+      });
+    }
+    $('lbTable').querySelectorAll('thead th[data-k]').forEach(function(th){
+      th.addEventListener('click', function(){
+        var k=th.getAttribute('data-k');
+        if(k===sortK) sortDir*=-1; else { sortK=k; sortDir = (k==='label'?1:-1); }
+        renderTable();
+      });
+    });
+    $('lbBody').addEventListener('click', function(e){
+      var tr=e.target.closest('tr[data-id]'); if(tr) window.location.href='issuer.html?id='+tr.getAttribute('data-id');
+    });
+
+    // ---------- risk-map scatter ----------
+    function renderScatter(){
+      var P={x0:46,y0:18,w:642,h:236};
+      var X=function(irs){ return P.x0 + (irs/1000)*P.w; };
+      var Y=function(rec){ return P.y0 + Math.min(rec,3)/3*P.h; };
+      var g='';
+      // distress shading + threshold
+      g += '<rect x="'+P.x0+'" y="'+P.y0+'" width="'+(X(300)-P.x0)+'" height="'+P.h+'" fill="var(--red-dim)"/>';
+      g += '<line class="thr" x1="'+X(300)+'" y1="'+P.y0+'" x2="'+X(300)+'" y2="'+(P.y0+P.h)+'"/>';
+      g += '<text class="axl" x="'+(X(300)+4)+'" y="'+(P.y0+12)+'" fill="var(--red)">distress &lt; 300</text>';
+      // x gridlines
+      [0,250,500,750,1000].forEach(function(v){
+        g += '<line class="grid" x1="'+X(v)+'" y1="'+P.y0+'" x2="'+X(v)+'" y2="'+(P.y0+P.h)+'"/>';
+        g += '<text class="axl" text-anchor="middle" x="'+X(v)+'" y="'+(P.y0+P.h+16)+'">'+v+'</text>';
+      });
+      g += '<text class="axl" x="'+P.x0+'" y="12">fresh</text><text class="axl" x="'+P.x0+'" y="'+(P.y0+P.h-2)+'">stale</text>';
+      // bubbles
+      issuers.forEach(function(r){
+        var cx=X(r.irs), cy=Y(r.recency), rad=Math.max(7,Math.min(26,Math.sqrt(r.exposure/1e6)*6));
+        var col = r.irs>=600?'var(--green)':(r.irs>=300?'var(--amber)':'var(--red)');
+        g += '<circle cx="'+cx+'" cy="'+cy+'" r="'+rad+'" fill="'+col+'" fill-opacity="0.16" stroke="'+col+'" stroke-width="1.6" data-id="'+r.id+'" style="cursor:pointer"/>';
+        g += '<text x="'+cx+'" y="'+(cy-rad-4)+'" text-anchor="middle" class="axl" fill="var(--text2)" style="font-size:9px;pointer-events:none">'+r.label.split(' · ')[0]+'</text>';
+      });
+      $('scatter').innerHTML=g;
+      $('scatter').addEventListener('click',function(e){
+        var id=e.target.getAttribute && e.target.getAttribute('data-id');
+        if(id) window.location.href='issuer.html?id='+id;
+      });
+    }
+
+    // ---------- live feed ----------
+    function renderFeed(){
+      var ev = [
+        { t:'now',   m:'<b>AI</b> repriced <b>USDC · Circle</b> to 660 bps · PD 36%' },
+        { t:'2m',    m:'<b>AI</b> proposed COLLATERAL_SHORTFALL on USDC — awaiting 2-of-3' },
+        { t:'14m',   m:'Sentiment alarm: <b>USDC</b> dropped below 350' },
+        { t:'1h',    m:'<b>Ondo · OUSG</b> posted 8.0% issuer bond' },
+        { t:'3h',    m:'<b>Maple · BlueChip</b> IRS up to 812 (+1.2)' },
+        { t:'6h',    m:'<b>Clearpool · Auralis</b> flagged — IRS 540, watch' }
+      ];
+      $('feed').innerHTML = ev.map(function(e){
+        return '<div class="row"><span class="ts">'+e.t+'</span><span class="msg">'+e.m+'</span></div>';
+      }).join('');
+    }
+
+    // ---------- skeleton / states ----------
+    function skelKPIs(){
+      $('kpis').innerHTML = new Array(6).fill(0).map(function(){
+        return '<div class="stx-kpi"><div class="k stx-skel">loading metric</div><div class="v stx-skel">0000</div><div class="d stx-skel">loading</div></div>';
+      }).join('');
+    }
+    function skelRows(){
+      $('lbBody').innerHTML = new Array(6).fill(0).map(function(){
+        return '<tr><td><div class="stx-skel" style="width:60%">Issuer name</div></td><td><span class="stx-skel">000</span></td>'+
+          '<td><span class="stx-skel">00%</span></td><td><span class="stx-skel">000</span></td><td><span class="stx-skel">0%</span></td>'+
+          '<td><span class="stx-skel">0.0</span></td><td><span class="stx-skel" style="display:inline-block;width:60px;height:14px"></span></td></tr>';
+      }).join('');
+    }
+    function benchSkel(){ $('bAi').className='v stx-skel'; $('bAi').textContent='0 / 0'; $('bLead').className='v stx-skel'; $('bLead').textContent='+0'; }
+    function benchDone(){ $('bAi').className='v'; $('bLead').className='v'; }
+
+    // react to data-layer state events (loading/ok/empty/error/stale)
+    D.on('state', function(s){
+      if(s.scope!=='tally') return;
+      var b=$('benchProv');
+      if(s.state==='ok'){ benchDone(); b.className='stx-prov-badge chain'; b.textContent='on-chain'; }
+      else if(s.state==='stale'){ benchDone(); b.className='stx-prov-badge replay'; b.textContent='stale cache'; }
+      else if(s.state==='error'){ benchDone(); b.className='stx-prov-badge'; b.textContent='RPC error · using replay'; $('bAi').textContent='1 / 0'; $('bLead').textContent='+3 epochs'; }
+      else if(s.state==='empty'){ benchDone(); b.className='stx-prov-badge'; b.textContent='not configured'; }
+    });
+
+    // ---------- live/replay reaction ----------
+    window.Strata.onMode(function(m){
+      if(m==='live'){
+        benchSkel();
+        D.getTally().then(function(t){
+          renderKPIs(t || null);
+          if(t && t.source==='chain'){ $('lbProv').className='stx-prov-badge chain'; $('lbProv').textContent='live + AI'; }
+        });
+      } else {
+        renderKPIs(null);
+        $('lbProv').className='stx-prov-badge ai'; $('lbProv').textContent='AI-computed';
+      }
+    });
+
+    // ---------- boot (skeleton → content) ----------
+    skelKPIs(); skelRows();
+    setTimeout(function(){
+      renderKPIs(null);
+      renderTable();
+      renderScatter();
+      renderFeed();
+    }, 480);
+  })();
+  </script>
+</body>
+</html>
