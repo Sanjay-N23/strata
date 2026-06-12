@@ -3,1431 +3,305 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Strata — Browse Issuers</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='8,8 16,8 20,14 16,20 8,20 4,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,8 24,8 28,14 24,20 16,20 12,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,5 22,14 16,23 10,14' fill='%23F0B90B'/><circle cx='16' cy='13' r='1.5' fill='white'/></svg>">
+  <title>Strata — Issuers</title>
+  <meta name="description" content="Strata issuer directory — every RWA issuer on the book: IRS credit score, PD, premium, first-loss bond, exposure, and 7-day trend, with sector allocation and risk distribution.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='5' y='20' width='22' height='4' rx='1' fill='%23F0B90B'/><rect x='7' y='14' width='18' height='4' rx='1' fill='%235B8DEF'/><rect x='9' y='8' width='14' height='4' rx='1' fill='%2316C784'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="strata-theme.css">
   <style>
-/* ============================================================
-   Strata Issuers Page — Claymorphism Warm Light Design
-   ============================================================ */
-
-:root {
-  --bg-primary: #E0F7FA;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f5f6f8;
-  --text-primary: #2D3436;
-  --text-secondary: #5C676B;
-  --text-muted: #5f6b70;
-  --border-color: rgba(0,0,0,0.08);
-  --shadow-clay: 0 8px 32px rgba(0,0,0,0.12);
-  --shadow-clay-hover: 0 12px 40px rgba(0,0,0,0.18);
-  --shadow-clay-sm: 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-clay-inset: inset 2px 2px 5px rgba(0,0,0,0.15), inset -2px -2px 5px rgba(255,255,255,0.02);
-  --nav-bg: rgba(255,255,255,0.8);
-  --form-bg: #f5f5f5;
-  --form-border: rgba(0,0,0,0.1);
-  --gold: #00BCD4;
-  --gold-light: #4DD0E1;
-  --gold-dim: rgba(0,188,212,0.12);
-  --accent-coral: #FF6B6B;
-  --accent-purple: #6C5CE7;
-  --color-pool: #3B8BFF;
-  --color-coverage: #E8760A;
-  --color-verify: #6C5CE7;
-  --color-payout: #00B894;
-  --color-success: #00B894;
-  --color-success-dim: rgba(0,184,148,0.12);
-  --color-danger: #EF4444;
-  --color-danger-dim: rgba(239,68,68,0.12);
-  --color-warning: #00BCD4;
-  --color-warning-dim: rgba(0,188,212,0.12);
-  --font-heading: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
-  --radius-xl: 24px;
-  --radius-card: var(--radius-xl);
-  --radius-pill: 999px;
-  --spring: cubic-bezier(0.22, 1.2, 0.36, 1);
-  --ease-smooth: cubic-bezier(0.39, 0.575, 0.565, 1);
-  --motion: 1;
-  --nav-height: 68px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :root { --motion: 0; }
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
-
-::selection { background: rgba(0,188,212,0.25); color: #2D3436; }
-::-moz-selection { background: rgba(0,188,212,0.25); color: #2D3436; }
-
-body {
-  font-family: var(--font-main); font-size: 0.875rem; line-height: 1.5;
-  color: var(--text-primary);
-  background: var(--bg-primary);
-  min-height: 100vh; -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-  position: relative;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,188,212,0.3); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,188,212,0.5); }
-* { scrollbar-width: thin; scrollbar-color: rgba(0,188,212,0.3) transparent; }
-
-a { color: var(--gold); text-decoration: none; transition: color 0.2s; }
-a:hover { color: #00838F; }
-h1,h2,h3,h4,h5,h6 { font-family: var(--font-heading); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; color: var(--text-primary); }
-code, pre { font-family: var(--font-mono); }
-.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-
-/* ---------- ABSTRACT SVG BACKGROUND ---------- */
-.bg-blobs { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; display: none; }
-.bg-blob { position: absolute; opacity: 0.08; }
-.bg-blob:nth-child(1) { top: -5%; right: -5%; animation: blob-float-1 18s ease-in-out infinite; }
-.bg-blob:nth-child(2) { bottom: -10%; left: -5%; animation: blob-float-2 22s ease-in-out infinite; }
-.bg-blob:nth-child(3) { top: 40%; right: 10%; animation: blob-float-1 25s ease-in-out infinite reverse; }
-
-@keyframes blob-float-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -20px) scale(1.05); }
-  66% { transform: translate(-20px, 15px) scale(0.95); }
-}
-@keyframes blob-float-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(-25px, 20px) scale(0.97); }
-  66% { transform: translate(15px, -25px) scale(1.03); }
-}
-
-/* ---------- NAV ---------- */
-.dash-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  height: var(--nav-height); background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  box-shadow: none;
-  display: flex; align-items: center; padding: 0 1.5rem;
-}
-.dash-nav-inner {
-  max-width: 1600px; width: 100%; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  position: relative;
-}
-.nav-logo { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; }
-.nav-logo-text { font-size: 1.25rem; font-weight: 900; color: var(--text-primary); letter-spacing: -0.03em; }
-.nav-logo .accent { color: var(--gold); }
-
-.dash-nav-links { display: flex; align-items: center; justify-content: center; gap: 0.25rem; }
-.dash-nav-link {
-  padding: 0.4rem 0.75rem; border: none; background: none; border-radius: 0;
-  font-size: 0.8125rem; font-weight: 600; color: #636E72;
-  text-decoration: none; transition: color 0.2s;
-}
-.dash-nav-link:hover { color: #F0B90B; }
-.dash-nav-link.active { color: #F0B90B; }
-
-.nav-actions { display: flex; align-items: center; gap: 0.75rem; justify-content: flex-end; }
-.badge-testnet {
-  display: inline-flex; align-items: center; gap: 0.35rem;
-  padding: 0.25rem 0.6rem; border-radius: var(--radius-pill);
-  font-size: 0.625rem; font-weight: 600; letter-spacing: 0.03em; white-space: nowrap;
-  background: rgba(0,188,212,0.1); color: #006064;
-  border: 1px solid rgba(0,188,212,0.2);
-}
-.badge-testnet .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse-gold 1.5s ease-in-out infinite; }
-@keyframes pulse-gold {
-  0%,100% { box-shadow: 0 0 4px rgba(0,188,212,0.4); }
-  50% { box-shadow: 0 0 16px rgba(0,188,212,0.9); }
-}
-
-.btn-connect {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.55rem 1.25rem; border-radius: var(--radius-pill); border: none;
-  background: linear-gradient(135deg, #00BCD4 0%, #4DD0E1 100%);
-  color: #000; font-family: var(--font-main); font-size: 0.8125rem; font-weight: 700;
-  cursor: pointer; transition: all 0.25s var(--spring);
-  box-shadow: 4px 4px 12px rgba(0,188,212,0.3), -2px -2px 8px rgba(255,255,255,0.6);
-}
-.btn-connect:hover { transform: scale(1.04) translateY(-1px); box-shadow: 6px 6px 18px rgba(0,188,212,0.4), -3px -3px 10px rgba(255,255,255,0.7); }
-.btn-connect.connected {
-  background: var(--color-success-dim); color: var(--color-success);
-  box-shadow: var(--shadow-clay-sm); border: 1px solid rgba(0,184,148,0.2);
-}
-.btn-connect.connected:hover { background: rgba(0,184,148,0.18); }
-
-/* ---------- THEME TOGGLE ---------- */
-.theme-toggle {
-  width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1);
-  background: transparent; cursor: pointer; display: flex; align-items: center;
-  justify-content: center; position: relative; transition: all 0.3s;
-  color: #636E72;
-}
-.theme-toggle:hover { border-color: #00BCD4; color: #00BCD4; }
-.theme-toggle .icon-sun, .theme-toggle .icon-moon { position: absolute; transition: opacity 0.3s, transform 0.3s; }
-.icon-sun { opacity: 0; transform: scale(0.5) rotate(-90deg); }
-.icon-moon { opacity: 1; transform: scale(1); }
-[data-theme="dark"] .icon-sun { opacity: 1; transform: scale(1); }
-[data-theme="dark"] .icon-moon { opacity: 0; transform: scale(0.5) rotate(90deg); }
-[data-theme="dark"] .theme-toggle { border-color: rgba(255,255,255,0.15); color: #B2BEC3; }
-[data-theme="dark"] .theme-toggle:hover { border-color: #00BCD4; color: #00BCD4; }
-
-/* ---------- MAIN LAYOUT ---------- */
-.dash-main {
-  padding-top: var(--nav-height);
-  min-height: 100vh;
-  position: relative; z-index: 1;
-}
-.dash-container {
-  display: grid;
-  gap: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.25rem 1.5rem;
-}
-
-/* ---------- PAGE HEADER ---------- */
-.page-header {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 1rem;
-}
-.page-header h1 {
-  font-size: 1.75rem; font-weight: 900; letter-spacing: -0.03em;
-}
-.page-header h1 .accent { color: var(--gold); }
-.page-subtitle {
-  font-size: 0.875rem; color: var(--text-muted); font-weight: 500; margin-top: 0.25rem;
-}
-
-/* ---------- METRICS BAR ---------- */
-.metrics-bar {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
-  position: relative; z-index: 1;
-}
-
-.metric-card {
-  background: #ffffff;
-  color: #2D3436;
-  border-radius: 14px; padding: 1.25rem 1.25rem 1rem;
-  border: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  transition: transform 0.3s var(--spring), box-shadow 0.3s;
-  display: flex; align-items: flex-start; gap: 1rem;
-  position: relative; overflow: hidden;
-}
-.metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-clay-hover);
-}
-.metric-icon {
-  width: 48px; height: 48px; border-radius: 14px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.metric-icon-gold { background: rgba(0,188,212,0.2); color: #006064; }
-.metric-icon-blue { background: rgba(59,139,255,0.2); color: #1A56A8; }
-.metric-icon-orange { background: rgba(232,118,10,0.2); color: #8B4500; }
-.metric-icon-purple { background: rgba(108,92,231,0.2); color: #3C2A8C; }
-.metric-icon-green { background: rgba(0,184,148,0.2); color: #006B4F; }
-.metric-label { font-size: 0.75rem; color: #636E72; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.25rem; }
-.metric-value {
-  font-size: 1.75rem; font-weight: 900; letter-spacing: -0.03em;
-  font-family: var(--font-mono); font-variant-numeric: tabular-nums;
-  color: #2D3436;
-}
-
-/* ---------- FILTERS BAR ---------- */
-.filters-bar {
-  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-}
-.filter-group {
-  display: flex; align-items: center; gap: 0.4rem;
-}
-.filter-label {
-  font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: 0.05em;
-}
-.filter-select {
-  padding: 0.625rem 1rem; border-radius: 12px;
-  border: 1px solid rgba(0,0,0,0.1);
-  background: #f5f5f5; color: #2D3436;
-  font-family: var(--font-main); font-size: 0.8125rem; font-weight: 500;
-  cursor: pointer; transition: all 0.2s;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235f6b70' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 0.6rem center;
-  padding-right: 2rem;
-}
-.filter-select:hover { border-color: var(--gold); }
-.filter-select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(0,188,212,0.15); }
-
-.search-input {
-  padding: 0.625rem 1rem 0.625rem 2.2rem; border-radius: 12px;
-  border: 1px solid rgba(0,0,0,0.1);
-  background: #f5f5f5; color: #2D3436;
-  font-family: var(--font-main); font-size: 0.8125rem; font-weight: 500;
-  transition: all 0.2s; width: 220px;
-}
-.search-input:hover { border-color: var(--gold); }
-.search-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(0,188,212,0.15); }
-.search-input::placeholder { color: var(--text-muted); }
-[data-theme="dark"] .search-input {
-  background: #1e2329;
-  border-color: rgba(255,255,255,0.08);
-  color: #ffffff;
-}
-.search-wrap {
-  position: relative; display: flex; align-items: center;
-}
-.search-wrap svg {
-  position: absolute; left: 0.7rem; color: var(--text-muted); pointer-events: none;
-}
-
-/* ---------- ISSUER CARDS GRID ---------- */
-.issuer-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 1rem;
-}
-
-.issuer-card {
-  background: #ffffff;
-  color: #2D3436;
-  border-radius: 16px;
-  border: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  transition: transform 0.3s var(--spring), box-shadow 0.3s;
-  overflow: hidden;
-  position: relative;
-  min-height: auto;
-  display: flex;
-  flex-direction: column;
-}
-.issuer-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-clay-hover);
-}
-
-.issuer-card-header {
-  display: flex; align-items: center; gap: 0.875rem;
-  padding: 0.875rem 1.25rem 0;
-}
-.issuer-avatar {
-  width: 48px; height: 48px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem; font-weight: 700; color: #fff; flex-shrink: 0;
-  box-shadow: 3px 3px 8px rgba(0,0,0,0.12);
-}
-.issuer-header-info { flex: 1; min-width: 0; }
-.issuer-header-name {
-  font-size: 1.0625rem; font-weight: 800; color: #2D3436;
-  font-family: var(--font-heading); letter-spacing: -0.02em;
-}
-.issuer-header-meta {
-  font-size: 0.75rem; color: #636E72; display: flex; align-items: center; gap: 0.5rem;
-  margin-top: 2px;
-}
-.issuer-header-meta code {
-  font-size: 0.6875rem; color: #636E72; background: rgba(0,0,0,0.04);
-  padding: 0.1rem 0.4rem; border-radius: 4px;
-}
-
-.issuer-card-body { padding: 1rem 1.25rem; flex: 1; }
-
-/* IRS Score Section */
-.irs-section { margin: 1.25rem 0; }
-.irs-row {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 0.4rem;
-}
-.irs-label { font-size: 0.75rem; font-weight: 600; color: #636E72; text-transform: uppercase; letter-spacing: 0.04em; }
-.irs-score {
-  font-size: 1.25rem; font-weight: 800; color: #00838F;
-  font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
-}
-.irs-bar-wrap {
-  width: 100%; height: 8px; border-radius: 4px;
-  background: rgba(0,188,212,0.1);
-  overflow: hidden;
-}
-.irs-bar {
-  height: 100%; border-radius: 4px;
-  background: linear-gradient(90deg, #00BCD4, #4DD0E1);
-  transition: width 0.6s var(--ease-smooth);
-}
-.irs-pct { font-size: 0.75rem; font-weight: 600; color: #4DD0E1; }
-
-/* Info rows */
-.info-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1rem;
-  margin-bottom: 1rem;
-}
-.info-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(0,0,0,0.04);
-}
-.info-item-label {
-  font-size: 0.75rem; color: var(--text-muted); font-weight: 500;
-}
-.info-item-value {
-  font-size: 0.8125rem; font-weight: 600; color: var(--text-primary);
-  font-family: var(--font-mono);
-}
-
-.status-badge {
-  display: inline-flex; align-items: center; gap: 0.3rem;
-  padding: 0.2rem 0.55rem; border-radius: var(--radius-pill);
-  font-size: 0.6875rem; font-weight: 600;
-}
-.status-active { background: #E8F5E9; color: #2E7D32; }
-.status-observing { background: #E3F2FD; color: #1565C0; }
-.status-suspended { background: #FFEBEE; color: #C62828; }
-.status-defaulted { background: #FFEBEE; color: #C62828; }
-.status-winding { background: rgba(108,92,231,0.1); color: #3C2A8C; }
-
-.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-.dot-green { background: var(--color-success); animation: pulse-green 1.5s ease-in-out infinite; }
-.dot-gold { background: var(--gold); animation: pulse-gold 1.5s ease-in-out infinite; }
-.dot-red { background: var(--color-danger); }
-
-@keyframes pulse-green {
-  0%,100% { box-shadow: 0 0 4px rgba(0,184,148,0.4); transform: scale(1); }
-  50% { box-shadow: 0 0 16px rgba(0,184,148,0.9); transform: scale(1.3); }
-}
-
-/* Coverage Progress */
-.coverage-section { margin-bottom: 0.875rem; }
-.coverage-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 0.35rem;
-}
-.coverage-header-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
-.coverage-header-pct { font-size: 0.75rem; font-weight: 700; color: var(--color-coverage); }
-.coverage-bar-wrap {
-  width: 100%; height: 6px; border-radius: 3px;
-  background: rgba(232,118,10,0.1); overflow: hidden;
-}
-.coverage-bar {
-  height: 100%; border-radius: 3px;
-  background: linear-gradient(90deg, #E8760A, #FF9533);
-  transition: width 0.6s var(--ease-smooth);
-}
-
-/* Premium */
-.premium-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem 0 0.5rem; border-top: 1px solid rgba(0,0,0,0.06);
-  margin-top: 1.25rem;
-}
-.premium-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
-.premium-value {
-  font-size: 1rem; font-weight: 800; color: #00838F;
-  font-family: var(--font-mono);
-}
-.premium-bps { font-size: 0.6875rem; color: var(--text-muted); font-weight: 500; margin-left: 0.3rem; }
-
-/* Card Footer Buttons */
-.issuer-card-footer {
-  display: flex; gap: 0.5rem;
-  padding: 0 1.75rem 1.75rem;
-  margin-top: 1.5rem;
-}
-.btn-coverage {
-  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
-  padding: 0.75rem 1.5rem; border-radius: 12px; border: none;
-  background: linear-gradient(135deg, #00BCD4, #4DD0E1);
-  color: #000; font-family: var(--font-main); font-size: 0.8125rem; font-weight: 700;
-  cursor: pointer; transition: all 0.25s var(--spring);
-  box-shadow: 4px 4px 12px rgba(0,188,212,0.2), -2px -2px 6px rgba(255,255,255,0.5);
-}
-.btn-coverage:hover { transform: translateY(-1px); box-shadow: 6px 6px 18px rgba(0,188,212,0.3), -3px -3px 8px rgba(255,255,255,0.6); }
-
-.btn-details {
-  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
-  padding: 0.75rem 1.5rem; border-radius: 12px;
-  border: 1px solid rgba(0,188,212,0.3);
-  background: transparent; color: #4DD0E1;
-  font-family: var(--font-main); font-size: 0.8125rem; font-weight: 600;
-  cursor: pointer; transition: all 0.2s;
-}
-.btn-details:hover { border-color: #00BCD4; color: #00BCD4; background: rgba(0,188,212,0.06); }
-
-/* ---------- MODAL ---------- */
-.modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
-  align-items: center; justify-content: center;
-  animation: modal-fade 0.2s ease;
-}
-.modal-overlay.show { display: flex; }
-@keyframes modal-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.modal-content {
-  background: #ffffff; color: #2D3436;
-  border-radius: 20px;
-  border: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
-  width: 90%; max-width: 620px; max-height: 85vh;
-  overflow-y: auto; position: relative;
-  animation: modal-slide 0.3s var(--spring);
-}
-@keyframes modal-slide {
-  from { opacity: 0; transform: translateY(20px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid var(--border-color);
-}
-.modal-header h2 { font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 0.75rem; }
-.modal-close {
-  width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border-color);
-  background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  color: var(--text-muted); transition: all 0.2s;
-}
-.modal-close:hover { border-color: var(--color-danger); color: var(--color-danger); background: var(--color-danger-dim); }
-
-.modal-body { padding: 1.5rem; }
-
-/* IRS Breakdown */
-.irs-breakdown { margin-bottom: 1.5rem; }
-.irs-breakdown h3 {
-  font-size: 0.875rem; font-weight: 700; color: var(--text-primary);
-  margin-bottom: 0.875rem; display: flex; align-items: center; gap: 0.5rem;
-}
-.irs-dim-row {
-  display: flex; align-items: center; gap: 0.75rem;
-  margin-bottom: 0.625rem;
-}
-.irs-dim-label {
-  width: 140px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
-  flex-shrink: 0;
-}
-.irs-dim-bar-wrap {
-  flex: 1; height: 10px; border-radius: 5px;
-  background: rgba(0,188,212,0.08);
-  overflow: hidden;
-}
-.irs-dim-bar {
-  height: 100%; border-radius: 5px;
-  background: linear-gradient(90deg, #00BCD4, #4DD0E1);
-  transition: width 0.5s var(--ease-smooth);
-}
-.irs-dim-value {
-  width: 50px; text-align: right;
-  font-size: 0.8125rem; font-weight: 700; color: var(--text-primary);
-  font-family: var(--font-mono);
-}
-
-/* Modal detail sections */
-.modal-section { margin-bottom: 1.5rem; }
-.modal-section h3 {
-  font-size: 0.875rem; font-weight: 700; color: var(--text-primary);
-  margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
-}
-.detail-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
-}
-.detail-item {
-  padding: 0.6rem 0.75rem; border-radius: var(--radius-sm);
-  background: var(--form-bg);
-}
-.detail-item-label { font-size: 0.6875rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.15rem; }
-.detail-item-value { font-size: 0.875rem; font-weight: 700; color: var(--text-primary); font-family: var(--font-mono); }
-
-.detail-item-full {
-  grid-column: span 2;
-  padding: 0.6rem 0.75rem; border-radius: var(--radius-sm);
-  background: var(--form-bg);
-}
-
-.btn-bscscan {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.6rem 1.25rem; border-radius: var(--radius-sm);
-  border: 1.5px solid rgba(0,188,212,0.3);
-  background: var(--gold-dim); color: var(--gold);
-  font-family: var(--font-main); font-size: 0.8125rem; font-weight: 700;
-  cursor: pointer; transition: all 0.2s; text-decoration: none;
-}
-.btn-bscscan:hover { background: rgba(0,188,212,0.2); border-color: var(--gold); color: var(--gold); }
-
-/* ---------- EMPTY STATE ---------- */
-.empty-state {
-  text-align: center; padding: 1.5rem 1rem;
-  color: var(--text-muted);
-}
-.empty-state svg { margin-bottom: 1rem; opacity: 0.4; }
-.empty-state p { font-size: 0.9375rem; font-weight: 500; }
-
-/* ---------- DARK MODE ---------- */
-[data-theme="dark"] {
-  --bg-primary: #0f1118;
-  --bg-card: #1e2329;
-  --bg-card-hover: #2a2f36;
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255,255,255,0.65);
-  --text-muted: rgba(255,255,255,0.4);
-  --border-color: rgba(255,255,255,0.06);
-  --shadow-clay: 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03);
-  --shadow-clay-hover: 0 6px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-  --shadow-clay-sm: 0 2px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.02);
-  --shadow-clay-inset: inset 2px 2px 5px rgba(0,0,0,0.2), inset -2px -2px 5px rgba(255,255,255,0.02);
-  --nav-bg: rgba(15,17,24,0.95);
-  --form-bg: #1e2329;
-  --form-border: rgba(255,255,255,0.08);
-  --gold-dim: rgba(0,188,212,0.15);
-  --color-success-dim: rgba(0,184,148,0.15);
-  --color-danger-dim: rgba(239,68,68,0.15);
-  --color-warning-dim: rgba(0,188,212,0.15);
-}
-
-[data-theme="dark"] .dash-nav { background: rgba(15,17,24,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06); }
-[data-theme="dark"] .dash-nav .nav-logo-text { color: #ffffff; }
-[data-theme="dark"] .dash-nav-link { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .dash-nav-link:hover { color: #F0B90B; }
-[data-theme="dark"] .dash-nav-link.active { color: #F0B90B; }
-[data-theme="dark"] .metric-value { color: #ffffff; }
-[data-theme="dark"] .metric-label { color: rgba(255,255,255,0.5); }
-[data-theme="dark"] .metric-icon-gold { background: rgba(0,188,212,0.15); color: #4DD0E1; }
-[data-theme="dark"] .metric-icon-blue { background: rgba(59,139,255,0.15); color: #6BA6FF; }
-[data-theme="dark"] .metric-icon-orange { background: rgba(232,118,10,0.15); color: #FF9533; }
-[data-theme="dark"] .metric-icon-purple { background: rgba(108,92,231,0.15); color: #A78BFA; }
-[data-theme="dark"] .metric-icon-green { background: rgba(0,184,148,0.15); color: #34D4A4; }
-[data-theme="dark"] .issuer-header-meta code { background: rgba(255,255,255,0.08); }
-[data-theme="dark"] .badge-testnet { background: rgba(0,188,212,0.15); color: #4DD0E1; border-color: rgba(0,188,212,0.25); }
-[data-theme="dark"] .modal-overlay { background: rgba(0,0,0,0.7); }
-[data-theme="dark"] .filter-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-}
-/* Status badges dark */
-[data-theme="dark"] .status-active { background: rgba(0,184,148,0.15); color: #55efc4; }
-[data-theme="dark"] .status-observing { background: rgba(0,188,212,0.15); color: #4DD0E1; }
-[data-theme="dark"] .status-suspended { background: rgba(239,68,68,0.15); color: #FF6B6B; }
-[data-theme="dark"] .status-defaulted { background: rgba(239,68,68,0.15); color: #FF6B6B; }
-[data-theme="dark"] .status-winding { background: rgba(108,92,231,0.15); color: #A29BFE; }
-
-/* Dark mode card backgrounds */
-[data-theme="dark"] .issuer-card,
-[data-theme="dark"] .metric-card {
-  background: #1e2329;
-  color: #e8e8e8;
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03);
-}
-[data-theme="dark"] .issuer-card:hover,
-[data-theme="dark"] .metric-card:hover {
-  box-shadow: 0 6px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-}
-
-/* Dark mode page header */
-[data-theme="dark"] .page-header h1 { color: #ffffff; }
-[data-theme="dark"] .page-header p { color: rgba(255,255,255,0.5); }
-
-/* Dark mode filter select */
-[data-theme="dark"] .filter-select {
-  background-color: #1e2329;
-  border-color: rgba(255,255,255,0.08);
-  color: #e8e8e8;
-}
-[data-theme="dark"] .filter-select:focus {
-  border-color: #00BCD4;
-}
-
-/* Dark mode modal */
-[data-theme="dark"] .modal-content {
-  background: #1e2329;
-  color: #e8e8e8;
-  border-color: rgba(255,255,255,0.06);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-}
-[data-theme="dark"] .modal-content h2,
-[data-theme="dark"] .modal-content h3 { color: #ffffff; }
-[data-theme="dark"] .modal-content p { color: rgba(255,255,255,0.6); }
-
-/* Dark mode issuer card text */
-[data-theme="dark"] .issuer-card h3 { color: #ffffff; }
-[data-theme="dark"] .issuer-card .issuer-sector { color: rgba(255,255,255,0.5); }
-[data-theme="dark"] .issuer-stat-label { color: rgba(255,255,255,0.5); }
-[data-theme="dark"] .issuer-stat-value { color: #ffffff; }
-
-/* Dark mode toast & scrollbar */
-[data-theme="dark"] .toast { background: #1a1d24; border-color: rgba(255,255,255,0.08); color: #ffffff; }
-[data-theme="dark"] ::-webkit-scrollbar-track { background: #0f1118; }
-[data-theme="dark"] ::-webkit-scrollbar-thumb { background: rgba(0,188,212,0.3); }
-
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 900px) {
-  .metrics-bar { grid-template-columns: repeat(2, 1fr); }
-  .issuer-grid { grid-template-columns: 1fr; }
-  .dash-nav-links { display: none; }
-}
-@media (max-width: 600px) {
-  .metrics-bar { grid-template-columns: 1fr; }
-  .filters-bar { flex-direction: column; align-items: stretch; }
-  .search-input { width: 100%; }
-  .page-header { flex-direction: column; align-items: flex-start; }
-  .detail-grid { grid-template-columns: 1fr; }
-  .detail-item-full { grid-column: span 1; }
-}
+    .iss-chartcard{display:flex;flex-direction:column}
+    .iss-chartcard .stx-chart2{margin-top:6px}
+    .iss-ava-txt{color:#0A0C10}
+    /* breakdown modal */
+    .iss-bd{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:200;
+      display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.2s}
+    .iss-bd.open{opacity:1;pointer-events:all}
+    .iss-modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);
+      width:min(540px,92vw);max-height:90vh;overflow-y:auto;box-shadow:var(--elev2)}
+    .iss-modal-h{display:flex;align-items:center;gap:12px;padding:18px 20px 14px;border-bottom:1px solid var(--border)}
+    .iss-modal-h h3{font-family:var(--head);font-weight:700;font-size:1.05rem;flex:1}
+    .iss-modal-close{background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1}
+    .iss-modal-close:hover{color:var(--text)}
+    .iss-modal-b{padding:18px 20px}
+    .iss-dim{margin-bottom:12px}
+    .iss-dim-h{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px}
+    .iss-dim-h .dk{color:var(--text2)} .iss-dim-h .dv{font-family:var(--mono);font-weight:700}
+    .iss-dim-track{height:8px;border-radius:999px;background:var(--surface2);overflow:hidden}
+    .iss-dim-fill{height:100%;border-radius:999px}
+    .iss-modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px}
   </style>
 </head>
-<body>
+<body data-page="issuers" data-mode="replay" data-theme="dark">
+  <aside class="stx-side" id="stxSide"></aside>
+  <div class="stx-content">
+    <header class="stx-top" id="stxTop"></header>
 
+    <main class="stx-main">
+      <div class="stx-pagehead">
+        <div class="stx-eyebrow">Directory · Credit Book · AI × RWA</div>
+        <h1>Issuers</h1>
+        <p>Every RWA issuer the desk underwrites — IRS credit score, default probability, risk-priced premium, first-loss bond, and exposure. Click any issuer to open its full profile.</p>
+      </div>
 
-<!-- Background Blobs -->
-<div class="bg-blobs" aria-hidden="true">
-  <svg class="bg-blob" width="600" height="600" viewBox="0 0 600 600"><path d="M300,50 C420,50 550,180 550,300 C550,420 420,550 300,550 C180,550 50,420 50,300 C50,180 180,50 300,50Z" fill="url(#blobGrad1)"/><defs><linearGradient id="blobGrad1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00BCD4"/><stop offset="100%" stop-color="#FF6B6B"/></linearGradient></defs></svg>
-  <svg class="bg-blob" width="500" height="500" viewBox="0 0 500 500"><circle cx="250" cy="250" r="250" fill="url(#blobGrad2)"/><defs><linearGradient id="blobGrad2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6C5CE7"/><stop offset="100%" stop-color="#3B8BFF"/></linearGradient></defs></svg>
-  <svg class="bg-blob" width="400" height="400" viewBox="0 0 400 400"><ellipse cx="200" cy="200" rx="200" ry="180" fill="url(#blobGrad3)"/><defs><linearGradient id="blobGrad3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00B894"/><stop offset="100%" stop-color="#00BCD4"/></linearGradient></defs></svg>
-</div>
+      <!-- KPI strip -->
+      <div class="stx-kpis" id="issKpis" style="grid-template-columns:repeat(5,1fr)"></div>
 
-<!-- SVG Defs for logo gradient -->
-<svg width="0" height="0" aria-hidden="true">
-  <defs>
-    <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#00BCD4"/><stop offset="100%" stop-color="#4DD0E1"/>
-    </linearGradient>
-  </defs>
-</svg>
+      <!-- charts row -->
+      <div class="stx-grid g-3" style="margin-bottom:18px">
+        <div class="stx-card soft iss-chartcard">
+          <div class="stx-card-h"><h3>Exposure by Sector</h3><span class="stx-prov-badge ai">AI</span></div>
+          <div id="chSectorBar"></div>
+        </div>
+        <div class="stx-card soft iss-chartcard">
+          <div class="stx-card-h"><h3>IRS Distribution</h3><span class="tag">issuers per band</span></div>
+          <div id="chIrsBar"></div>
+        </div>
+        <div class="stx-card soft iss-chartcard">
+          <div class="stx-card-h"><h3>Sector Allocation</h3><span class="stx-prov-badge ai">AI</span></div>
+          <div id="chDonut" style="display:flex;justify-content:center;margin-top:6px"></div>
+          <div id="chDonutLegend"></div>
+        </div>
+      </div>
 
-<!-- ============================================================
-     NAVIGATION
-     ============================================================ -->
-<nav class="dash-nav" aria-label="Main navigation">
-  <div class="dash-nav-inner">
-    <a href="index.html" class="nav-logo" aria-label="Strata home">
-      <svg width="36" height="36" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <polygon points="10,9 16,9 19,13 16,17 10,17 7,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
-        <polygon points="16,9 22,9 25,13 22,17 16,17 13,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
-        <polygon points="16,7 20.5,13 16,19 11.5,13" fill="var(--logo-diamond, var(--gold, #F0B90B))"/><circle cx="16" cy="12.5" r="1" fill="white" opacity="0.85"/>
-      </svg>
-      <span class="nav-logo-text">Cover<span class="accent">Fi</span></span>
-    </a>
+      <!-- directory table -->
+      <div class="stx-card">
+        <div class="stx-card-h"><h3>Issuer Directory</h3><span class="stx-prov-badge replay" id="dirProv">replay</span>
+          <span class="tag" id="dirCount"></span></div>
 
-    <div class="dash-nav-links">
-      <a href="dashboard.html" class="dash-nav-link">Dashboard</a>
-      <a href="issuers.html" class="dash-nav-link active">Issuers</a>
-      <a href="pool.html" class="dash-nav-link">Pool</a>
-      <a href="coverage.html" class="dash-nav-link">Coverage</a>
-      <a href="subrogation.html" class="dash-nav-link">Subrogation</a>
-      <a href="stats.html" class="dash-nav-link">Stats</a>
-    </div>
+        <div class="stx-filters">
+          <input type="text" id="fSearch" placeholder="Search issuer or sector…"/>
+          <select id="fSort">
+            <option value="irs">Sort: IRS ▼</option>
+            <option value="premium">Sort: Premium ▼</option>
+            <option value="exposure">Sort: Exposure ▼</option>
+            <option value="delta7d">Sort: 7d Δ ▼</option>
+            <option value="bond">Sort: Bond ▼</option>
+          </select>
+          <select id="fSector"><option value="">All sectors</option></select>
+          <select id="fStatus">
+            <option value="">All status</option>
+            <option value="ok">Healthy (≥600)</option>
+            <option value="warn">Watch (300–599)</option>
+            <option value="alarm">Distress (&lt;300)</option>
+          </select>
+        </div>
 
-    <div class="nav-actions">
-      <div class="badge-testnet"><span class="dot"></span> Mantle Testnet</div>
-      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
-        <svg class="icon-sun" width="18" aria-hidden="true" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        <svg class="icon-moon" width="18" aria-hidden="true" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-      <button class="btn-connect" id="btnConnect" onclick="handleWalletClick()" aria-label="Connect wallet">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg>
-        Connect Wallet
-      </button>
-    </div>
+        <div style="overflow-x:auto">
+          <table class="stx-table" id="dirTable">
+            <thead><tr>
+              <th data-k="label">Issuer <span class="ar"></span></th>
+              <th data-k="irs">IRS <span class="ar"></span></th>
+              <th data-k="pd">PD <span class="ar"></span></th>
+              <th data-k="premium">Premium <span class="ar"></span></th>
+              <th data-k="bond">Bond <span class="ar"></span></th>
+              <th data-k="delta7d">7d Δ <span class="ar"></span></th>
+              <th>Status</th>
+              <th>Trend</th>
+            </tr></thead>
+            <tbody id="dirBody"></tbody>
+          </table>
+        </div>
+        <div class="stx-pager" id="dirPager"></div>
+      </div>
+
+      <div class="stx-foot">Strata Protocol · Issuer directory · IRS scores are AI-computed; USDC is the SVB replay (badged). Click a row for the full credit profile.</div>
+    </main>
   </div>
-</nav>
 
-<!-- ============================================================
-     MAIN CONTENT
-     ============================================================ -->
-<main class="dash-main">
-  <div class="dash-container">
-
-    <!-- Page Header -->
-    <div class="page-header">
-      <div>
-        <h1>Browse <span class="accent">Issuers</span></h1>
-        <p class="page-subtitle">Compare registered RWA issuers, their IRS credit scores, and buy coverage protection.</p>
+  <!-- IRS breakdown modal -->
+  <div class="iss-bd" id="issBd" role="dialog" aria-modal="true">
+    <div class="iss-modal">
+      <div class="iss-modal-h">
+        <span class="stx-ava iss-ava-txt" id="mAva"></span>
+        <h3 id="mName">Issuer</h3>
+        <button class="iss-modal-close" id="mClose">×</button>
       </div>
-    </div>
-
-    <!-- Metrics Bar -->
-    <div class="metrics-bar">
-      <div class="metric-card">
-        <div class="metric-icon metric-icon-purple">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <div class="iss-modal-b">
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <div class="stx-kpi" style="flex:1;min-width:90px"><div class="k">IRS</div><div class="v stx-score" id="mIrs">—</div></div>
+          <div class="stx-kpi" style="flex:1;min-width:90px"><div class="k">PD (1y)</div><div class="v" id="mPd">—</div></div>
+          <div class="stx-kpi" style="flex:1;min-width:90px"><div class="k">Premium</div><div class="v" id="mPrem">—</div></div>
         </div>
-        <div>
-          <div class="metric-label">Registered Issuers</div>
-          <div class="metric-value" id="metricTotalIssuers">3</div>
+        <div style="font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;margin-bottom:10px">Score dimensions</div>
+        <div id="mDims"></div>
+        <div style="margin-top:14px;padding:11px 13px;background:var(--surface2);border-radius:var(--radius-sm);font-size:.8rem;color:var(--text2)">
+          <b style="color:var(--text)">Premium</b> = MAX_BPS − (IRS ÷ 1000 × range). Lower credit risk → lower premium. First-loss <b id="mBond" style="color:var(--text)">—</b> issuer bond absorbs the initial shortfall before the pool.
         </div>
       </div>
-      <div class="metric-card">
-        <div class="metric-icon metric-icon-blue">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-        </div>
-        <div>
-          <div class="metric-label">Avg IRS Score</div>
-          <div class="metric-value" id="metricAvgIRS">--</div>
-        </div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-icon metric-icon-orange">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        </div>
-        <div>
-          <div class="metric-label">Total Coverage Available</div>
-          <div class="metric-value" id="metricTotalCoverage">--</div>
-        </div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-icon metric-icon-green">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-        </div>
-        <div>
-          <div class="metric-label">Lowest Premium</div>
-          <div class="metric-value" id="metricLowestPremium">--</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="filters-bar">
-      <div class="search-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" class="search-input" id="searchInput" placeholder="Search issuers..." oninput="applyFilters()">
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Sort:</span>
-        <select class="filter-select" id="sortSelect" onchange="applyFilters()">
-          <option value="irs-desc">IRS Score (High to Low)</option>
-          <option value="irs-asc">IRS Score (Low to High)</option>
-          <option value="premium-asc">Premium (Low to High)</option>
-          <option value="premium-desc">Premium (High to Low)</option>
-          <option value="status">Status</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Status:</span>
-        <select class="filter-select" id="statusFilter" onchange="applyFilters()">
-          <option value="all">All</option>
-          <option value="active">Active Only</option>
-          <option value="observing">Observing</option>
-          <option value="defaulted">Defaulted</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Sector:</span>
-        <select class="filter-select" id="sectorFilter" onchange="applyFilters()">
-          <option value="all">All Sectors</option>
-          <option value="Real Estate">Real Estate</option>
-          <option value="Trade Finance">Trade Finance</option>
-          <option value="Infrastructure">Infrastructure</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Issuer Cards Grid -->
-    <div class="issuer-grid" id="issuerGrid">
-      <!-- Cards rendered by JS -->
-    </div>
-
-  </div>
-</main>
-
-<!-- ============================================================
-     DETAIL MODAL
-     ============================================================ -->
-<div class="modal-overlay" id="detailModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 id="modalTitle">
-        <span class="issuer-avatar" id="modalAvatar" style="width:40px;height:40px;font-size:0.9rem;">AR</span>
-        <span id="modalName">Issuer Name</span>
-      </h2>
-      <button class="modal-close" onclick="closeModal()" aria-label="Close">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="modal-body">
-
-      <!-- IRS Breakdown -->
-      <div class="irs-breakdown">
-        <h3>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          IRS Score Breakdown
-        </h3>
-        <div id="modalIRSBreakdown">
-          <!-- dimension rows rendered by JS -->
-        </div>
-      </div>
-
-      <!-- Premium Formula -->
-      <div class="modal-section">
-        <h3>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-          Premium Calculation
-        </h3>
-        <div class="detail-grid" id="modalPremium">
-          <!-- rendered by JS -->
-        </div>
-      </div>
-
-      <!-- Bond Details -->
-      <div class="modal-section">
-        <h3>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Bond Details
-        </h3>
-        <div class="detail-grid" id="modalBond">
-          <!-- rendered by JS -->
-        </div>
-      </div>
-
-      <!-- Registration Info -->
-      <div class="modal-section">
-        <h3>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-pool)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Registration Info
-        </h3>
-        <div class="detail-grid" id="modalRegistration">
-          <!-- rendered by JS -->
-        </div>
-      </div>
-
-      <!-- Contract Link -->
-      <div style="text-align:center; padding-top:0.5rem;">
-        <a class="btn-bscscan" id="modalBscscan" href="#" target="_blank" rel="noopener noreferrer">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          View on Explorer
-        </a>
+      <div class="iss-modal-foot">
+        <a class="stx-btn ai" id="mProfile" style="flex:1;justify-content:center">Open full profile →</a>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ============================================================
-     JAVASCRIPT
-     ============================================================ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-<script src="contract-abis.js"></script>
-<script>
-// ---- Theme ----
-function getTheme() { return localStorage.getItem('coverfi-theme') || 'light'; }
-function setTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('coverfi-theme', theme);
-}
-function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
-(function() { setTheme(getTheme()); })();
+  <script src="strata-config.js"></script>
+  <script src="strata-scoring.js"></script>
+  <script src="strata-data.js"></script>
+  <script src="strata-charts.js"></script>
+  <script src="strata-shell.js"></script>
+  <script>
+  (function(){
+    var D = window.StrataData, C = window.StrataCharts;
+    var $ = function(id){ return document.getElementById(id); };
+    var issuers = D.getIssuers();
+    var pal = C.palette();
 
-// ---- Constants ----
-var BSC_TESTNET_RPC = 'https://rpc.sepolia.mantle.xyz';
-var BSC_TESTNET_CHAIN_ID = '0x85';
-var BSCSCAN_BASE = 'https://testnet-explorer.hsk.xyz/address/';
+    function band(irs){ return irs>=600?'ok':(irs>=300?'warn':'alarm'); }
+    function scoreCls(v){ return 's-'+(v>=600?'ok':(v>=300?'warn':'bad')); }
+    function symbol(label){ return (label.split('·')[0]||label).trim(); }
+    function mono(label){ return symbol(label).slice(0,2).toUpperCase(); }
 
-var CONTRACT_ADDRESSES = {
-  IssuerRegistry: '0xc07859b25FC869F0a81fae86b9B5bEa868D08A9f',
-  IRSOracle:      '0x8D4C37f45883aAEEd20d2CC1020e6Ab193D3A50C',
-  IssuerBond:     '0x1Ca7B678BDf1deCe9964c5178C01AB9312F2664D',
-  MockERC3643Token: '0xa7C664459C66325Cd9dB15245DD901f1623c9655'
-};
-
-// ---- Mock Issuers (used when no wallet or contracts fail) ----
-var MOCK_ISSUERS = [
-  {
-    name: 'AsiaReit Capital',
-    sector: 'Real Estate',
-    tokenAddress: '0x65A3Ae0e4787856CfcDdE505015c5CC3d5560212',
-    avatarColor: '#E8760A',
-    avatarInitials: 'AR',
-    irsScore: 0,
-    maxScore: 1000,
-    status: 3, // Defaulted
-    bondAmount: '5.0',
-    bondVerified: true,
-    attestationCount: 3,
-    requiredAttestations: 3,
-    premiumBPS: 324,
-    coverageCap: 0,
-    currentCoverage: 0,
-    fastTrack: true,
-    issuerEOA: '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B',
-    registrationBlock: 47123456,
-    components: {
-      navPunctuality: 0,
-      attestationAccuracy: 0,
-      repaymentHistory: 0,
-      collateralHealth: 0,
-      governanceActivity: 0
-    }
-  },
-  {
-    name: 'TradeFlow Finance',
-    sector: 'Trade Finance',
-    tokenAddress: '0x1234567890abcdef1234567890abcdef12345678',
-    avatarColor: '#3B8BFF',
-    avatarInitials: 'TF',
-    irsScore: 650,
-    maxScore: 1000,
-    status: 2, // Active
-    bondAmount: '3.5',
-    bondVerified: true,
-    attestationCount: 3,
-    requiredAttestations: 3,
-    premiumBPS: 412,
-    coverageCap: 60,
-    currentCoverage: 0,
-    fastTrack: false,
-    issuerEOA: '0xdD870fA1b7C4700F2BD7f44238821C26f7392148',
-    registrationBlock: 47089100,
-    components: {
-      navPunctuality: 150,
-      attestationAccuracy: 140,
-      repaymentHistory: 130,
-      collateralHealth: 120,
-      governanceActivity: 110
-    }
-  },
-  {
-    name: 'UrbanBridge REIT',
-    sector: 'Real Estate',
-    tokenAddress: '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd',
-    avatarColor: '#00B894',
-    avatarInitials: 'UB',
-    irsScore: 580,
-    maxScore: 1000,
-    status: 1, // Observing
-    bondAmount: '2.0',
-    bondVerified: true,
-    attestationCount: 2,
-    requiredAttestations: 3,
-    premiumBPS: 510,
-    coverageCap: 40,
-    currentCoverage: 0,
-    fastTrack: false,
-    issuerEOA: '0x583031D1113aD414F02576BD6afaBfb302140225',
-    registrationBlock: 47200000,
-    components: {
-      navPunctuality: 130,
-      attestationAccuracy: 120,
-      repaymentHistory: 110,
-      collateralHealth: 120,
-      governanceActivity: 100
-    }
-  }
-];
-
-var STATUS_MAP = { 0: 'Registered', 1: 'Observing', 2: 'Active', 3: 'Defaulted', 4: 'WindingDown' };
-var STATUS_CLASS = { 0: 'status-observing', 1: 'status-observing', 2: 'status-active', 3: 'status-defaulted', 4: 'status-winding' };
-var STATUS_DOT = { 0: 'dot-gold', 1: 'dot-gold', 2: 'dot-green', 3: 'dot-red', 4: 'dot-gold' };
-
-// ---- State ----
-var issuersData = [];
-var walletAddress = null;
-var provider = null;
-var signer = null;
-
-// ---- Wallet Connection ----
-async function handleWalletClick() {
-  if (walletAddress) {
-    disconnectWallet();
-    return;
-  }
-  if (typeof window.ethereum === 'undefined') {
-    alert('Please install MetaMask to connect your wallet.');
-    return;
-  }
-  try {
-    var accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    if (!accounts || !accounts.length) return;
-    walletAddress = accounts[0];
-
-    // Ensure Mantle Testnet
-    try {
-      await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BSC_TESTNET_CHAIN_ID }] });
-    } catch (switchError) {
-      if (switchError.code === 4902) {
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [{ chainId: BSC_TESTNET_CHAIN_ID, chainName: 'Mantle Testnet', nativeCurrency: { name: 'MNT', symbol: 'MNT', decimals: 18 }, rpcUrls: [BSC_TESTNET_RPC], blockExplorerUrls: ['https://testnet-explorer.hsk.xyz'] }]
-        });
-      }
+    // ---------- KPIs ----------
+    function renderKpis(){
+      var n=issuers.length;
+      var avgIrs=Math.round(issuers.reduce(function(a,r){return a+r.irs;},0)/n);
+      var avgDelta=(issuers.reduce(function(a,r){return a+r.delta7d;},0)/n);
+      var totalExp=issuers.reduce(function(a,r){return a+r.exposure;},0);
+      var avgPrem=Math.round(issuers.reduce(function(a,r){return a+r.premium;},0)/n);
+      var watch=issuers.filter(function(r){return r.irs<600;}).length;
+      var dCls=avgDelta>=0?'up':'down';
+      var tiles=[
+        {k:'Registered', v:n, acc:'var(--c1)', d:'on the book'},
+        {k:'Avg IRS', v:avgIrs, acc: avgIrs>=600?'var(--c2)':'var(--c4)', cls:scoreCls(avgIrs), delta:(avgDelta>=0?'+':'')+avgDelta.toFixed(1)+' /7d', dCls:dCls},
+        {k:'Total exposure', v:D.fmtUSD(totalExp), acc:'var(--c2)', d:'across book'},
+        {k:'Avg premium', v:avgPrem+' bps', acc:'var(--c4)', d:'risk-priced'},
+        {k:'Watchlist', v:watch, acc:'var(--c5)', d:'IRS < 600'}
+      ];
+      $('issKpis').innerHTML=tiles.map(function(t){
+        return '<div class="stx-kpi soft" style="--accent:'+t.acc+'"><div class="k">'+t.k+'</div>'+
+          '<div class="v '+(t.cls?'stx-score '+t.cls:'')+'">'+t.v+'</div>'+
+          (t.delta?'<div class="delta '+t.dCls+'">'+t.delta+'</div>':'<div class="d">'+t.d+'</div>')+'</div>';
+      }).join('');
     }
 
-    provider = new ethers.BrowserProvider(window.ethereum);
-    signer = await provider.getSigner();
-
-    localStorage.setItem('coverfi-wallet-connected', 'true');
-    var btn = document.getElementById('btnConnect');
-    var short = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
-    btn.textContent = short;
-    btn.classList.add('connected');
-
-    await loadIssuersFromChain();
-  } catch (err) {
-    console.error('Wallet connection error:', err);
-  }
-}
-
-function disconnectWallet() {
-  walletAddress = null;
-  provider = null;
-  signer = null;
-  localStorage.removeItem('coverfi-wallet-connected');
-  var btn = document.getElementById('btnConnect');
-  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg> Connect Wallet';
-  btn.classList.remove('connected');
-  loadMockData();
-}
-
-// ---- Contract Loading ----
-async function loadIssuersFromChain() {
-  try {
-    var readProvider = provider || new ethers.JsonRpcProvider(BSC_TESTNET_RPC);
-    var registry = new ethers.Contract(CONTRACT_ADDRESSES.IssuerRegistry, COVERFI_ABIS.IssuerRegistry, readProvider);
-    var irsOracle = new ethers.Contract(CONTRACT_ADDRESSES.IRSOracle, COVERFI_ABIS.IRSOracle, readProvider);
-    var issuerBond = new ethers.Contract(CONTRACT_ADDRESSES.IssuerBond, COVERFI_ABIS.IssuerBond, readProvider);
-
-    // Try to load the known token address first
-    var tokenAddr = CONTRACT_ADDRESSES.MockERC3643Token;
-    var profile = await registry.getProfile(tokenAddr);
-
-    if (profile && profile.tokenAddress !== '0x0000000000000000000000000000000000000000') {
-      var score = await irsOracle.getScore(tokenAddr);
-      var components = await irsOracle.getComponents(tokenAddr);
-      var premiumBPS = await irsOracle.getPremiumRateBPS(tokenAddr);
-      var bondRecord = await issuerBond.bonds(tokenAddr);
-
-      // Build on-chain issuer
-      var onChainIssuer = {
-        name: 'AsiaReit Capital',
-        sector: 'Real Estate',
-        tokenAddress: tokenAddr,
-        avatarColor: '#E8760A',
-        avatarInitials: 'AR',
-        irsScore: Number(score),
-        maxScore: 1000,
-        status: Number(profile.status),
-        bondAmount: ethers.formatUnits(bondRecord.bondAmount || 0, 18),
-        bondVerified: !bondRecord.liquidated && !bondRecord.released,
-        attestationCount: Number(profile.attestationCount),
-        requiredAttestations: profile.fastTrack ? 3 : 5,
-        premiumBPS: Number(premiumBPS),
-        coverageCap: 50000,
-        currentCoverage: 15000,
-        fastTrack: profile.fastTrack,
-        issuerEOA: profile.issuerEOA,
-        registrationBlock: Number(profile.registrationBlock),
-        components: {
-          navPunctuality: Number(components.navPunctuality),
-          attestationAccuracy: Number(components.attestationAccuracy),
-          repaymentHistory: Number(components.repaymentHistory),
-          collateralHealth: Number(components.collateralHealth),
-          governanceActivity: Number(components.governanceActivity)
-        }
-      };
-
-      // Merge on-chain data with mock for the rest
-      issuersData = [onChainIssuer, MOCK_ISSUERS[1], MOCK_ISSUERS[2]];
-    } else {
-      loadMockData();
-      return;
+    // ---------- charts ----------
+    function renderCharts(){
+      var sd=D.getSectorDistribution();
+      // sector bar (short labels)
+      var barItems=sd.slices.map(function(s,i){
+        return { label: symbol(s.sector.split('/')[0]).slice(0,8), value:s.exposure, color:pal[i%pal.length] };
+      });
+      $('chSectorBar').innerHTML=C.bar(barItems,{w:380,h:200,valueFmt:D.fmtUSD,pad:{t:18,r:8,b:38,l:46}});
+      // IRS distribution
+      var ird=D.getIrsDistribution();
+      var bandHex={bad:pal[4],warn:pal[3],ok:pal[0],great:pal[1]};
+      var irsItems=ird.bands.map(function(b){ return {label:b.label,value:b.count,color:bandHex[b.key]}; });
+      $('chIrsBar').innerHTML=C.bar(irsItems,{w:380,h:200,valueFmt:function(v){return v;},pad:{t:18,r:8,b:38,l:30},yMax:Math.max.apply(null,irsItems.map(function(i){return i.value;}))+1});
+      // donut
+      var donutSlices=sd.slices.map(function(s,i){ return {label:symbol(s.sector.split('/')[0]),value:s.exposure,color:pal[i%pal.length]}; });
+      $('chDonut').innerHTML=C.donut(donutSlices,{size:188,thickness:24,centerValue:D.fmtUSD(sd.total),centerLabel:'Total exposure'});
+      $('chDonutLegend').innerHTML=C.legend(sd.slices.map(function(s,i){ return {label:symbol(s.sector.split('/')[0]),color:pal[i%pal.length],value:s.pct.toFixed(0)+'%'}; }));
     }
-  } catch (err) {
-    console.warn('Chain read failed, using mock data:', err);
-    loadMockData();
-    return;
-  }
-  updateMetrics();
-  applyFilters();
-}
 
-function loadMockData() {
-  issuersData = MOCK_ISSUERS.slice();
-  updateMetrics();
-  applyFilters();
-}
-
-// ---- Metrics ----
-function updateMetrics() {
-  document.getElementById('metricTotalIssuers').textContent = issuersData.length;
-
-  var totalIRS = 0;
-  var lowestPremium = Infinity;
-  var totalCovCap = 0;
-  for (var i = 0; i < issuersData.length; i++) {
-    totalIRS += issuersData[i].irsScore;
-    if (issuersData[i].premiumBPS < lowestPremium) lowestPremium = issuersData[i].premiumBPS;
-    totalCovCap += issuersData[i].coverageCap;
-  }
-  var avgIRS = Math.round(totalIRS / issuersData.length);
-  document.getElementById('metricAvgIRS').textContent = avgIRS + ' / 1000';
-  document.getElementById('metricTotalCoverage').textContent = '$' + totalCovCap.toLocaleString();
-  document.getElementById('metricLowestPremium').textContent = (lowestPremium / 100).toFixed(2) + '%';
-}
-
-// ---- Filtering & Sorting ----
-function applyFilters() {
-  var searchVal = document.getElementById('searchInput').value.toLowerCase();
-  var sortVal = document.getElementById('sortSelect').value;
-  var statusVal = document.getElementById('statusFilter').value;
-  var sectorVal = document.getElementById('sectorFilter').value;
-
-  var filtered = issuersData.filter(function(issuer) {
-    if (searchVal && issuer.name.toLowerCase().indexOf(searchVal) === -1 && issuer.sector.toLowerCase().indexOf(searchVal) === -1) return false;
-    if (statusVal === 'active' && issuer.status !== 2) return false;
-    if (statusVal === 'observing' && issuer.status !== 1) return false;
-    if (statusVal === 'defaulted' && issuer.status !== 3) return false;
-    if (sectorVal !== 'all' && issuer.sector !== sectorVal) return false;
-    return true;
-  });
-
-  filtered.sort(function(a, b) {
-    switch (sortVal) {
-      case 'irs-desc': return b.irsScore - a.irsScore;
-      case 'irs-asc':  return a.irsScore - b.irsScore;
-      case 'premium-asc':  return a.premiumBPS - b.premiumBPS;
-      case 'premium-desc': return b.premiumBPS - a.premiumBPS;
-      case 'status': return a.status - b.status;
-      default: return 0;
+    // ---------- table (filter + sort + paginate) ----------
+    var sortK='irs', sortDir=-1, page=1, pageSize=5;
+    function populateSectorFilter(){
+      var secs={}; issuers.forEach(function(r){ secs[r.sector]=1; });
+      $('fSector').innerHTML='<option value="">All sectors</option>'+Object.keys(secs).map(function(s){return '<option value="'+s+'">'+s+'</option>';}).join('');
     }
-  });
-
-  renderGrid(filtered);
-}
-
-// ---- Card Rendering ----
-function renderGrid(issuers) {
-  var grid = document.getElementById('issuerGrid');
-  if (!issuers.length) {
-    grid.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>No issuers match your filters.</p></div>';
-    return;
-  }
-
-  var html = '';
-  for (var i = 0; i < issuers.length; i++) {
-    var iss = issuers[i];
-    var pct = Math.round((iss.irsScore / iss.maxScore) * 100);
-    var covPct = iss.coverageCap > 0 ? Math.round((iss.currentCoverage / iss.coverageCap) * 100) : 0;
-    var premiumPct = (iss.premiumBPS / 100).toFixed(2);
-    var shortAddr = iss.tokenAddress.slice(0, 6) + '...' + iss.tokenAddress.slice(-4);
-    var statusLabel = STATUS_MAP[iss.status] || 'Unknown';
-    var statusCls = STATUS_CLASS[iss.status] || 'status-observing';
-    var dotCls = STATUS_DOT[iss.status] || 'dot-gold';
-    var bondCheck = iss.bondVerified ? ' &#10003;' : '';
-    var attestLabel = iss.attestationCount + '/' + iss.requiredAttestations + ' confirmed';
-
-    html += '<div class="issuer-card">';
-    html += '  <div class="issuer-card-header">';
-    html += '    <div class="issuer-avatar" style="background:' + iss.avatarColor + ';">' + iss.avatarInitials + '</div>';
-    html += '    <div class="issuer-header-info">';
-    html += '      <div class="issuer-header-name">' + iss.name + '</div>';
-    html += '      <div class="issuer-header-meta">' + iss.sector + ' &middot; <code>' + shortAddr + '</code></div>';
-    html += '    </div>';
-    html += '  </div>';
-
-    html += '  <div class="issuer-card-body">';
-
-    // IRS Score
-    html += '    <div class="irs-section">';
-    html += '      <div class="irs-row">';
-    html += '        <span class="irs-label">IRS Score</span>';
-    html += '        <span><span class="irs-score">' + iss.irsScore + '</span> <span class="irs-pct">' + pct + '%</span></span>';
-    html += '      </div>';
-    html += '      <div class="irs-bar-wrap"><div class="irs-bar" style="width:' + pct + '%;"></div></div>';
-    html += '    </div>';
-
-    // Info grid
-    html += '    <div class="info-grid">';
-    html += '      <div class="info-item"><span class="info-item-label">Status</span><span class="status-badge ' + statusCls + '"><span class="dot ' + dotCls + '"></span> ' + statusLabel + '</span></div>';
-    html += '      <div class="info-item"><span class="info-item-label">Bond</span><span class="info-item-value">' + parseFloat(iss.bondAmount).toFixed(1) + ' USDT' + bondCheck + '</span></div>';
-    html += '      <div class="info-item"><span class="info-item-label">Attestors</span><span class="info-item-value">' + attestLabel + '</span></div>';
-    html += '      <div class="info-item"><span class="info-item-label">Track</span><span class="info-item-value">' + (iss.fastTrack ? 'Fast' : 'Standard') + '</span></div>';
-    html += '    </div>';
-
-    // Coverage progress
-    html += '    <div class="coverage-section">';
-    html += '      <div class="coverage-header">';
-    html += '        <span class="coverage-header-label">Coverage: $' + iss.currentCoverage.toLocaleString() + ' / $' + iss.coverageCap.toLocaleString() + '</span>';
-    html += '        <span class="coverage-header-pct">' + covPct + '%</span>';
-    html += '      </div>';
-    html += '      <div class="coverage-bar-wrap"><div class="coverage-bar" style="width:' + covPct + '%;"></div></div>';
-    html += '    </div>';
-
-    // Premium
-    html += '    <div class="premium-row">';
-    html += '      <span class="premium-label">Premium Rate</span>';
-    html += '      <span><span class="premium-value">' + premiumPct + '%</span><span class="premium-bps">(' + iss.premiumBPS + ' bps)</span></span>';
-    html += '    </div>';
-
-    html += '  </div>';
-
-    // Footer buttons
-    html += '  <div class="issuer-card-footer">';
-    html += '    <button class="btn-coverage" onclick="getCoverage(\'' + iss.tokenAddress + '\')">Get Coverage</button>';
-    html += '    <button class="btn-details" onclick="openDetail(' + i + ')">View Details</button>';
-    html += '  </div>';
-
-    html += '</div>';
-  }
-  grid.innerHTML = html;
-}
-
-// ---- Detail Modal ----
-var currentFilteredIssuers = [];
-
-function openDetail(filteredIndex) {
-  // Rebuild filtered list to get correct issuer
-  var searchVal = document.getElementById('searchInput').value.toLowerCase();
-  var sortVal = document.getElementById('sortSelect').value;
-  var statusVal = document.getElementById('statusFilter').value;
-  var sectorVal = document.getElementById('sectorFilter').value;
-
-  var filtered = issuersData.filter(function(issuer) {
-    if (searchVal && issuer.name.toLowerCase().indexOf(searchVal) === -1 && issuer.sector.toLowerCase().indexOf(searchVal) === -1) return false;
-    if (statusVal === 'active' && issuer.status !== 2) return false;
-    if (statusVal === 'observing' && issuer.status !== 1) return false;
-    if (statusVal === 'defaulted' && issuer.status !== 3) return false;
-    if (sectorVal !== 'all' && issuer.sector !== sectorVal) return false;
-    return true;
-  });
-  filtered.sort(function(a, b) {
-    switch (sortVal) {
-      case 'irs-desc': return b.irsScore - a.irsScore;
-      case 'irs-asc':  return a.irsScore - b.irsScore;
-      case 'premium-asc':  return a.premiumBPS - b.premiumBPS;
-      case 'premium-desc': return b.premiumBPS - a.premiumBPS;
-      case 'status': return a.status - b.status;
-      default: return 0;
+    function filtered(){
+      var q=($('fSearch').value||'').toLowerCase(), sec=$('fSector').value, st=$('fStatus').value;
+      var rows=issuers.filter(function(r){
+        if(q && (r.label+' '+r.sector).toLowerCase().indexOf(q)<0) return false;
+        if(sec && r.sector!==sec) return false;
+        if(st && band(r.irs)!==st) return false;
+        return true;
+      });
+      rows.sort(function(a,b){ var x=a[sortK],y=b[sortK];
+        if(typeof x==='string') return sortDir*x.localeCompare(y); return sortDir*(x-y); });
+      return rows;
     }
-  });
-
-  var iss = filtered[filteredIndex];
-  if (!iss) return;
-
-  // Header
-  document.getElementById('modalAvatar').style.background = iss.avatarColor;
-  document.getElementById('modalAvatar').textContent = iss.avatarInitials;
-  document.getElementById('modalName').textContent = iss.name;
-
-  // IRS Breakdown
-  var dims = [
-    { label: 'NAV Punctuality', value: iss.components.navPunctuality, max: 200 },
-    { label: 'Attestation Accuracy', value: iss.components.attestationAccuracy, max: 200 },
-    { label: 'Repayment History', value: iss.components.repaymentHistory, max: 200 },
-    { label: 'Collateral Health', value: iss.components.collateralHealth, max: 200 },
-    { label: 'Governance Activity', value: iss.components.governanceActivity, max: 200 }
-  ];
-  var brkHtml = '';
-  for (var d = 0; d < dims.length; d++) {
-    var dimPct = Math.round((dims[d].value / dims[d].max) * 100);
-    brkHtml += '<div class="irs-dim-row">';
-    brkHtml += '  <span class="irs-dim-label">' + dims[d].label + '</span>';
-    brkHtml += '  <div class="irs-dim-bar-wrap"><div class="irs-dim-bar" style="width:' + dimPct + '%;"></div></div>';
-    brkHtml += '  <span class="irs-dim-value">' + dims[d].value + '</span>';
-    brkHtml += '</div>';
-  }
-  brkHtml += '<div class="irs-dim-row" style="border-top:1px solid var(--border-color);padding-top:0.5rem;margin-top:0.25rem;">';
-  brkHtml += '  <span class="irs-dim-label" style="font-weight:700;color:var(--text-primary);">Total Score</span>';
-  brkHtml += '  <div class="irs-dim-bar-wrap"><div class="irs-dim-bar" style="width:' + Math.round(iss.irsScore / 10) + '%;"></div></div>';
-  brkHtml += '  <span class="irs-dim-value" style="color:var(--accent-purple);font-size:0.9375rem;">' + iss.irsScore + '</span>';
-  brkHtml += '</div>';
-  document.getElementById('modalIRSBreakdown').innerHTML = brkHtml;
-
-  // Premium
-  var premiumPct = (iss.premiumBPS / 100).toFixed(2);
-  var premHtml = '';
-  premHtml += '<div class="detail-item"><div class="detail-item-label">Premium Rate</div><div class="detail-item-value">' + premiumPct + '%</div></div>';
-  premHtml += '<div class="detail-item"><div class="detail-item-label">Rate (BPS)</div><div class="detail-item-value">' + iss.premiumBPS + ' bps</div></div>';
-  premHtml += '<div class="detail-item-full"><div class="detail-item-label">Formula</div><div class="detail-item-value" style="font-size:0.75rem;">premium = MAX_BPS - ((score * (MAX_BPS - MIN_BPS)) / MAX_SCORE)</div></div>';
-  document.getElementById('modalPremium').innerHTML = premHtml;
-
-  // Bond
-  var bondHtml = '';
-  bondHtml += '<div class="detail-item"><div class="detail-item-label">Bond Amount</div><div class="detail-item-value">' + parseFloat(iss.bondAmount).toFixed(2) + ' USDT</div></div>';
-  bondHtml += '<div class="detail-item"><div class="detail-item-label">Status</div><div class="detail-item-value" style="color:' + (iss.bondVerified ? 'var(--color-success)' : 'var(--color-danger)') + ';">' + (iss.bondVerified ? 'Verified' : 'Unverified') + '</div></div>';
-  bondHtml += '<div class="detail-item"><div class="detail-item-label">Coverage Cap</div><div class="detail-item-value">$' + iss.coverageCap.toLocaleString() + '</div></div>';
-  bondHtml += '<div class="detail-item"><div class="detail-item-label">Current Usage</div><div class="detail-item-value">$' + iss.currentCoverage.toLocaleString() + '</div></div>';
-  document.getElementById('modalBond').innerHTML = bondHtml;
-
-  // Registration
-  var regHtml = '';
-  regHtml += '<div class="detail-item"><div class="detail-item-label">Token Address</div><div class="detail-item-value" style="font-size:0.7rem;">' + iss.tokenAddress + '</div></div>';
-  regHtml += '<div class="detail-item"><div class="detail-item-label">Issuer EOA</div><div class="detail-item-value" style="font-size:0.7rem;">' + (iss.issuerEOA ? iss.issuerEOA.slice(0, 10) + '...' : 'N/A') + '</div></div>';
-  regHtml += '<div class="detail-item"><div class="detail-item-label">Reg Block</div><div class="detail-item-value">#' + iss.registrationBlock.toLocaleString() + '</div></div>';
-  regHtml += '<div class="detail-item"><div class="detail-item-label">Fast Track</div><div class="detail-item-value">' + (iss.fastTrack ? 'Yes' : 'No') + '</div></div>';
-  regHtml += '<div class="detail-item"><div class="detail-item-label">Attestations</div><div class="detail-item-value">' + iss.attestationCount + ' / ' + iss.requiredAttestations + '</div></div>';
-  regHtml += '<div class="detail-item"><div class="detail-item-label">Sector</div><div class="detail-item-value">' + iss.sector + '</div></div>';
-  document.getElementById('modalRegistration').innerHTML = regHtml;
-
-  // BscScan link
-  document.getElementById('modalBscscan').href = BSCSCAN_BASE + iss.tokenAddress;
-
-  // Show modal
-  document.getElementById('detailModal').classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-  document.getElementById('detailModal').classList.remove('show');
-  document.body.style.overflow = '';
-}
-
-// Close modal on overlay click
-document.getElementById('detailModal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-// Close modal on Escape
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeModal();
-});
-
-// ---- Get Coverage Action ----
-function getCoverage(tokenAddress) {
-  // Redirect to dashboard or open coverage flow
-  window.location.href = 'dashboard.html?coverage=' + encodeURIComponent(tokenAddress);
-}
-
-// ---- Wallet event listeners ----
-if (typeof window.ethereum !== 'undefined') {
-  window.ethereum.on('accountsChanged', function(accounts) {
-    if (!accounts.length) { disconnectWallet(); return; }
-    walletAddress = accounts[0];
-    var btn = document.getElementById('btnConnect');
-    btn.textContent = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
-    loadIssuersFromChain();
-  });
-  window.ethereum.on('chainChanged', function() {
-    window.location.reload();
-  });
-}
-
-// ---- Init ----
-loadMockData();
-
-// Auto-connect if previously connected
-(async function() {
-  if (localStorage.getItem('coverfi-wallet-connected') === 'true' && typeof window.ethereum !== 'undefined') {
-    try {
-      var accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts.length > 0) {
-        walletAddress = accounts[0];
-        provider = new ethers.BrowserProvider(window.ethereum);
-        signer = await provider.getSigner();
-        var btn = document.getElementById('btnConnect');
-        btn.textContent = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
-        btn.classList.add('connected');
-        await loadIssuersFromChain();
-      }
-    } catch(e) {
-      console.log('Auto-reconnect failed:', e.message);
+    function renderTable(){
+      var rows=filtered();
+      var pages=Math.max(1,Math.ceil(rows.length/pageSize));
+      if(page>pages) page=pages;
+      var slice=rows.slice((page-1)*pageSize, page*pageSize);
+      $('dirBody').innerHTML=slice.map(function(r){
+        var col=C.monogramColor(r.id);
+        var st=band(r.irs), stLabel={ok:'Healthy',warn:'Watch',alarm:'Distress'}[st];
+        return '<tr class="clickable" data-id="'+r.id+'">'+
+          '<td><div style="display:flex;align-items:center;gap:10px">'+
+            '<span class="stx-ava iss-ava-txt" style="background:'+col+'">'+mono(r.label)+'</span>'+
+            '<div><div style="font-weight:600">'+r.label+'</div><div class="hint" style="margin:0;font-size:.72rem">'+r.sector+'</div></div>'+
+          '</div></td>'+
+          '<td class="num stx-score '+scoreCls(r.irs)+'">'+r.irs+'</td>'+
+          '<td class="num">'+(r.pd/100).toFixed(1)+'%</td>'+
+          '<td class="num">'+r.premium+' bps</td>'+
+          '<td class="num">'+r.bond.toFixed(1)+'%</td>'+
+          '<td class="num" style="color:var(--'+(r.delta7d>=0?'green':'red')+')">'+(r.delta7d>=0?'+':'')+r.delta7d+'</td>'+
+          '<td><span class="stx-badge '+st+'">'+stLabel+'</span></td>'+
+          '<td>'+C.sparkline(r.spark)+'</td></tr>';
+      }).join('');
+      $('dirCount').textContent=rows.length+' issuer'+(rows.length===1?'':'s');
+      // header arrows
+      $('dirTable').querySelectorAll('thead th[data-k]').forEach(function(th){
+        var ar=th.querySelector('.ar'); ar.textContent= th.getAttribute('data-k')===sortK ? (sortDir<0?'▼':'▲') : '';
+      });
+      // pager
+      $('dirPager').innerHTML='<span class="pg-info">Page '+page+' of '+pages+'</span>'+
+        '<button '+(page<=1?'disabled':'')+' data-pg="prev">‹ Prev</button>'+
+        '<button '+(page>=pages?'disabled':'')+' data-pg="next">Next ›</button>';
     }
-  }
-})();
-</script>
+
+    // ---------- modal ----------
+    var DIMS=[
+      {key:'nav',label:'NAV punctuality',max:1000},
+      {key:'att',label:'Attestation accuracy',max:1000},
+      {key:'rep',label:'Repayment history',max:1000},
+      {key:'col',label:'Collateral health',max:12000},
+      {key:'act',label:'Governance activity',max:1000}
+    ];
+    function openModal(id){
+      var r=D.getIssuer(id), c=r.components, col=C.monogramColor(r.id);
+      $('mAva').textContent=mono(r.label); $('mAva').style.background=col;
+      $('mName').textContent=r.label;
+      var mi=$('mIrs'); mi.textContent=r.irs; mi.className='v stx-score '+scoreCls(r.irs);
+      $('mPd').textContent=(r.pd/100).toFixed(1)+'%';
+      $('mPrem').textContent=r.premium+' bps';
+      $('mBond').textContent=r.bond.toFixed(1)+'%';
+      $('mDims').innerHTML=DIMS.map(function(d,i){
+        var v=c[d.key]||0, pct=Math.min(100, v/d.max*100), hex=pal[i%pal.length];
+        return '<div class="iss-dim"><div class="iss-dim-h"><span class="dk">'+d.label+'</span>'+
+          '<span class="dv">'+Math.round(pct)+'%</span></div>'+
+          '<div class="iss-dim-track"><div class="iss-dim-fill" style="width:'+pct+'%;background:'+hex+'"></div></div></div>';
+      }).join('');
+      $('mProfile').href='issuer.html?id='+r.id;
+      $('issBd').classList.add('open');
+    }
+    function closeModal(){ $('issBd').classList.remove('open'); }
+
+    // ---------- wire ----------
+    $('dirTable').querySelectorAll('thead th[data-k]').forEach(function(th){
+      th.addEventListener('click',function(){ var k=th.getAttribute('data-k');
+        if(k===sortK) sortDir*=-1; else { sortK=k; sortDir=(k==='label'?1:-1); }
+        page=1; renderTable(); });
+    });
+    $('dirBody').addEventListener('click',function(e){
+      var tr=e.target.closest('tr[data-id]'); if(tr) openModal(tr.getAttribute('data-id'));
+    });
+    $('dirPager').addEventListener('click',function(e){
+      var b=e.target.closest('button[data-pg]'); if(!b) return;
+      page += (b.getAttribute('data-pg')==='next'?1:-1); renderTable();
+    });
+    ['fSearch','fSort','fSector','fStatus'].forEach(function(id){
+      $(id).addEventListener('input',function(){
+        if(id==='fSort'){ sortK=$('fSort').value; sortDir=-1; }
+        page=1; renderTable();
+      });
+    });
+    $('mClose').addEventListener('click',closeModal);
+    $('issBd').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+
+    // mode reaction
+    window.Strata && window.Strata.onMode && window.Strata.onMode(function(m){
+      $('dirProv').className='stx-prov-badge '+(m==='live'?'chain':'replay');
+      $('dirProv').textContent=(m==='live'?'on-chain':'replay');
+    });
+
+    // ---------- boot ----------
+    renderKpis(); renderCharts(); populateSectorFilter(); renderTable();
+  })();
+  </script>
 </body>
 </html>
