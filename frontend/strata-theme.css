@@ -423,6 +423,12 @@ body[data-mode="replay"] .stx-replay-banner{display:flex}
    REFERENCE-MATCH LAYER (OnlyGenius look) — shared KPI + card head.
    Rendered by strata-ui.js (window.StrataUI). Append-only.
    ============================================================ */
+/* Step 1 — deeper, more neutral "black" surface palette, scoped to APP
+   pages only (landing <body> has no data-page, so it is untouched). */
+body[data-page]{
+  --bg:#0A0A0C; --bg2:#101013; --surface:#16171B; --surface2:#1C1D22;
+  --elev:#232430; --border:#26272F; --border2:#33343E;
+}
 /* reference-style KPI stat card: icon + label → big value → % delta */
 .stx-kpi2{background:var(--surface);border:1px solid var(--border);border-radius:16px;
   padding:18px 20px;box-shadow:var(--elev2)}
