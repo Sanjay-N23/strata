@@ -130,38 +130,7 @@
       </div>
 
       <!-- KPI strip -->
-      <div class="stx-kpis" style="grid-template-columns:repeat(6,1fr);margin-bottom:20px">
-        <div class="stx-kpi">
-          <div class="k">Policy Rules</div>
-          <div class="v">6</div>
-          <div class="d">2 auto · 4 quorum</div>
-        </div>
-        <div class="stx-kpi">
-          <div class="k">Pending Approval</div>
-          <div class="v" style="color:var(--amber)">2</div>
-          <div class="d">awaiting 2-of-3</div>
-        </div>
-        <div class="stx-kpi">
-          <div class="k">Auto-cleared Today</div>
-          <div class="v">14</div>
-          <div class="d up">↑ 3 vs yesterday</div>
-        </div>
-        <div class="stx-kpi">
-          <div class="k">Quorum Signers</div>
-          <div class="v">2/3</div>
-          <div class="d">threshold met</div>
-        </div>
-        <div class="stx-kpi">
-          <div class="k">Avg Approval Time</div>
-          <div class="v" style="font-size:1.2rem">4.2 min</div>
-          <div class="d">last 7 epochs</div>
-        </div>
-        <div class="stx-kpi">
-          <div class="k">Audit Entries</div>
-          <div class="v">847</div>
-          <div class="d">since genesis</div>
-        </div>
-      </div>
+      <div class="stx-kpis" id="govKpis" style="grid-template-columns:repeat(6,1fr);margin-bottom:20px"></div>
 
       <!-- Routing mix (chart-v2 retrofit) -->
       <div class="stx-card soft" style="margin-bottom:18px;display:flex;align-items:center;gap:26px;flex-wrap:wrap">
@@ -492,6 +461,7 @@
   <script src="strata-shell.js"></script>
   <script src="strata-data.js"></script>
   <script src="strata-charts.js"></script>
+  <script src="strata-ui.js"></script>
   <script>
     /* governance interaction logic */
     var _simTarget = null; // which queue item the modal is for
@@ -578,6 +548,20 @@
         else { b.className = 'stx-prov-badge replay'; b.textContent = 'replay'; }
       });
     });
+
+    // reference-style KPI cards
+    (function(){
+      if(!window.StrataUI) return;
+      var el=document.getElementById('govKpis');
+      if(el) el.innerHTML=StrataUI.kpiCards([
+        {icon:'shield',     label:'Policy rules',      value:'6', sub:'2 auto · 4 quorum', accent:'var(--c1)', accentDim:'var(--c1-dim)'},
+        {icon:'alert',      label:'Pending approval',  value:'2', delta:'2-of-3', dir:'down', sub:'awaiting', accent:'var(--c4)', accentDim:'var(--c4-dim)'},
+        {icon:'check',      label:'Auto-cleared today', value:'14', delta:'+3', dir:'up', sub:'vs yesterday', accent:'var(--c2)', accentDim:'var(--c2-dim)'},
+        {icon:'users',      label:'Quorum signers',    value:'2/3', sub:'threshold met', accent:'var(--c3)', accentDim:'var(--c3-dim)'},
+        {icon:'clock',      label:'Avg approval time', value:'4.2 min', sub:'last 7 epochs', accent:'var(--c6)', accentDim:'var(--c6-dim)'},
+        {icon:'file',       label:'Audit entries',     value:'847', sub:'since genesis', accent:'var(--c1)', accentDim:'var(--c1-dim)'}
+      ]);
+    })();
 
     // routing-mix donut (chart-v2 retrofit)
     (function(){

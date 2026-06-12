@@ -139,6 +139,7 @@
   <script src="strata-scoring.js"></script>
   <script src="strata-data.js"></script>
   <script src="strata-charts.js"></script>
+  <script src="strata-ui.js"></script>
   <script src="strata-shell.js"></script>
   <script>
   (function(){
@@ -160,19 +161,14 @@
       var totalExp=issuers.reduce(function(a,r){return a+r.exposure;},0);
       var avgPrem=Math.round(issuers.reduce(function(a,r){return a+r.premium;},0)/n);
       var watch=issuers.filter(function(r){return r.irs<600;}).length;
-      var dCls=avgDelta>=0?'up':'down';
-      var tiles=[
-        {k:'Registered', v:n, acc:'var(--c1)', d:'on the book'},
-        {k:'Avg IRS', v:avgIrs, acc: avgIrs>=600?'var(--c2)':'var(--c4)', cls:scoreCls(avgIrs), delta:(avgDelta>=0?'+':'')+avgDelta.toFixed(1)+' /7d', dCls:dCls},
-        {k:'Total exposure', v:D.fmtUSD(totalExp), acc:'var(--c2)', d:'across book'},
-        {k:'Avg premium', v:avgPrem+' bps', acc:'var(--c4)', d:'risk-priced'},
-        {k:'Watchlist', v:watch, acc:'var(--c5)', d:'IRS < 600'}
+      var items=[
+        {icon:'building',   label:'Registered',     value:n, sub:'issuers on the book', accent:'var(--c1)', accentDim:'var(--c1-dim)'},
+        {icon:'activity',   label:'Avg IRS',        valueHtml:'<span class="stx-score '+scoreCls(avgIrs)+'">'+avgIrs+'</span>', delta:(avgDelta>=0?'+':'')+avgDelta.toFixed(1), dir:(avgDelta>=0?'up':'down'), sub:'7d avg change', accent: avgIrs>=600?'var(--c2)':'var(--c4)', accentDim: avgIrs>=600?'var(--c2-dim)':'var(--c4-dim)'},
+        {icon:'coins',      label:'Total exposure', value:D.fmtUSD(totalExp), sub:'across the book', accent:'var(--c2)', accentDim:'var(--c2-dim)'},
+        {icon:'dollar',     label:'Avg premium',    value:avgPrem+' bps', sub:'risk-priced', accent:'var(--c4)', accentDim:'var(--c4-dim)'},
+        {icon:'alert',      label:'Watchlist',      value:watch, sub:'IRS < 600', accent:'var(--c5)', accentDim:'var(--c5-dim)'}
       ];
-      $('issKpis').innerHTML=tiles.map(function(t){
-        return '<div class="stx-kpi soft" style="--accent:'+t.acc+'"><div class="k">'+t.k+'</div>'+
-          '<div class="v '+(t.cls?'stx-score '+t.cls:'')+'">'+t.v+'</div>'+
-          (t.delta?'<div class="delta '+t.dCls+'">'+t.delta+'</div>':'<div class="d">'+t.d+'</div>')+'</div>';
-      }).join('');
+      $('issKpis').innerHTML=window.StrataUI ? StrataUI.kpiCards(items) : '';
     }
 
     // ---------- charts ----------

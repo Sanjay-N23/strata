@@ -92,7 +92,7 @@
       <!-- capital flow -->
       <div class="stx-card soft" style="margin-bottom:18px">
         <div class="stx-card-h"><h3>Capital Flow</h3><span class="stx-prov-badge replay">replay</span>
-          <span class="tag">pool balance by tranche · last 12 periods</span></div>
+          <span class="stx-period">Last 12 periods ▾</span></div>
         <div id="capFlow"></div>
         <div id="capFlowLegend" style="margin-bottom:10px"></div>
         <div class="stx-card-h" style="margin-top:6px"><h3 style="font-size:.9rem">Inflow vs Outflow</h3><span class="tag">last 6 periods</span></div>
@@ -103,7 +103,7 @@
       <!-- yield -->
       <div class="stx-grid g-2" style="margin-bottom:18px">
         <div class="stx-card soft">
-          <div class="stx-card-h"><h3>Tranche Yield (APY)</h3><span class="tag">senior vs junior</span></div>
+          <div class="stx-card-h"><h3>Tranche Yield (APY)</h3><span class="stx-period">Last 9 epochs ▾</span></div>
           <div id="capYield"></div>
           <div id="capYieldLegend"></div>
         </div>
@@ -180,6 +180,7 @@
   <script src="strata-scoring.js"></script>
   <script src="strata-data.js"></script>
   <script src="strata-charts.js"></script>
+  <script src="strata-ui.js"></script>
   <script src="strata-shell.js"></script>
   <script>
   (function(){
@@ -208,18 +209,14 @@
     function renderKpis(){
       var prev=flow.rows[flow.rows.length-2].total, dPct=((tvl-prev)/prev*100);
       var insured=tvl*0.78, coverage=tvl/insured*100;
-      var tiles=[
-        {k:'Pool TVL', v:D.fmtUSD(tvl), acc:'var(--c1)', delta:(dPct>=0?'+':'')+dPct.toFixed(1)+'%', dCls:dPct>=0?'up':'down'},
-        {k:'Senior tranche', v:D.fmtUSD(split.slices[0].value), acc:'var(--c1)', d:pct(split.slices[0].value).toFixed(0)+'% · low risk'},
-        {k:'Junior tranche', v:D.fmtUSD(split.slices[1].value), acc:'var(--c4)', d:pct(split.slices[1].value).toFixed(0)+'% · high yield'},
-        {k:'Bond reserve', v:D.fmtUSD(split.slices[2].value), acc:'var(--c2)', d:'first-loss'},
-        {k:'Coverage ratio', v:coverage.toFixed(0)+'%', acc:'var(--c2)', d:'healthy'}
+      var items=[
+        {icon:'layers', label:'Pool TVL',       value:D.fmtUSD(tvl), delta:(dPct>=0?'+':'')+dPct.toFixed(1)+'%', dir:dPct>=0?'up':'down', sub:'vs last period', accent:'var(--c1)', accentDim:'var(--c1-dim)'},
+        {icon:'shield', label:'Senior tranche', value:D.fmtUSD(split.slices[0].value), sub:pct(split.slices[0].value).toFixed(0)+'% · low risk', accent:'var(--c1)', accentDim:'var(--c1-dim)'},
+        {icon:'zap',    label:'Junior tranche', value:D.fmtUSD(split.slices[1].value), sub:pct(split.slices[1].value).toFixed(0)+'% · high yield', accent:'var(--c4)', accentDim:'var(--c4-dim)'},
+        {icon:'coins',  label:'Bond reserve',   value:D.fmtUSD(split.slices[2].value), sub:'first-loss reserve', accent:'var(--c2)', accentDim:'var(--c2-dim)'},
+        {icon:'check',  label:'Coverage ratio', value:coverage.toFixed(0)+'%', delta:'healthy', dir:'up', sub:'', accent:'var(--c2)', accentDim:'var(--c2-dim)'}
       ];
-      $('capKpis').innerHTML=tiles.map(function(t){
-        return '<div class="stx-kpi soft" style="--accent:'+t.acc+'"><div class="k">'+t.k+'</div>'+
-          '<div class="v">'+t.v+'</div>'+
-          (t.delta?'<div class="delta '+t.dCls+'">'+t.delta+'</div>':'<div class="d">'+t.d+'</div>')+'</div>';
-      }).join('');
+      $('capKpis').innerHTML=window.StrataUI ? StrataUI.kpiCards(items) : '';
     }
 
     // ---------- tranche donut + split ----------

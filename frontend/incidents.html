@@ -68,33 +68,7 @@
       </div>
 
       <!-- KPI strip -->
-      <div class="stx-kpis" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px">
-        <div class="stx-kpi">
-          <div class="k">Incidents logged</div>
-          <div class="v">4</div>
-          <div class="d">all-time</div>
-        </div>
-        <div class="stx-kpi">
-          <div class="k">Funds at risk</div>
-          <div class="v" style="color:var(--red)">$3.1M</div>
-          <div class="d">across active incidents</div>
-        </div>
-        <div class="stx-kpi">
-          <div class="k">AI avg lead</div>
-          <div class="v" style="color:var(--green)">+1.75</div>
-          <div class="d up">epochs ahead of rulebook</div>
-        </div>
-        <div class="stx-kpi">
-          <div class="k">Resolved</div>
-          <div class="v">2</div>
-          <div class="d">funds recovered / closed</div>
-        </div>
-        <div class="stx-kpi">
-          <div class="k">Pending</div>
-          <div class="v" style="color:var(--amber)">2</div>
-          <div class="d">awaiting 2-of-3 action</div>
-        </div>
-      </div>
+      <div class="stx-kpis" id="incKpis" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px"></div>
 
       <!-- Featured: INC-001 SVB -->
       <div class="inc-hero">
@@ -305,7 +279,21 @@
   <script src="strata-shell.js"></script>
   <script src="strata-data.js"></script>
   <script src="strata-charts.js"></script>
+  <script src="strata-ui.js"></script>
   <script>
+    // reference-style KPI cards
+    (function(){
+      if(!window.StrataUI) return;
+      var el=document.getElementById('incKpis');
+      if(el) el.innerHTML=StrataUI.kpiCards([
+        {icon:'alert',       label:'Incidents logged', value:'4', sub:'all-time', accent:'var(--c1)', accentDim:'var(--c1-dim)'},
+        {icon:'dollar',      label:'Funds at risk',    valueHtml:'<span style="color:var(--red)">$3.1M</span>', sub:'across active incidents', accent:'var(--c5)', accentDim:'var(--c5-dim)'},
+        {icon:'trendingUp',  label:'AI avg lead',      value:'+1.75', delta:'+1.75 epochs', dir:'up', sub:'ahead of rulebook', accent:'var(--c2)', accentDim:'var(--c2-dim)'},
+        {icon:'check',       label:'Resolved',         value:'2', sub:'funds recovered / closed', accent:'var(--c2)', accentDim:'var(--c2-dim)'},
+        {icon:'clock',       label:'Pending',          value:'2', delta:'2-of-3', dir:'down', sub:'awaiting action', accent:'var(--c4)', accentDim:'var(--c4-dim)'}
+      ]);
+    })();
+
     // SVB IRS-trajectory area chart (chart-v2 retrofit)
     (function(){
       if(!window.StrataCharts) return;
