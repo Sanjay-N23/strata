@@ -27,7 +27,7 @@
     { id: 'underwriter',label: 'Underwriter',  href: 'console.html',  icon: 'cpu' },
     { id: 'issuers',    label: 'Issuers',      href: 'issuers.html',  icon: 'building', tag: 'v1' },
     { id: 'capital',    label: 'Capital',      href: 'pool.html',     icon: 'layers',   tag: 'v1' },
-    { id: 'governance', label: 'Governance',   href: 'attestor.html', icon: 'shield',   tag: 'v1' }
+    { id: 'governance', label: 'Governance',   href: 'governance.html', icon: 'shield' }
   ];
 
   var ICONS = {

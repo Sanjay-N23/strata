@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Strata — Governance</title>
+  <meta name="description" content="Strata Governance — policy-gated autonomy: threshold rules, 2-of-3 approval queue, pre-execution simulation, and a full audit trail.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='5' y='20' width='22' height='4' rx='1' fill='%23F0B90B'/><rect x='7' y='14' width='18' height='4' rx='1' fill='%235B8DEF'/><rect x='9' y='8' width='14' height='4' rx='1' fill='%2316C784'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="strata-theme.css">
+  <style>
+    /* ---- governance-specific components ---- */
+
+    /* route badges inside rules table */
+    .gov-auto{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.7rem;
+      font-weight:600;padding:2px 9px;border-radius:999px;
+      background:var(--green-dim);color:var(--green)}
+    .gov-quorum{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.7rem;
+      font-weight:600;padding:2px 9px;border-radius:999px;
+      background:var(--ai-dim);color:var(--ai)}
+    .gov-auto::before,.gov-quorum::before{content:'';width:6px;height:6px;border-radius:50%;
+      background:currentColor;flex:none}
+
+    /* pending approval cards */
+    .gov-queue{display:flex;flex-direction:column;gap:12px}
+    .gov-qitem{border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;
+      transition:border-color .15s}
+    .gov-qitem.sev-red{border-left:3px solid var(--red)}
+    .gov-qitem.sev-amber{border-left:3px solid var(--amber)}
+    .gov-qitem.dismissed{opacity:.35;pointer-events:none}
+    .gov-qitem-h{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+    .gov-qitem-title{font-weight:700;font-size:.92rem;font-family:var(--mono)}
+    .gov-qitem-issuer{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-left:auto}
+    .gov-qitem-evidence{font-size:.82rem;color:var(--text2);margin-bottom:10px;line-height:1.45}
+    .gov-qitem-foot{display:flex;gap:8px;align-items:center}
+    .gov-qitem-sigs{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-left:auto}
+    .gov-btn{padding:5px 14px;border-radius:7px;border:1px solid var(--border2);cursor:pointer;
+      font-size:.8rem;font-weight:600;transition:all .15s;background:var(--surface2);color:var(--text2)}
+    .gov-btn:hover{border-color:var(--ai);color:var(--ai)}
+    .gov-btn.approve{background:var(--green-dim);color:var(--green);border-color:var(--green)}
+    .gov-btn.approve:hover{background:var(--green);color:#000}
+    .gov-btn.reject{background:var(--red-dim);color:var(--red);border-color:var(--red)}
+    .gov-btn.reject:hover{background:var(--red);color:#fff}
+    .gov-btn.simulate{background:var(--ai-dim);color:var(--ai);border-color:var(--ai)}
+
+    /* audit timeline */
+    .gov-trail{display:flex;flex-direction:column;gap:0}
+    .gov-te{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);position:relative}
+    .gov-te:last-child{border-bottom:none}
+    .gov-te-dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;
+      margin-top:1px;font-size:.65rem;font-weight:700;font-family:var(--mono)}
+    .gov-te-dot.ai{background:var(--ai-dim);color:var(--ai)}
+    .gov-te-dot.human{background:var(--green-dim);color:var(--green)}
+    .gov-te-dot.system{background:var(--surface2);color:var(--muted)}
+    .gov-te-body{flex:1;min-width:0}
+    .gov-te-action{font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--text)}
+    .gov-te-detail{font-size:.78rem;color:var(--text2);margin-top:2px}
+    .gov-te-time{font-family:var(--mono);font-size:.68rem;color:var(--muted);white-space:nowrap}
+    .gov-te-route{font-family:var(--mono);font-size:.68rem;margin-top:4px}
+    .gov-te-route.auto{color:var(--green)}
+    .gov-te-route.quorum{color:var(--ai)}
+    .gov-te-route.approved{color:var(--green)}
+    .gov-te-route.rejected{color:var(--red)}
+
+    /* simulation modal */
+    .gov-sim-bd{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+      z-index:200;display:flex;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;transition:opacity .2s}
+    .gov-sim-bd.open{opacity:1;pointer-events:all}
+    .gov-sim{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);
+      width:min(580px,92vw);max-height:90vh;overflow-y:auto;box-shadow:var(--shadow)}
+    .gov-sim-h{display:flex;align-items:center;gap:10px;padding:18px 20px 14px;
+      border-bottom:1px solid var(--border)}
+    .gov-sim-h h3{font-family:var(--head);font-weight:700;font-size:1rem;flex:1}
+    .gov-sim-action{font-family:var(--mono);font-size:.72rem;padding:2px 9px;border-radius:999px;
+      background:var(--ai-dim);color:var(--ai)}
+    .gov-sim-close{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;
+      line-height:1;padding:0 4px;margin-left:8px}
+    .gov-sim-close:hover{color:var(--text)}
+    .gov-sim-body{padding:18px 20px}
+    .gov-sim-compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+    .gov-sim-col{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);
+      padding:12px 14px}
+    .gov-sim-col h4{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+      font-weight:600;margin-bottom:10px}
+    .gov-sim-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;
+      border-bottom:1px solid var(--border);font-size:.82rem}
+    .gov-sim-row:last-child{border-bottom:none}
+    .gov-sim-row .k{color:var(--text2)}
+    .gov-sim-row .v{font-family:var(--mono);font-weight:600}
+    .gov-sim-row .v.up{color:var(--red)}
+    .gov-sim-row .v.down{color:var(--red)}
+    .gov-sim-row .v.ok{color:var(--green)}
+    .gov-sim-clauses{margin-bottom:16px}
+    .gov-sim-clauses h4{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+      font-weight:600;margin-bottom:8px}
+    .gov-clause{display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:.82rem;
+      border-bottom:1px solid var(--border)}
+    .gov-clause:last-child{border-bottom:none}
+    .gov-clause-id{font-family:var(--mono);color:var(--amber);font-size:.72rem;flex:none;padding-top:1px}
+    .gov-clause-text{color:var(--text2)}
+    .gov-sim-notify{font-size:.8rem;color:var(--text2);margin-bottom:16px}
+    .gov-sim-notify span{color:var(--text);font-weight:600}
+    .gov-sim-foot{display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--border)}
+
+    /* disabled state when no pending items */
+    .gov-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:.88rem}
+    .gov-empty svg{width:36px;height:36px;stroke:var(--border2);margin-bottom:10px}
+
+    /* column separator line for the 2-col layout */
+    @media(min-width:861px){
+      .gov-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+    }
+    @media(max-width:860px){
+      .gov-cols{display:flex;flex-direction:column;gap:16px}
+    }
+  </style>
+</head>
+<body data-page="governance" data-mode="replay" data-theme="dark">
+  <aside class="stx-side" id="stxSide"></aside>
+  <div class="stx-content">
+    <header class="stx-top" id="stxTop"></header>
+
+    <main class="stx-main">
+      <div class="stx-pagehead">
+        <div class="stx-eyebrow">Policy Engine · Autonomy Gate · Audit Trail</div>
+        <h1>Governance</h1>
+        <p>Threshold rules route low-materiality AI actions to auto-execute; high-value or high-risk actions escalate to a <b>2-of-3 quorum</b> (AI proposer + 2 human signers). Every action is simulation-previewed and immutably logged.</p>
+      </div>
+
+      <!-- KPI strip -->
+      <div class="stx-kpis" style="grid-template-columns:repeat(6,1fr);margin-bottom:20px">
+        <div class="stx-kpi">
+          <div class="k">Policy Rules</div>
+          <div class="v">6</div>
+          <div class="d">2 auto · 4 quorum</div>
+        </div>
+        <div class="stx-kpi">
+          <div class="k">Pending Approval</div>
+          <div class="v" style="color:var(--amber)">2</div>
+          <div class="d">awaiting 2-of-3</div>
+        </div>
+        <div class="stx-kpi">
+          <div class="k">Auto-cleared Today</div>
+          <div class="v">14</div>
+          <div class="d up">↑ 3 vs yesterday</div>
+        </div>
+        <div class="stx-kpi">
+          <div class="k">Quorum Signers</div>
+          <div class="v">2/3</div>
+          <div class="d">threshold met</div>
+        </div>
+        <div class="stx-kpi">
+          <div class="k">Avg Approval Time</div>
+          <div class="v" style="font-size:1.2rem">4.2 min</div>
+          <div class="d">last 7 epochs</div>
+        </div>
+        <div class="stx-kpi">
+          <div class="k">Audit Entries</div>
+          <div class="v">847</div>
+          <div class="d">since genesis</div>
+        </div>
+      </div>
+
+      <!-- Policy rules table -->
+      <div class="stx-card pad0" style="margin-bottom:18px">
+        <div class="stx-card-h" style="padding:16px 18px 12px">
+          <h3>Policy Rules</h3>
+          <span class="stx-prov-badge replay">replay</span>
+          <span class="tag" style="margin-left:auto;font-size:.72rem;color:var(--muted)">6 active rules — route AI actions to auto-clear or 2-of-3 quorum</span>
+          <button id="addRuleBtn" style="margin-left:12px;padding:4px 12px;border-radius:7px;border:1px solid var(--border2);background:none;color:var(--ai);font-size:.78rem;cursor:pointer">+ Add Rule</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="stx-table">
+            <thead>
+              <tr>
+                <th>Rule ID</th>
+                <th>Asset</th>
+                <th>Method</th>
+                <th>Size Threshold</th>
+                <th>Issuer</th>
+                <th>Route</th>
+                <th>Status</th>
+                <th style="text-align:right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span style="font-family:var(--mono);color:var(--muted)">GV-01</span></td>
+                <td><span style="font-family:var(--mono)">USDC</span></td>
+                <td><span style="font-family:var(--mono)">reprice</span></td>
+                <td style="text-align:left"><code style="font-size:.78rem">&lt; $500K</code></td>
+                <td style="color:var(--muted)">any</td>
+                <td><span class="gov-auto">Auto-clear</span></td>
+                <td><span class="stx-badge ok">Active</span></td>
+                <td style="text-align:right"><button class="gov-btn" style="padding:3px 10px;font-size:.74rem">Edit</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-family:var(--mono);color:var(--muted)">GV-02</span></td>
+                <td><span style="font-family:var(--mono)">USDC</span></td>
+                <td><span style="font-family:var(--mono)">reprice</span></td>
+                <td style="text-align:left"><code style="font-size:.78rem">≥ $500K</code></td>
+                <td style="color:var(--muted)">any</td>
+                <td><span class="gov-quorum">2-of-3</span></td>
+                <td><span class="stx-badge ok">Active</span></td>
+                <td style="text-align:right"><button class="gov-btn" style="padding:3px 10px;font-size:.74rem">Edit</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-family:var(--mono);color:var(--muted)">GV-03</span></td>
+                <td><span style="font-family:var(--mono)">*</span></td>
+                <td><span style="font-family:var(--mono)">propose_default</span></td>
+                <td style="text-align:left"><code style="font-size:.78rem">any</code></td>
+                <td style="color:var(--muted)">any</td>
+                <td><span class="gov-quorum">2-of-3</span></td>
+                <td><span class="stx-badge ok">Active</span></td>
+                <td style="text-align:right"><button class="gov-btn" style="padding:3px 10px;font-size:.74rem">Edit</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-family:var(--mono);color:var(--muted)">GV-04</span></td>
+                <td><span style="font-family:var(--mono)">*</span></td>
+                <td><span style="font-family:var(--mono)">emergency_pause</span></td>
+                <td style="text-align:left"><code style="font-size:.78rem">any</code></td>
+                <td style="color:var(--muted)">any</td>
+                <td><span class="gov-quorum">2-of-3</span></td>
+                <td><span class="stx-badge ok">Active</span></td>
+                <td style="text-align:right"><button class="gov-btn" style="padding:3px 10px;font-size:.74rem">Edit</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-family:var(--mono);color:var(--muted)">GV-05</span></td>
+                <td><span style="font-family:var(--mono)">USDC</span></td>
+                <td><span style="font-family:var(--mono)">adjust_premium</span></td>
+                <td style="text-align:left"><code style="font-size:.78rem">≤ 50 bps</code></td>
+                <td style="color:var(--muted)">any</td>
+                <td><span class="gov-auto">Auto-clear</span></td>
+                <td><span class="stx-badge ok">Active</span></td>
+                <td style="text-align:right"><button class="gov-btn" style="padding:3px 10px;font-size:.74rem">Edit</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-family:var(--mono);color:var(--muted)">GV-06</span></td>
+                <td><span style="font-family:var(--mono)">mETH</span></td>
+                <td><span style="font-family:var(--mono)">adjust_premium</span></td>
+                <td style="text-align:left"><code style="font-size:.78rem">any</code></td>
+                <td style="color:var(--muted)">any</td>
+                <td><span class="gov-quorum">2-of-3</span></td>
+                <td><span class="stx-badge ok">Active</span></td>
+                <td style="text-align:right"><button class="gov-btn" style="padding:3px 10px;font-size:.74rem">Edit</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 2-col: pending approvals + audit trail -->
+      <div class="gov-cols">
+
+        <!-- pending approvals -->
+        <div class="stx-card">
+          <div class="stx-card-h">
+            <h3>Pending Approval Queue</h3>
+            <span class="stx-prov-badge replay">replay</span>
+            <span id="pendingCount" style="margin-left:auto;font-family:var(--mono);font-size:.72rem;
+              background:var(--amber-dim);color:var(--amber);padding:2px 9px;border-radius:999px">2 pending</span>
+          </div>
+          <p class="hint" style="margin-bottom:14px;font-size:.8rem;color:var(--muted)">Actions flagged above the auto-clear threshold — requires 2 human signers.</p>
+
+          <div class="gov-queue" id="govQueue">
+
+            <!-- item 1: COLLATERAL_SHORTFALL -->
+            <div class="gov-qitem sev-red" id="qi-1">
+              <div class="gov-qitem-h">
+                <span class="stx-badge alarm" style="font-size:.68rem">HIGH</span>
+                <span class="gov-qitem-title">COLLATERAL_SHORTFALL</span>
+                <span class="gov-qitem-issuer">USDC-SVB</span>
+              </div>
+              <div class="gov-qitem-evidence">
+                Proposed by <b>AI Agent #1</b> · Epoch 6<br>
+                Collateral ratio fell to <b style="color:var(--red)">81.4%</b> (threshold 100%). Exposure <b>$2.1M</b>. IRS 58 → PD 14.1%. Triggers § 7.3 halt-redemptions clause.
+              </div>
+              <div class="gov-qitem-foot">
+                <button class="gov-btn simulate" onclick="openSim('shortfall')">Simulate</button>
+                <button class="gov-btn approve" onclick="resolveItem('qi-1','approved','COLLATERAL_SHORTFALL','USDC-SVB','HIGH')">Approve</button>
+                <button class="gov-btn reject" onclick="resolveItem('qi-1','rejected','COLLATERAL_SHORTFALL','USDC-SVB','HIGH')">Reject</button>
+                <span class="gov-qitem-sigs">0 / 2 signed</span>
+              </div>
+            </div>
+
+            <!-- item 2: SENTIMENT_FLAG -->
+            <div class="gov-qitem sev-amber" id="qi-2">
+              <div class="gov-qitem-h">
+                <span class="stx-badge warn" style="font-size:.68rem">MED</span>
+                <span class="gov-qitem-title">SENTIMENT_FLAG</span>
+                <span class="gov-qitem-issuer">mETH</span>
+              </div>
+              <div class="gov-qitem-evidence">
+                Proposed by <b>AI Agent #1</b> · Epoch 6<br>
+                Sentiment score <b style="color:var(--amber)">341</b> / 1000 (threshold 350). Negative coverage spike on X (+218%). Recommends watchlist upgrade + premium +12 bps.
+              </div>
+              <div class="gov-qitem-foot">
+                <button class="gov-btn simulate" onclick="openSim('sentiment')">Simulate</button>
+                <button class="gov-btn approve" onclick="resolveItem('qi-2','approved','SENTIMENT_FLAG','mETH','MED')">Approve</button>
+                <button class="gov-btn reject" onclick="resolveItem('qi-2','rejected','SENTIMENT_FLAG','mETH','MED')">Reject</button>
+                <span class="gov-qitem-sigs">0 / 2 signed</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- audit trail -->
+        <div class="stx-card">
+          <div class="stx-card-h">
+            <h3>Audit Trail</h3>
+            <span class="stx-prov-badge replay">replay</span>
+            <span class="tag">immutable · epoch-stamped</span>
+          </div>
+          <p class="hint" style="margin-bottom:14px;font-size:.8rem;color:var(--muted)">Every AI action and human decision, in order.</p>
+
+          <div class="gov-trail" id="govTrail">
+
+            <div class="gov-te">
+              <div class="gov-te-dot ai">AI</div>
+              <div class="gov-te-body">
+                <div class="gov-te-action">REPRICE · USDC · $310K</div>
+                <div class="gov-te-detail">IRS 72 → 68 · PD 4.1% → 5.3% · +14 bps premium</div>
+                <div class="gov-te-route auto">→ Auto-cleared (rule GV-01 · &lt; $500K)</div>
+              </div>
+              <div class="gov-te-time">2 min ago</div>
+            </div>
+
+            <div class="gov-te">
+              <div class="gov-te-dot ai">AI</div>
+              <div class="gov-te-body">
+                <div class="gov-te-action">SENTIMENT_FLAG · mETH · score 341</div>
+                <div class="gov-te-detail">Negative coverage spike · +12 bps premium proposed</div>
+                <div class="gov-te-route quorum">→ Routed to 2-of-3 quorum (rule GV-06)</div>
+              </div>
+              <div class="gov-te-time">4 min ago</div>
+            </div>
+
+            <div class="gov-te">
+              <div class="gov-te-dot ai">AI</div>
+              <div class="gov-te-body">
+                <div class="gov-te-action">COLLATERAL_SHORTFALL · USDC-SVB · $2.1M</div>
+                <div class="gov-te-detail">Collateral 81.4% · PD 14.1% · § 7.3 triggered</div>
+                <div class="gov-te-route quorum">→ Routed to 2-of-3 quorum (rule GV-03)</div>
+              </div>
+              <div class="gov-te-time">6 min ago</div>
+            </div>
+
+            <div class="gov-te">
+              <div class="gov-te-dot human">H</div>
+              <div class="gov-te-body">
+                <div class="gov-te-action">APPROVE REPRICE · USDC · $800K</div>
+                <div class="gov-te-detail">Signer: 0x8aC7…3B1 · quorum 2-of-3 met</div>
+                <div class="gov-te-route approved">→ Executed on-chain (tx: 0xd3f4…a90c)</div>
+              </div>
+              <div class="gov-te-time">18 min ago</div>
+            </div>
+
+            <div class="gov-te">
+              <div class="gov-te-dot ai">AI</div>
+              <div class="gov-te-body">
+                <div class="gov-te-action">ADJUST_PREMIUM · USDC · +18 bps</div>
+                <div class="gov-te-detail">Sentiment 410 → 341 · within 50 bps auto-clear</div>
+                <div class="gov-te-route auto">→ Auto-cleared (rule GV-05 · ≤ 50 bps)</div>
+              </div>
+              <div class="gov-te-time">31 min ago</div>
+            </div>
+
+            <div class="gov-te">
+              <div class="gov-te-dot ai">AI</div>
+              <div class="gov-te-body">
+                <div class="gov-te-action">REPRICE · mETH · $185K</div>
+                <div class="gov-te-detail">IRS 81 → 79 · delta 7d −2.1 · +7 bps premium</div>
+                <div class="gov-te-route auto">→ Auto-cleared (rule GV-01)</div>
+              </div>
+              <div class="gov-te-time">47 min ago</div>
+            </div>
+
+            <div class="gov-te">
+              <div class="gov-te-dot human">H</div>
+              <div class="gov-te-body">
+                <div class="gov-te-action">APPROVE PROPOSE_DEFAULT · USDC-SVB</div>
+                <div class="gov-te-detail">Signers: 0x8aC7…3B1 · 0xF32E…9D4 · 2-of-3 met</div>
+                <div class="gov-te-route approved">→ Executed · halt-redemptions active (SVB epoch)</div>
+              </div>
+              <div class="gov-te-time">2 hr ago</div>
+            </div>
+
+            <div class="gov-te">
+              <div class="gov-te-dot ai">AI</div>
+              <div class="gov-te-body">
+                <div class="gov-te-action">REPRICE · USDC · $240K</div>
+                <div class="gov-te-detail">IRS 64 → 58 · PD 6.1% → 8.2% · sentinel rising</div>
+                <div class="gov-te-route auto">→ Auto-cleared (rule GV-01 · &lt; $500K)</div>
+              </div>
+              <div class="gov-te-time">2 hr ago</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- pre-execution simulation modal -->
+  <div class="gov-sim-bd" id="simBackdrop" aria-modal="true" role="dialog">
+    <div class="gov-sim" id="simPanel">
+      <div class="gov-sim-h">
+        <h3>Pre-execution Simulation</h3>
+        <span class="gov-sim-action" id="simActionLabel">—</span>
+        <button class="gov-sim-close" id="simClose" title="Close">×</button>
+      </div>
+      <div class="gov-sim-body">
+
+        <!-- shortfall sim (default hidden) -->
+        <div id="simShortfall">
+          <div class="gov-sim-compare">
+            <div class="gov-sim-col">
+              <h4>Current State</h4>
+              <div class="gov-sim-row"><span class="k">IRS</span><span class="v">58</span></div>
+              <div class="gov-sim-row"><span class="k">PD (1y)</span><span class="v">8.2%</span></div>
+              <div class="gov-sim-row"><span class="k">Premium</span><span class="v">412 bps</span></div>
+              <div class="gov-sim-row"><span class="k">Collateral</span><span class="v">81.4%</span></div>
+              <div class="gov-sim-row"><span class="k">Redemptions</span><span class="v ok">Active</span></div>
+            </div>
+            <div class="gov-sim-col">
+              <h4>After Execution</h4>
+              <div class="gov-sim-row"><span class="k">IRS</span><span class="v down">48 (−10)</span></div>
+              <div class="gov-sim-row"><span class="k">PD (1y)</span><span class="v up">14.1% (+5.9%)</span></div>
+              <div class="gov-sim-row"><span class="k">Premium</span><span class="v up">680 bps (+268)</span></div>
+              <div class="gov-sim-row"><span class="k">Collateral</span><span class="v down">81.4% (freeze)</span></div>
+              <div class="gov-sim-row"><span class="k">Redemptions</span><span class="v up">HALTED</span></div>
+            </div>
+          </div>
+          <div class="gov-sim-clauses">
+            <h4>Triggered Clauses</h4>
+            <div class="gov-clause"><span class="gov-clause-id">§ 7.3</span><span class="gov-clause-text">Collateral shortfall notice — trustee notification within 24 h</span></div>
+            <div class="gov-clause"><span class="gov-clause-id">§ 12.1</span><span class="gov-clause-text">Halt redemptions — investor requests queued, not executed</span></div>
+            <div class="gov-clause"><span class="gov-clause-id">§ 4.8</span><span class="gov-clause-text">Trustee notification — certified communication within 4 h</span></div>
+          </div>
+          <div class="gov-sim-notify">Notified parties: <span>Trustee</span> · <span>Legal</span> · <span>DAO multisig</span></div>
+        </div>
+
+        <!-- sentiment sim -->
+        <div id="simSentiment" style="display:none">
+          <div class="gov-sim-compare">
+            <div class="gov-sim-col">
+              <h4>Current State</h4>
+              <div class="gov-sim-row"><span class="k">IRS</span><span class="v">81</span></div>
+              <div class="gov-sim-row"><span class="k">Sentiment</span><span class="v">341</span></div>
+              <div class="gov-sim-row"><span class="k">Premium</span><span class="v">208 bps</span></div>
+              <div class="gov-sim-row"><span class="k">Watchlist</span><span class="v ok">Normal</span></div>
+            </div>
+            <div class="gov-sim-col">
+              <h4>After Execution</h4>
+              <div class="gov-sim-row"><span class="k">IRS</span><span class="v down">79 (−2)</span></div>
+              <div class="gov-sim-row"><span class="k">Sentiment</span><span class="v">341 (flag)</span></div>
+              <div class="gov-sim-row"><span class="k">Premium</span><span class="v up">220 bps (+12)</span></div>
+              <div class="gov-sim-row"><span class="k">Watchlist</span><span class="v up">ELEVATED</span></div>
+            </div>
+          </div>
+          <div class="gov-sim-clauses">
+            <h4>Triggered Clauses</h4>
+            <div class="gov-clause"><span class="gov-clause-id">§ 9.2</span><span class="gov-clause-text">Sentiment watchlist — elevated monitoring flag set</span></div>
+            <div class="gov-clause"><span class="gov-clause-id">§ 5.1</span><span class="gov-clause-text">Premium adjustment — notified within 48 h to bondholder registry</span></div>
+          </div>
+          <div class="gov-sim-notify">Notified parties: <span>Issuer</span> · <span>Bondholder registry</span></div>
+        </div>
+
+      </div>
+      <div class="gov-sim-foot">
+        <button class="gov-btn approve" id="simApprove" style="flex:1">Sign &amp; Approve</button>
+        <button class="gov-btn reject" id="simReject" style="flex:1">Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="strata-config.js"></script>
+  <script src="strata-shell.js"></script>
+  <script src="strata-data.js"></script>
+  <script>
+    /* governance interaction logic */
+    var _simTarget = null; // which queue item the modal is for
+
+    function openSim(type) {
+      _simTarget = type;
+      document.getElementById('simShortfall').style.display = (type === 'shortfall') ? '' : 'none';
+      document.getElementById('simSentiment').style.display = (type === 'sentiment') ? '' : 'none';
+      document.getElementById('simActionLabel').textContent =
+        type === 'shortfall' ? 'COLLATERAL_SHORTFALL · USDC-SVB' : 'SENTIMENT_FLAG · mETH';
+      document.getElementById('simBackdrop').classList.add('open');
+    }
+
+    document.getElementById('simClose').addEventListener('click', function() {
+      document.getElementById('simBackdrop').classList.remove('open');
+    });
+    document.getElementById('simBackdrop').addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+
+    document.getElementById('simApprove').addEventListener('click', function() {
+      document.getElementById('simBackdrop').classList.remove('open');
+      if (_simTarget === 'shortfall') resolveItem('qi-1','approved','COLLATERAL_SHORTFALL','USDC-SVB','HIGH');
+      if (_simTarget === 'sentiment') resolveItem('qi-2','approved','SENTIMENT_FLAG','mETH','MED');
+    });
+    document.getElementById('simReject').addEventListener('click', function() {
+      document.getElementById('simBackdrop').classList.remove('open');
+      if (_simTarget === 'shortfall') resolveItem('qi-1','rejected','COLLATERAL_SHORTFALL','USDC-SVB','HIGH');
+      if (_simTarget === 'sentiment') resolveItem('qi-2','rejected','SENTIMENT_FLAG','mETH','MED');
+    });
+
+    function resolveItem(itemId, resolution, action, issuer, sev) {
+      var el = document.getElementById(itemId);
+      if (!el) return;
+      el.classList.add('dismissed');
+      setTimeout(function() { el.style.display = 'none'; updatePendingCount(); }, 400);
+      prependAuditEntry(resolution, action, issuer, sev);
+    }
+
+    function updatePendingCount() {
+      var visible = document.querySelectorAll('#govQueue .gov-qitem:not([style*="display: none"])').length;
+      var el = document.getElementById('pendingCount');
+      if (el) el.textContent = visible + ' pending';
+      if (visible === 0) {
+        var q = document.getElementById('govQueue');
+        q.innerHTML = '<div class="gov-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg><br>All caught up — no pending approvals.</div>';
+        if (el) { el.textContent = '0 pending'; el.style.background = 'var(--green-dim)'; el.style.color = 'var(--green)'; }
+      }
+    }
+
+    function prependAuditEntry(resolution, action, issuer, sev) {
+      var trail = document.getElementById('govTrail');
+      if (!trail) return;
+      var isApproved = resolution === 'approved';
+      var entry = document.createElement('div');
+      entry.className = 'gov-te';
+      entry.innerHTML =
+        '<div class="gov-te-dot human">H</div>' +
+        '<div class="gov-te-body">' +
+          '<div class="gov-te-action">' + resolution.toUpperCase() + ' ' + action + ' · ' + issuer + '</div>' +
+          '<div class="gov-te-detail">Signer: you (wallet) · severity ' + sev + '</div>' +
+          '<div class="gov-te-route ' + (isApproved ? 'approved' : 'rejected') + '">' +
+            '→ ' + (isApproved ? 'Executed on-chain' : 'Rejected — action voided') +
+          '</div>' +
+        '</div>' +
+        '<div class="gov-te-time">just now</div>';
+      entry.style.opacity = '0';
+      trail.insertBefore(entry, trail.firstChild);
+      requestAnimationFrame(function() {
+        entry.style.transition = 'opacity .3s';
+        entry.style.opacity = '1';
+      });
+    }
+
+    // stub: add rule modal
+    document.getElementById('addRuleBtn').addEventListener('click', function() {
+      alert('Rule editor — coming in Phase C.\n\nWill allow: Asset · Method · Size threshold · Issuer filter · Route (auto/quorum)');
+    });
+
+    // mode reaction: show/hide banner & sync prov badges
+    window.Strata && window.Strata.onMode && window.Strata.onMode(function(m) {
+      document.querySelectorAll('.stx-prov-badge').forEach(function(b) {
+        if (m === 'live') { b.className = 'stx-prov-badge chain'; b.textContent = 'on-chain'; }
+        else { b.className = 'stx-prov-badge replay'; b.textContent = 'replay'; }
+      });
+    });
+  </script>
+</body>
+</html>
