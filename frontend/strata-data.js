@@ -172,10 +172,125 @@
     };
   }
 
+  // ============================================================
+  //  Aggregations for the colorful dashboard restyle (append-only).
+  //  All deterministic (index/Math.sin, never random); source-tagged.
+  // ============================================================
+
+  // exposure grouped by sector → donut/bar slices
+  function getSectorDistribution() {
+    var iss = getIssuers(), map = {}, order = [];
+    iss.forEach(function (r) {
+      if (!map[r.sector]) { map[r.sector] = { sector: r.sector, exposure: 0, count: 0 }; order.push(r.sector); }
+      map[r.sector].exposure += r.exposure; map[r.sector].count++;
+    });
+    var tot = iss.reduce(function (a, r) { return a + r.exposure; }, 0) || 1;
+    var arr = order.map(function (k) { return map[k]; }).sort(function (a, b) { return b.exposure - a.exposure; });
+    arr.forEach(function (s, i) { s.pct = s.exposure / tot * 100; s.colorIdx = i; });
+    return { slices: arr, total: tot, source: 'ai' };
+  }
+
+  // IRS histogram bands (red → teal)
+  function getIrsDistribution() {
+    var iss = getIssuers();
+    var bands = [
+      { label: '<300', min: 0, max: 300, count: 0, key: 'bad' },
+      { label: '300–599', min: 300, max: 600, count: 0, key: 'warn' },
+      { label: '600–799', min: 600, max: 800, count: 0, key: 'ok' },
+      { label: '800+', min: 800, max: 1001, count: 0, key: 'great' }
+    ];
+    iss.forEach(function (r) {
+      for (var i = 0; i < bands.length; i++) { if (r.irs >= bands[i].min && r.irs < bands[i].max) { bands[i].count++; break; } }
+    });
+    return { bands: bands, source: 'ai' };
+  }
+
+  // pool balance over N periods, anchored to current TVL, split by tranche
+  function getCapitalFlow(periods) {
+    periods = periods || 12;
+    var tvl = getKPIs().tvl, rows = [];
+    for (var i = 0; i < periods; i++) {
+      var t = periods < 2 ? 1 : i / (periods - 1);
+      var last = i === periods - 1;
+      var growth = 0.52 + 0.48 * t;                          // ramps toward full TVL
+      var wob = last ? 1 : (1 + 0.045 * Math.sin(i * 1.3));  // last period anchors exactly to TVL
+      var total = tvl * growth * wob;
+      rows.push({
+        period: 'M' + (i + 1),
+        senior: total * 0.70, junior: total * 0.23, bond: total * 0.07, total: total,
+        inflow: total * (0.04 + 0.02 * Math.abs(Math.sin(i * 1.1))),
+        outflow: total * (0.02 + 0.02 * Math.abs(Math.sin(i * 0.8 + 1)))
+      });
+    }
+    return { rows: rows, source: 'replay' };
+  }
+
+  // latest tranche allocation → donut
+  function getTrancheSplit() {
+    var f = getCapitalFlow(), last = f.rows[f.rows.length - 1];
+    return {
+      slices: [
+        { label: 'Senior', value: last.senior, key: 'senior', colorIdx: 0 },
+        { label: 'Junior', value: last.junior, key: 'junior', colorIdx: 3 },
+        { label: 'Bond reserve', value: last.bond, key: 'bond', colorIdx: 1 }
+      ], total: last.total, source: 'replay'
+    };
+  }
+
+  // APY history: senior 3–5% (low risk), junior 9–12% (high yield)
+  function getYieldHistory(periods) {
+    periods = periods || 9;
+    var rows = [];
+    for (var i = 0; i < periods; i++) {
+      var sr = 4.0 + 0.8 * Math.sin(i * 0.9);
+      var jr = 10.2 + 1.4 * Math.sin(i * 0.7 + 1);
+      rows.push({ period: 'e' + (i + 1), senior: +sr.toFixed(1), junior: +jr.toFixed(1) });
+    }
+    var last = rows[rows.length - 1];
+    return {
+      rows: rows,
+      current: { srApy: last.senior, jrApy: last.junior },
+      srSpark: rows.map(function (r) { return r.senior; }),
+      jrSpark: rows.map(function (r) { return r.junior; }),
+      source: 'replay'
+    };
+  }
+
+  // seeded LP position book (presentation-safe; no real addresses/positions)
+  function getLpPositions() {
+    var rows = [
+      { addr: '0x8aC7…b3B1', tranche: 'Senior', token: 'srCVR', amount: 1250000, apy: 4.3, pnl: 3.1, since: '64d' },
+      { addr: '0xF32E…9D41', tranche: 'Junior', token: 'jrCVR', amount: 680000, apy: 10.1, pnl: 8.7, since: '41d' },
+      { addr: '0x19Bd…7c02', tranche: 'Senior', token: 'srCVR', amount: 940000, apy: 4.1, pnl: 2.4, since: '88d' },
+      { addr: '0xA77c…11F9', tranche: 'Junior', token: 'jrCVR', amount: 415000, apy: 9.8, pnl: 6.2, since: '23d' },
+      { addr: '0x5e90…3aB7', tranche: 'Senior', token: 'srCVR', amount: 2100000, apy: 4.4, pnl: 3.6, since: '120d' },
+      { addr: '0xc401…8E15', tranche: 'Junior', token: 'jrCVR', amount: 530000, apy: 10.4, pnl: 9.3, since: '37d' },
+      { addr: '0x2Df8…6a44', tranche: 'Senior', token: 'srCVR', amount: 760000, apy: 4.0, pnl: 1.9, since: '15d' },
+      { addr: '0xBb73…0c8d', tranche: 'Junior', token: 'jrCVR', amount: 295000, apy: 9.6, pnl: 5.1, since: '52d' }
+    ];
+    rows.forEach(function (r) { r.value = Math.round(r.amount * (1 + r.pnl / 100)); r.source = 'replay'; });
+    return rows;
+  }
+
+  // loss waterfall layers (first-loss order)
+  function getLossWaterfall() {
+    var s = getTrancheSplit();
+    return {
+      layers: [
+        { label: 'Bond reserve', sub: '1st loss', value: s.slices[2].value, key: 'bond', colorIdx: 1 },
+        { label: 'Junior tranche', sub: '2nd loss', value: s.slices[1].value, key: 'junior', colorIdx: 3 },
+        { label: 'Senior tranche', sub: 'protected', value: s.slices[0].value, key: 'senior', colorIdx: 0 }
+      ], source: 'ai'
+    };
+  }
+
   window.StrataData = {
     on: on, emit: emit,
     loadEthers: loadEthers, healthCheck: healthCheck, health: function () { return health; },
     getTally: getTally, getIssuers: getIssuers, getIssuer: getIssuer, getIssuerScore: getIssuerScore, getKPIs: getKPIs,
+    getSectorDistribution: getSectorDistribution, getIrsDistribution: getIrsDistribution,
+    getCapitalFlow: getCapitalFlow, getTrancheSplit: getTrancheSplit, getYieldHistory: getYieldHistory,
+    getLpPositions: getLpPositions, getLossWaterfall: getLossWaterfall,
     fmtUSD: function (n) {
       if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
       if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
