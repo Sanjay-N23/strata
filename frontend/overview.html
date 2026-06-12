@@ -62,7 +62,7 @@
         <div>
           <!-- Risk map -->
           <div class="stx-card" style="margin-bottom:16px">
-            <div class="stx-card-h"><h3>Portfolio Risk Map</h3><span class="tag">IRS × recency · bubble = exposure</span></div>
+            <div class="stx-card-h"><h3>Portfolio Risk Map</h3><span class="stx-period">Replay · 9 epochs ▾</span></div>
             <p class="hint">Each issuer plotted by credit score (right = safer) and how recently it was re-underwritten (top = fresh). Left of the red line is the distress zone (IRS &lt; 300).</p>
             <svg class="stx-chart" id="scatter" viewBox="0 0 720 300" style="height:300px" role="img" aria-label="Scatter of issuers by IRS score and recency"></svg>
           </div>
@@ -121,6 +121,7 @@
   <script src="strata-scoring.js"></script>
   <script src="strata-data.js"></script>
   <script src="strata-charts.js"></script>
+  <script src="strata-ui.js"></script>
   <script src="strata-shell.js"></script>
   <script>
   (function(){
@@ -132,19 +133,15 @@
     function provDot(src){ return '<span class="stx-prov-badge '+src+'" style="border:none;padding:0;font-size:.6rem">'+(src==='chain'?'on-chain':(src==='replay'?'replay':'AI'))+'</span>'; }
     function renderKPIs(tally){
       var k = D.getKPIs(tally);
-      var tiles = [
-        { k:'Bonded first-loss', v:D.fmtUSD(k.bonded), d:'5–8% of mcap', s:k.bondedSource },
-        { k:'Pool TVL', v:D.fmtUSD(k.tvl), d:'sr 70 / jr 30', s:k.tvlSource },
-        { k:'Active issuers', v:k.issuers, d:'on the book', s:'ai' },
-        { k:'AI wins', v:k.aiWins, d:'vs static rulebook', s:k.aiWinsSource, up:true },
-        { k:'Avg lead', v:(k.avgLead>=0?'+':'')+k.avgLead, d:'epochs early', s:k.avgLeadSource, up:true },
-        { k:'Open claims', v:k.openClaims, d:'awaiting 2-of-3', s:'ai' }
+      var items = [
+        {icon:'shield',     label:'Bonded first-loss', value:D.fmtUSD(k.bonded), sub:'first-loss · 5–8% of mcap', accent:'var(--c4)', accentDim:'var(--c4-dim)'},
+        {icon:'layers',     label:'Pool TVL',          value:D.fmtUSD(k.tvl),    sub:'senior 70 / junior 30',     accent:'var(--c1)', accentDim:'var(--c1-dim)'},
+        {icon:'building',   label:'Active issuers',    value:k.issuers,          sub:'on the book',               accent:'var(--c3)', accentDim:'var(--c3-dim)'},
+        {icon:'award',      label:'AI wins',           value:k.aiWins+' / '+(tally?tally.st:0), delta:'AI leads', dir:'up', sub:'Turing benchmark', accent:'var(--c2)', accentDim:'var(--c2-dim)'},
+        {icon:'trendingUp', label:'Avg lead',          value:(k.avgLead>=0?'+':'')+k.avgLead, delta:k.avgLead+' epochs', dir:'up', sub:'ahead of rulebook', accent:'var(--c2)', accentDim:'var(--c2-dim)'},
+        {icon:'alert',      label:'Open claims',       value:k.openClaims,       sub:'awaiting 2-of-3',           accent:'var(--c5)', accentDim:'var(--c5-dim)'}
       ];
-      var KPI_ACC=['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)','var(--c6)'];
-      $('kpis').innerHTML = tiles.map(function(t,i){
-        return '<div class="stx-kpi soft" style="--accent:'+KPI_ACC[i%6]+'"><div class="k">'+t.k+'</div><div class="v">'+t.v+'</div>'+
-          '<div class="d'+(t.up?' up':'')+'">'+t.d+' · '+provDot(t.s)+'</div></div>';
-      }).join('');
+      $('kpis').innerHTML = window.StrataUI ? StrataUI.kpiCards(items) : '';
       $('bAi').textContent = k.aiWins+' / '+(tally?tally.st:0);
       $('bLead').textContent = (k.avgLead>=0?'+':'')+k.avgLead+' epochs';
       // scale-stats band

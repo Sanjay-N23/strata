@@ -418,3 +418,29 @@ body[data-mode="replay"] .stx-replay-banner{display:flex}
 @media(max-width:560px){
   .stx-filters input[type=text]{min-width:140px}
 }
+
+/* ============================================================
+   REFERENCE-MATCH LAYER (OnlyGenius look) — shared KPI + card head.
+   Rendered by strata-ui.js (window.StrataUI). Append-only.
+   ============================================================ */
+/* reference-style KPI stat card: icon + label → big value → % delta */
+.stx-kpi2{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:18px 20px;box-shadow:var(--elev2)}
+.stx-kpi2 .top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.stx-kpi2 .ic{width:33px;height:33px;border-radius:10px;background:var(--accent-dim,var(--surface2));
+  display:grid;place-items:center;color:var(--accent,var(--ai));flex:none}
+.stx-kpi2 .ic svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.stx-kpi2 .lbl{font-size:.82rem;color:var(--text2);font-weight:600;letter-spacing:.01em}
+.stx-kpi2 .val{font-family:var(--head);font-size:1.85rem;font-weight:800;letter-spacing:-.015em;line-height:1.05}
+.stx-kpi2 .val .stx-score{font-family:var(--head)}
+.stx-kpi2 .dl{font-size:.76rem;margin-top:9px;color:var(--muted)}
+.stx-kpi2 .dl b{font-family:var(--mono);font-weight:700}
+.stx-kpi2 .dl.up b{color:var(--green)} .stx-kpi2 .dl.down b{color:var(--red)}
+
+/* card header with a period dropdown (decorative selector, like the reference) */
+.stx-period{margin-left:auto;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border2);
+  border-radius:9px;padding:5px 11px;font-size:.78rem;color:var(--text2);cursor:pointer;
+  background:var(--surface);user-select:none;transition:.12s;white-space:nowrap}
+.stx-period:hover{border-color:var(--ai);color:var(--text)}
+.stx-period svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}

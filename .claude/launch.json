@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["http-server", "frontend", "-p", "8083", "-c-1", "--cors"],
       "port": 8083
+    },
+    {
+      "name": "frontend-verify",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["http-server", "frontend", "-p", "8099", "-c-1", "--cors"],
+      "port": 8099
     }
   ]
 }
