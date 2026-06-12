@@ -344,3 +344,77 @@ body[data-mode="replay"] .stx-replay-banner{display:flex}
 .stx-burger{display:none;width:36px;height:36px;place-items:center;border:1px solid var(--border);
   background:var(--surface);border-radius:var(--radius-sm);color:var(--text);cursor:pointer}
 .stx-burger svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* ============================================================
+   CHART-V2 LAYER (append-only) — colorful dashboard restyle.
+   Categorical palette + soft cards + viz components. No existing
+   rule is modified; everything here is opt-in via new classes.
+   ============================================================ */
+:root{
+  /* categorical chart palette (reuses proven hues for contrast) */
+  --c1:#5B8DEF; --c2:#16C784; --c3:#A78BFA; --c4:#F5A623; --c5:#F6465D; --c6:#2DD4BF;
+  --c1-dim:rgba(91,141,239,.16); --c2-dim:rgba(22,199,132,.16); --c3-dim:rgba(167,139,250,.16);
+  --c4-dim:rgba(245,166,35,.16); --c5-dim:rgba(246,70,93,.16); --c6-dim:rgba(45,212,191,.16);
+  --chart-axis:#6C7585; --chart-grid:#232A35;
+  --elev2:0 8px 30px rgba(0,0,0,.55);
+}
+
+/* ---- soft (rounded, elevated, gradient) card + kpi ---- */
+.stx-card.soft{border-radius:var(--radius-lg);box-shadow:var(--elev2);
+  background:linear-gradient(180deg,var(--surface),var(--surface) 58%,var(--bg2))}
+.stx-kpi.soft{border-radius:var(--radius-lg);box-shadow:var(--elev2);position:relative;overflow:hidden}
+.stx-kpi.soft::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;
+  background:var(--accent,var(--gold))}
+/* green/red delta pill (matches reference KPI cards) */
+.stx-kpi .delta{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:.7rem;
+  font-weight:700;padding:1px 7px;border-radius:999px;margin-top:6px}
+.stx-kpi .delta.up{background:var(--green-dim);color:var(--green)}
+.stx-kpi .delta.down{background:var(--red-dim);color:var(--red)}
+.stx-kpi .delta.flat{background:var(--surface2);color:var(--muted)}
+
+/* ---- chart-v2 container + legend ---- */
+.stx-chart2{width:100%;display:block}
+.stx-chart2 .axl{fill:var(--chart-axis);font-family:var(--mono);font-size:10px}
+.stx-chart2 .grid{stroke:var(--chart-grid);stroke-width:1}
+.stx-legend2{display:flex;flex-wrap:wrap;gap:12px 16px;margin-top:12px}
+.stx-legend2 .lg{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;color:var(--text2)}
+.stx-legend2 .lg i{width:10px;height:10px;border-radius:3px;flex:none}
+.stx-legend2 .lg b{color:var(--text);font-family:var(--mono);font-weight:700;margin-left:2px}
+
+/* ---- avatar monogram (token glyph for tables) ---- */
+.stx-ava{width:30px;height:30px;border-radius:9px;display:inline-grid;place-items:center;flex:none;
+  font-family:var(--head);font-weight:800;font-size:.72rem;color:#0A0C10;letter-spacing:-.02em}
+
+/* ---- donut center label ---- */
+.stx-donut-wrap{position:relative;display:grid;place-items:center}
+.stx-donut-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}
+.stx-donut-center .dc-v{font-family:var(--mono);font-weight:800;font-size:1.25rem;line-height:1}
+.stx-donut-center .dc-k{font-size:.62rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:3px}
+
+/* ---- pagination ---- */
+.stx-pager{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:12px 4px 2px;
+  font-size:.78rem;color:var(--text2)}
+.stx-pager button{border:1px solid var(--border);background:var(--surface);color:var(--text2);
+  border-radius:7px;padding:4px 10px;cursor:pointer;font-size:.78rem;transition:.12s}
+.stx-pager button:hover:not(:disabled){border-color:var(--ai);color:var(--ai)}
+.stx-pager button:disabled{opacity:.4;cursor:default}
+.stx-pager .pg-info{font-family:var(--mono);color:var(--muted)}
+
+/* ---- filter bar (search + selects) ---- */
+.stx-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.stx-filters input[type=text],.stx-filters select{background:var(--surface);border:1px solid var(--border);
+  color:var(--text);border-radius:var(--radius-sm);padding:8px 11px;font-size:.84rem;font-family:var(--main)}
+.stx-filters input[type=text]{min-width:220px;flex:1}
+.stx-filters input[type=text]:focus,.stx-filters select:focus{outline:none;border-color:var(--ai)}
+.stx-filters input[type=text]::placeholder{color:var(--muted)}
+
+/* ---- toast (demo-mode notices) ---- */
+.stx-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+  background:var(--elev);border:1px solid var(--border2);border-left:3px solid var(--amber);
+  color:var(--text);padding:12px 18px;border-radius:var(--radius);box-shadow:var(--elev2);
+  font-size:.86rem;opacity:0;pointer-events:none;transition:.25s;z-index:300;max-width:90vw}
+.stx-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:560px){
+  .stx-filters input[type=text]{min-width:140px}
+}
