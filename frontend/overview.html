@@ -19,7 +19,7 @@
       <div class="stx-pagehead">
         <div class="stx-eyebrow">Command Center · AI × RWA · Mantle</div>
         <h1>Overview</h1>
-        <p>The whole credit book at a glance — bonded first-loss, pool capital, the issuer leaderboard, and where every issuer sits on the risk map. The AI underwriter reprices continuously; humans keep the legal gate.</p>
+        <p>The whole credit book at a glance — live AI underwriting, human legal gate.</p>
       </div>
 
       <!-- Scale-stats band + SLOs -->
@@ -63,14 +63,14 @@
           <!-- Risk map -->
           <div class="stx-card" style="margin-bottom:16px">
             <div class="stx-card-h"><h3>Portfolio Risk Map</h3><span class="stx-period">Replay · 9 epochs ▾</span></div>
-            <p class="hint">Each issuer plotted by credit score (right = safer) and how recently it was re-underwritten (top = fresh). Left of the red line is the distress zone (IRS &lt; 300).</p>
+            <p class="hint">Credit score (→ safer) × recency (↑ fresher). Left of the red line is distress.</p>
             <svg class="stx-chart" id="scatter" viewBox="0 0 720 300" style="height:300px" role="img" aria-label="Scatter of issuers by IRS score and recency"></svg>
           </div>
 
           <!-- Leaderboard -->
           <div class="stx-card">
             <div class="stx-card-h"><h3>Issuer Leaderboard</h3><span class="stx-prov-badge ai" id="lbProv">AI-computed</span></div>
-            <p class="hint">Click a column to sort. Click a row to open the issuer. Premiums priced off the IRS score.</p>
+            <p class="hint">Click a column to sort, a row to open the issuer.</p>
             <div style="overflow-x:auto">
               <table class="stx-table" id="lbTable">
                 <thead><tr>

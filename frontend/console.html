@@ -19,7 +19,7 @@
       <div class="stx-pagehead">
         <div class="stx-eyebrow">The Turing Test · AI × RWA · Mantle</div>
         <h1>AI Underwriter Console</h1>
-        <p>An autonomous agent re-underwrites RWA issuers every epoch, prices risk, and acts on-chain — humans keep the legal gate. Replayed against the <b>real USDC–SVB depeg (Mar 2023)</b> as ground truth.</p>
+        <p>Autonomous AI underwriting, replayed against the <b>real USDC–SVB depeg (Mar 2023)</b>.</p>
       </div>
 
       <!-- Recommendation-first hero -->
@@ -38,7 +38,7 @@
       <div class="stx-grid g-2" style="margin-bottom:18px">
         <div class="stx-card">
           <div class="stx-card-h"><h3>Turing Scoreboard</h3><span class="stx-prov-badge replay" id="sbProv">replay</span></div>
-          <p class="hint">Both arms read identical issuer signals. The static rulebook is blind to market sentiment by construction; the AI is not — so it sees distress first.</p>
+          <p class="hint">Same signals, two arms. The AI reads sentiment; the rulebook can't — so it sees distress first.</p>
           <div class="stx-vs">
             <div class="col ai"><div class="who">AI Underwriter</div><div class="big" id="aiLead">+3</div><div class="l">epochs of early warning</div></div>
             <div class="col base"><div class="who">Static Rulebook</div><div class="big" id="stLead">0</div><div class="l">reacted at the event</div></div>
@@ -73,7 +73,7 @@
       <!-- Replay chart -->
       <div class="stx-card" style="margin-bottom:18px">
         <div class="stx-card-h"><h3>Underwriting Replay</h3><span class="stx-prov-badge replay">replay · USDC–SVB</span><span class="stx-period">9 epochs ▾</span></div>
-        <p class="hint">AI score vs. static score each epoch. Alarm threshold = 300 (red line). Watch the AI cross into distress days before the rulebook reacts.</p>
+        <p class="hint">AI vs static score per epoch · red line = distress threshold (300).</p>
         <div class="stx-replayctl">
           <button class="stx-btn gold" id="playBtn">▶ Play replay</button>
           <input type="range" id="scrub" min="0" max="8" value="8" />
@@ -107,7 +107,7 @@
       <div class="stx-grid g-2">
         <div class="stx-card">
           <div class="stx-card-h"><h3>Agent Identity &amp; Reputation</h3></div>
-          <p class="hint">Every Strata agent carries an ERC-8004 identity; reputation accrues only from correct, timely calls — never self-asserted.</p>
+          <p class="hint">ERC-8004 identity; reputation accrues only from correct, timely calls.</p>
           <div class="stx-kv"><span class="k">ERC-8004 identity</span><span class="v" id="erc8004">Strata-Underwriter #1</span></div>
           <div class="stx-kv"><span class="k">Reputation (correct / resolved)</span><span class="v" id="rep">1 / 1</span></div>
           <div class="stx-kv"><span class="k">Scores submitted</span><span class="v" id="subs">9</span></div>
@@ -116,7 +116,7 @@
         </div>
         <div class="stx-card">
           <div class="stx-card-h"><h3>Live on Mantle</h3><span class="stx-prov-badge chain" id="netTag">Sepolia 5003</span></div>
-          <p class="hint">Flip <b>LIVE</b> (top-right) or load the tally to read the same figures straight from the deployed contracts.</p>
+          <p class="hint">Flip <b>LIVE</b> to read these figures from the deployed contracts.</p>
           <div class="stx-kv"><span class="k">StrataAIAgent</span><span class="v" id="addrAgent">— deploy pending —</span></div>
           <div class="stx-kv"><span class="k">TuringBenchmark</span><span class="v" id="addrBench">— deploy pending —</span></div>
           <div class="stx-kv"><span class="k">On-chain tally</span><span class="v" id="liveTally">—</span></div>
