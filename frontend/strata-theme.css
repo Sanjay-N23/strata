@@ -62,9 +62,9 @@ a{color:var(--ai);text-decoration:none}
   color:var(--text2);font-weight:600;font-size:.875rem;position:relative;transition:background .12s,color .12s}
 .stx-nav a svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;opacity:.85}
 .stx-nav a:hover{background:var(--surface);color:var(--text)}
-.stx-nav a.active{background:var(--surface2);color:var(--text)}
-.stx-nav a.active::before{content:'';position:absolute;left:-12px;top:8px;bottom:8px;width:3px;
-  border-radius:0 3px 3px 0;background:var(--gold)}
+.stx-nav a.active{background:var(--ai);color:#fff}
+.stx-nav a.active svg{opacity:1}
+.stx-nav a.active .tagx{color:#fff;border-color:rgba(255,255,255,.4)}
 .stx-nav a .tagx{margin-left:auto;font-family:var(--mono);font-size:.6rem;color:var(--muted);
   border:1px solid var(--border2);border-radius:5px;padding:1px 5px}
 /* sidebar footer agent status */
