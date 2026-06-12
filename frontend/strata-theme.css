@@ -428,6 +428,9 @@ body[data-mode="replay"] .stx-replay-banner{display:flex}
 body[data-page]{
   --bg:#0A0A0C; --bg2:#101013; --surface:#16171B; --surface2:#1C1D22;
   --elev:#232430; --border:#26272F; --border2:#33343E;
+  /* Step 3 — unify the app to one clean sans (Inter), matching the reference.
+     Landing keeps its display font (it has no data-page). */
+  --head:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 /* reference-style KPI stat card: icon + label → big value → % delta */
 .stx-kpi2{background:var(--surface);border:1px solid var(--border);border-radius:16px;
