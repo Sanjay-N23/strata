@@ -170,7 +170,14 @@
         '<polyline class="ln-ai" points="'+line(ai)+'"/>';
       var head = '<g id="playhead"><line class="play" x1="'+P.x(8)+'" y1="'+P.y0+'" x2="'+P.x(8)+'" y2="'+(P.y0+P.h)+'"/>'+
         '<circle id="phDot" cx="'+P.x(8)+'" cy="'+P.y(DATA[8].ai)+'" r="4.5" fill="var(--ai)" stroke="var(--bg)" stroke-width="2"/></g>';
-      $('chart').innerHTML = g + threshold + lines + head;
+      // gradient area fill under the AI line (chart-v2 retrofit)
+      var base = P.y0 + P.h;
+      var aiFill = 'M'+ai.map(function(d){return P.x(d.e)+','+P.y(d.v);}).join(' L')+' L'+P.x(8)+','+base+' L'+P.x(0)+','+base+' Z';
+      var defs = '<defs><linearGradient id="aiAreaGrad" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" style="stop-color:var(--ai);stop-opacity:.32"/>'+
+        '<stop offset="1" style="stop-color:var(--ai);stop-opacity:0"/></linearGradient></defs>';
+      var aiArea = '<path d="'+aiFill+'" fill="url(#aiAreaGrad)"/>';
+      $('chart').innerHTML = defs + g + aiArea + threshold + lines + head;
     }
     function movePlayhead(cur){
       var x = P.x(cur), ph = $('playhead');

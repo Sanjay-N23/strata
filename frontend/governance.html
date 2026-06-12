@@ -163,6 +163,16 @@
         </div>
       </div>
 
+      <!-- Routing mix (chart-v2 retrofit) -->
+      <div class="stx-card soft" style="margin-bottom:18px;display:flex;align-items:center;gap:26px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <div class="stx-card-h"><h3>Routing Mix</h3><span class="stx-prov-badge ai">AI</span></div>
+          <p class="hint" style="margin:0">How the 6 policy rules route AI actions. Most low-materiality actions clear automatically after simulation; high-value or high-risk actions escalate to the 2-of-3 quorum.</p>
+        </div>
+        <div id="govDonut"></div>
+        <div id="govLegend" style="min-width:150px"></div>
+      </div>
+
       <!-- Policy rules table -->
       <div class="stx-card pad0" style="margin-bottom:18px">
         <div class="stx-card-h" style="padding:16px 18px 12px">
@@ -481,6 +491,7 @@
   <script src="strata-config.js"></script>
   <script src="strata-shell.js"></script>
   <script src="strata-data.js"></script>
+  <script src="strata-charts.js"></script>
   <script>
     /* governance interaction logic */
     var _simTarget = null; // which queue item the modal is for
@@ -567,6 +578,20 @@
         else { b.className = 'stx-prov-badge replay'; b.textContent = 'replay'; }
       });
     });
+
+    // routing-mix donut (chart-v2 retrofit)
+    (function(){
+      if(!window.StrataCharts) return;
+      var pal=StrataCharts.palette();
+      var slices=[
+        {label:'Auto-clear', value:2, color:pal[1]},
+        {label:'2-of-3 quorum', value:4, color:pal[0]}
+      ];
+      var gd=document.getElementById('govDonut');
+      if(gd) gd.innerHTML=StrataCharts.donut(slices,{size:150,thickness:22,centerValue:'6',centerLabel:'rules'});
+      var gl=document.getElementById('govLegend');
+      if(gl) gl.innerHTML=StrataCharts.legend(slices.map(function(s){return {label:s.label,color:s.color,value:s.value};}));
+    })();
   </script>
 </body>
 </html>

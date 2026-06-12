@@ -115,6 +115,7 @@
             </div>
             <div class="stx-card">
               <div class="stx-card-h"><h3>Credit Quality</h3></div>
+              <div id="compBars" style="margin-bottom:10px"></div>
               <div class="stx-cbadges" id="cbadges"></div>
             </div>
           </div>
@@ -175,6 +176,7 @@
   <script src="strata-config.js"></script>
   <script src="strata-scoring.js"></script>
   <script src="strata-data.js"></script>
+  <script src="strata-charts.js"></script>
   <script src="strata-shell.js"></script>
   <script>
   (function(){
@@ -271,9 +273,27 @@
       });
       tenors.forEach(function(t,i){ g+='<text class="axl" text-anchor="middle" x="'+X(i)+'" y="'+(P.y0+P.h+16)+'">'+t+'</text>'; });
       var line=vals.map(function(v,i){ return X(i)+','+Y(v); }).join(' ');
+      var pBase=P.y0+P.h; // gradient area fill (chart-v2 retrofit)
+      g+='<defs><linearGradient id="pdAreaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--red);stop-opacity:.3"/><stop offset="1" style="stop-color:var(--red);stop-opacity:0"/></linearGradient></defs>';
+      g+='<path d="M'+vals.map(function(v,i){return X(i)+','+Y(v);}).join(' L')+' L'+X(tenors.length-1)+','+pBase+' L'+X(0)+','+pBase+' Z" fill="url(#pdAreaGrad)"/>';
       g+='<polyline class="ln-pd" style="opacity:1;stroke-width:2.4" points="'+line+'"/>';
       vals.forEach(function(v,i){ g+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="3.2" fill="var(--red)"/>'; });
       $('pdCurve').innerHTML=g;
+    }
+
+    // ----- component bars (chart-v2 retrofit) -----
+    function renderCompBars(){
+      if(!window.StrataCharts) return;
+      var pal=StrataCharts.palette();
+      var items=[
+        {label:'NAV', value:Math.round(c.nav/10)},
+        {label:'Attest', value:Math.round(c.att/10)},
+        {label:'Repay', value:Math.round(c.rep/10)},
+        {label:'Collat', value:Math.min(100,Math.round(c.col/120))},
+        {label:'Activity', value:Math.round(c.act/10)}
+      ];
+      items.forEach(function(it,i){ it.color=pal[i%pal.length]; });
+      $('compBars').innerHTML=StrataCharts.bar(items,{w:360,h:150,yMax:100,valueFmt:function(v){return v;},pad:{t:16,r:6,b:26,l:26}});
     }
 
     // ----- credit badges -----
@@ -301,6 +321,9 @@
       var g='';
       [0,250,500,750,1000].forEach(function(v){ var y=Y(v); g+='<line class="grid" x1="'+P.x0+'" y1="'+y+'" x2="'+(P.x0+P.w)+'" y2="'+y+'"/><text class="axl" x="6" y="'+(y+3)+'">'+v+'</text>'; });
       arr.forEach(function(v,i){ g+='<text class="axl" text-anchor="middle" x="'+X(i)+'" y="236">e'+i+'</text>'; });
+      var hBase=P.y0+P.h; // gradient area fill (chart-v2 retrofit)
+      g+='<defs><linearGradient id="histAreaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--ai);stop-opacity:.3"/><stop offset="1" style="stop-color:var(--ai);stop-opacity:0"/></linearGradient></defs>';
+      g+='<path d="M'+arr.map(function(v,i){return X(i)+','+Y(v);}).join(' L')+' L'+X(arr.length-1)+','+hBase+' L'+X(0)+','+hBase+' Z" fill="url(#histAreaGrad)"/>';
       g+='<line class="thr" x1="'+P.x0+'" y1="'+Y(ALARM)+'" x2="'+(P.x0+P.w)+'" y2="'+Y(ALARM)+'"/>';
       g+='<polyline class="ln-ai" points="'+arr.map(function(v,i){return X(i)+','+Y(v);}).join(' ')+'"/>';
       arr.forEach(function(v,i){ g+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="3" fill="var(--ai)"/>'; });
@@ -367,7 +390,7 @@
     });
 
     // ----- boot -----
-    renderHero(); renderKpis(); renderFlags(); renderDrivers(); rescore(); renderPdCurve(); renderBadges(); renderHistory(); renderRest();
+    renderHero(); renderKpis(); renderFlags(); renderDrivers(); rescore(); renderPdCurve(); renderCompBars(); renderBadges(); renderHistory(); renderRest();
   })();
   </script>
 </body>

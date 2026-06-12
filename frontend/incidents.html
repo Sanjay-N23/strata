@@ -225,6 +225,14 @@
         </div>
       </div>
 
+      <!-- SVB IRS trajectory (chart-v2 retrofit) -->
+      <div class="stx-card soft" style="margin-bottom:18px">
+        <div class="stx-card-h"><h3>INC-001 · AI IRS Trajectory</h3><span class="stx-prov-badge replay">replay</span>
+          <span class="tag" style="margin-left:auto">730 → 58 (crisis) → 620 (recovery) across 9 epochs</span></div>
+        <div id="incTraj"></div>
+        <p class="hint" style="margin:6px 0 0">The AI credit score collapsed through the distress threshold (300) at epoch 4 — three epochs before the rulebook breached — then recovered as Circle confirmed reserves.</p>
+      </div>
+
       <!-- All incidents table -->
       <div class="stx-card pad0">
         <div class="stx-card-h" style="padding:16px 18px 12px">
@@ -296,7 +304,18 @@
   <script src="strata-config.js"></script>
   <script src="strata-shell.js"></script>
   <script src="strata-data.js"></script>
+  <script src="strata-charts.js"></script>
   <script>
+    // SVB IRS-trajectory area chart (chart-v2 retrofit)
+    (function(){
+      if(!window.StrataCharts) return;
+      var traj=[730,600,440,280,150,95,58,340,620]; // AI IRS across the 9 SVB epochs
+      var labels=['e1','e2','e3','e4','e5','e6','e7','e8','e9'];
+      var el=document.getElementById('incTraj');
+      if(el) el.innerHTML=StrataCharts.area(traj,{w:900,h:170,color:StrataCharts.palette()[4],
+        labels:labels,yMax:1000,fillTop:.4,pad:{t:14,r:16,b:24,l:40}});
+    })();
+
     window.Strata && window.Strata.onMode && window.Strata.onMode(function(m) {
       document.querySelectorAll('.stx-prov-badge').forEach(function(b) {
         if (m === 'live') { b.className = 'stx-prov-badge chain'; b.textContent = 'on-chain'; }
