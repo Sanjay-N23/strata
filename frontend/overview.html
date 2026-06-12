@@ -103,6 +103,11 @@
               <a class="stx-btn ai" href="console.html">Open AI Underwriter →</a>
             </div>
           </div>
+          <div class="stx-card soft" style="margin-top:16px">
+            <div class="stx-card-h"><h3>Sector Allocation</h3><span class="stx-prov-badge ai">AI</span></div>
+            <div id="ovDonut" style="display:flex;justify-content:center;margin-top:4px"></div>
+            <div id="ovDonutLegend"></div>
+          </div>
         </div>
       </div>
 
@@ -115,6 +120,7 @@
   <script src="strata-config.js"></script>
   <script src="strata-scoring.js"></script>
   <script src="strata-data.js"></script>
+  <script src="strata-charts.js"></script>
   <script src="strata-shell.js"></script>
   <script>
   (function(){
@@ -134,8 +140,9 @@
         { k:'Avg lead', v:(k.avgLead>=0?'+':'')+k.avgLead, d:'epochs early', s:k.avgLeadSource, up:true },
         { k:'Open claims', v:k.openClaims, d:'awaiting 2-of-3', s:'ai' }
       ];
-      $('kpis').innerHTML = tiles.map(function(t){
-        return '<div class="stx-kpi"><div class="k">'+t.k+'</div><div class="v">'+t.v+'</div>'+
+      var KPI_ACC=['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)','var(--c6)'];
+      $('kpis').innerHTML = tiles.map(function(t,i){
+        return '<div class="stx-kpi soft" style="--accent:'+KPI_ACC[i%6]+'"><div class="k">'+t.k+'</div><div class="v">'+t.v+'</div>'+
           '<div class="d'+(t.up?' up':'')+'">'+t.d+' · '+provDot(t.s)+'</div></div>';
       }).join('');
       $('bAi').textContent = k.aiWins+' / '+(tally?tally.st:0);
@@ -224,6 +231,15 @@
       });
     }
 
+    // ---------- sector allocation donut (chart-v2 retrofit) ----------
+    function renderDonut(){
+      if(!window.StrataCharts) return;
+      var sd=D.getSectorDistribution(), pal=StrataCharts.palette();
+      var slices=sd.slices.map(function(s,i){ return {label:s.sector.split('/')[0].trim().split(' ')[0],value:s.exposure,color:pal[i%pal.length]}; });
+      $('ovDonut').innerHTML=StrataCharts.donut(slices,{size:172,thickness:22,centerValue:D.fmtUSD(sd.total),centerLabel:'Exposure'});
+      $('ovDonutLegend').innerHTML=StrataCharts.legend(slices.map(function(s,i){ return {label:s.label,color:s.color,value:sd.slices[i].pct.toFixed(0)+'%'}; }));
+    }
+
     // ---------- live feed ----------
     function renderFeed(){
       var ev = [
@@ -286,6 +302,7 @@
       renderTable();
       renderScatter();
       renderFeed();
+      renderDonut();
     }, 480);
   })();
   </script>
