@@ -3,1851 +3,375 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Strata Pool Management — Underwriter Dashboard</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='8,8 16,8 20,14 16,20 8,20 4,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,8 24,8 28,14 24,20 16,20 12,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,5 22,14 16,23 10,14' fill='%23F0B90B'/><circle cx='16' cy='13' r='1.5' fill='white'/></svg>">
+  <title>Strata — Capital</title>
+  <meta name="description" content="Strata capital pool — TVL, senior/junior tranche allocation, capital flows, yield, the loss waterfall, and LP positions. Senior is first-loss protected by the junior tranche and the issuer bond reserve.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='5' y='20' width='22' height='4' rx='1' fill='%23F0B90B'/><rect x='7' y='14' width='18' height='4' rx='1' fill='%235B8DEF'/><rect x='9' y='8' width='14' height='4' rx='1' fill='%2316C784'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="strata-theme.css">
   <style>
-/* ============================================================
-   Strata Pool Management — Claymorphism Design
-   ============================================================ */
-
-:root {
-  --bg-primary: #EDE7F6;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f5f6f8;
-  --text-primary: #2D3436;
-  --text-secondary: #5C676B;
-  --text-muted: #5f6b70;
-  --border-color: rgba(0,0,0,0.08);
-  --shadow-clay: 0 8px 32px rgba(0,0,0,0.12);
-  --shadow-clay-hover: 0 12px 40px rgba(0,0,0,0.18);
-  --shadow-clay-sm: 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-clay-inset: inset 2px 2px 5px rgba(0,0,0,0.15), inset -2px -2px 5px rgba(255,255,255,0.02);
-  --nav-bg: rgba(255,255,255,0.8);
-  --form-bg: #f5f5f5;
-  --form-border: rgba(0,0,0,0.1);
-  --gold: #7C4DFF;
-  --gold-light: #B388FF;
-  --gold-dim: rgba(124,77,255,0.12);
-  --accent-coral: #FF6B6B;
-  --accent-purple: #7C4DFF;
-  --color-pool: #7C4DFF;
-  --color-coverage: #E8760A;
-  --color-verify: #6C5CE7;
-  --color-payout: #00B894;
-  --color-success: #00B894;
-  --color-success-dim: rgba(0,184,148,0.12);
-  --color-danger: #EF4444;
-  --color-danger-dim: rgba(239,68,68,0.12);
-  --color-warning: #7C4DFF;
-  --color-warning-dim: rgba(124,77,255,0.12);
-  --font-heading: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
-  --radius-xl: 24px;
-  --radius-card: var(--radius-xl);
-  --radius-pill: 999px;
-  --spring: cubic-bezier(0.22, 1.2, 0.36, 1);
-  --ease-smooth: cubic-bezier(0.39, 0.575, 0.565, 1);
-  --motion: 1;
-  --nav-height: 68px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :root { --motion: 0; }
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
-
-::selection { background: rgba(124,77,255,0.25); color: #2D3436; }
-
-body {
-  font-family: var(--font-main); font-size: 0.875rem; line-height: 1.5;
-  color: var(--text-primary);
-  background: var(--bg-primary);
-  min-height: 100vh; -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
-
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(124,77,255,0.3); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(124,77,255,0.5); }
-* { scrollbar-width: thin; scrollbar-color: rgba(124,77,255,0.3) transparent; }
-
-a { color: #7C4DFF; text-decoration: none; transition: color 0.2s; }
-a:hover { color: #5E35B1; }
-h1,h2,h3,h4,h5,h6 { font-family: var(--font-heading); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; color: var(--text-primary); }
-code, pre { font-family: var(--font-mono); }
-.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-
-/* ---------- BG BLOBS ---------- */
-.bg-blobs { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; display: none; }
-.bg-blob { position: absolute; opacity: 0.08; }
-.bg-blob:nth-child(1) { top: -5%; right: -5%; animation: blob-float-1 18s ease-in-out infinite; }
-.bg-blob:nth-child(2) { bottom: -10%; left: -5%; animation: blob-float-2 22s ease-in-out infinite; }
-.bg-blob:nth-child(3) { top: 40%; right: 10%; animation: blob-float-1 25s ease-in-out infinite reverse; }
-
-@keyframes blob-float-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -20px) scale(1.05); }
-  66% { transform: translate(-20px, 15px) scale(0.95); }
-}
-@keyframes blob-float-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(-25px, 20px) scale(0.97); }
-  66% { transform: translate(15px, -25px) scale(1.03); }
-}
-
-/* ---------- NAV ---------- */
-.dash-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  height: var(--nav-height); background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  box-shadow: none;
-  display: flex; align-items: center; padding: 0 1.5rem;
-}
-.dash-nav-inner {
-  max-width: 1600px; width: 100%; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  position: relative;
-}
-.nav-logo { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; }
-.nav-logo-text { font-size: 1.25rem; font-weight: 900; color: var(--text-primary); letter-spacing: -0.03em; }
-.nav-logo .accent { color: var(--gold); }
-
-.dash-nav-links { display: flex; align-items: center; justify-content: center; gap: 0.25rem; }
-.dash-nav-link {
-  padding: 0.4rem 0.75rem; border: none; background: none; border-radius: 0;
-  font-size: 0.8125rem; font-weight: 600; color: #636E72;
-  text-decoration: none; transition: color 0.2s;
-}
-.dash-nav-link:hover { color: #F0B90B; }
-.dash-nav-link.active { color: #F0B90B; }
-
-.nav-actions { display: flex; align-items: center; gap: 0.75rem; justify-content: flex-end; }
-.badge-testnet {
-  display: inline-flex; align-items: center; gap: 0.35rem;
-  padding: 0.25rem 0.6rem; border-radius: var(--radius-pill);
-  font-size: 0.625rem; font-weight: 600; letter-spacing: 0.03em; white-space: nowrap;
-  background: rgba(124,77,255,0.1); color: #5E35B1;
-  border: 1px solid rgba(124,77,255,0.2);
-}
-.badge-testnet .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse-gold 1.5s ease-in-out infinite; }
-@keyframes pulse-gold {
-  0%,100% { box-shadow: 0 0 4px rgba(124,77,255,0.4); }
-  50% { box-shadow: 0 0 16px rgba(124,77,255,0.9); }
-}
-
-.btn-connect {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.55rem 1.25rem; border-radius: var(--radius-pill); border: none;
-  background: linear-gradient(135deg, #7C4DFF 0%, #B388FF 100%);
-  color: #ffffff; font-family: var(--font-main); font-size: 0.8125rem; font-weight: 700;
-  cursor: pointer; transition: all 0.25s var(--spring);
-  box-shadow: 4px 4px 12px rgba(124,77,255,0.3), -2px -2px 8px rgba(255,255,255,0.6);
-}
-.btn-connect:hover { transform: scale(1.04) translateY(-1px); box-shadow: 6px 6px 18px rgba(124,77,255,0.4), -3px -3px 10px rgba(255,255,255,0.7); }
-.btn-connect.connected {
-  background: var(--color-success-dim); color: var(--color-success);
-  box-shadow: var(--shadow-clay-sm); border: 1px solid rgba(0,184,148,0.2);
-}
-.btn-connect.connected:hover { background: rgba(0,184,148,0.18); }
-
-/* ---------- THEME TOGGLE ---------- */
-.theme-toggle {
-  width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1);
-  background: transparent; cursor: pointer; display: flex; align-items: center;
-  justify-content: center; position: relative; transition: all 0.3s;
-  color: #636E72;
-}
-.theme-toggle:hover { border-color: #7C4DFF; color: #7C4DFF; }
-.theme-toggle .icon-sun, .theme-toggle .icon-moon { position: absolute; transition: opacity 0.3s, transform 0.3s; }
-.icon-sun { opacity: 0; transform: scale(0.5) rotate(-90deg); }
-.icon-moon { opacity: 1; transform: scale(1); }
-[data-theme="dark"] .icon-sun { opacity: 1; transform: scale(1); }
-[data-theme="dark"] .icon-moon { opacity: 0; transform: scale(0.5) rotate(90deg); }
-[data-theme="dark"] .theme-toggle { border-color: rgba(255,255,255,0.15); color: #B2BEC3; }
-[data-theme="dark"] .theme-toggle:hover { border-color: #7C4DFF; color: #7C4DFF; }
-
-/* ---------- MAIN LAYOUT ---------- */
-.dash-main { padding-top: var(--nav-height); min-height: 100vh; position: relative; z-index: 1; }
-.dash-container { display: grid; gap: 1rem; max-width: 1200px; margin: 0 auto; padding: 1.25rem 1.5rem; }
-
-/* ---------- PAGE HEADER ---------- */
-.page-header {
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
-}
-.page-header h1 { font-size: 1.75rem; display: flex; align-items: center; gap: 0.75rem; }
-.page-header-sub { font-size: 0.875rem; color: var(--text-muted); font-weight: 500; }
-.breadcrumb { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--text-muted); }
-.breadcrumb a { color: var(--gold); font-weight: 600; }
-.breadcrumb span { color: var(--text-muted); }
-
-/* ---------- METRICS ---------- */
-.dash-row-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-
-.dash-row-metrics { align-items: stretch; }
-.metric-card-hero {
-  background: linear-gradient(135deg, #7C4DFF, #B388FF);
-  border-radius: var(--radius-card); padding: 1.25rem;
-  box-shadow: 8px 8px 20px rgba(124,77,255,0.25), -4px -4px 12px rgba(255,255,255,0.5);
-  transition: transform 0.3s var(--spring), box-shadow 0.3s;
-  display: flex; align-items: flex-start; gap: 1rem;
-  position: relative; overflow: hidden;
-}
-.metric-card-hero::before {
-  content: ''; position: absolute; top: -30%; right: -20%; width: 60%; height: 160%;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-.metric-card-hero:hover { transform: translateY(-3px); box-shadow: 10px 10px 28px rgba(124,77,255,0.35), -5px -5px 15px rgba(255,255,255,0.6); }
-.metric-card-hero .metric-icon {
-  width: 48px; height: 48px; border-radius: 14px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  background: rgba(255,255,255,0.25); color: rgba(0,0,0,0.5);
-}
-.metric-card-hero .metric-label { font-size: 0.75rem; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.25rem; }
-.metric-card-hero .metric-value { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.03em; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: #2D3436; }
-
-.metric-card {
-  background: #ffffff; color: #2D3436; border-radius: 14px; padding: 1.25rem;
-  border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  transition: transform 0.3s var(--spring), box-shadow 0.3s;
-  display: flex; align-items: flex-start; gap: 1rem;
-  position: relative; overflow: hidden;
-}
-.metric-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-clay-hover); }
-.metric-icon {
-  width: 48px; height: 48px; border-radius: 14px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.metric-icon-blue { background: rgba(124,77,255,0.2); color: #3C1F8C; }
-.metric-icon-purple { background: rgba(179,136,255,0.2); color: #3C1F8C; }
-.metric-icon-orange { background: rgba(94,53,177,0.2); color: #3C1F8C; }
-.metric-icon-green { background: rgba(0,184,148,0.2); color: #006B4F; }
-.metric-label { font-size: 0.75rem; color: #636E72; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.25rem; }
-.metric-value { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.03em; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: #2D3436; }
-
-/* ---------- GRID ROWS ---------- */
-.dash-row { display: grid; gap: 1rem; align-items: stretch; }
-.dash-row-2col { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; align-items: stretch; }
-.dash-row-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: stretch; }
-.dash-row-full { display: grid; grid-template-columns: 1fr; }
-
-/* ---------- CARD ---------- */
-.dash-card {
-  color: #2D3436;
-  background: var(--bg-card); border-radius: 16px; border: 1px solid rgba(0,0,0,0.08);
-  box-shadow: var(--shadow-clay);
-  transition: transform 0.3s var(--spring), box-shadow 0.3s;
-  overflow: hidden; position: relative;
-  display: flex; flex-direction: column;
-}
-.dash-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-clay-hover); }
-.card-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0.875rem 1.25rem; border-bottom: 1px solid rgba(0,0,0,0.08);
-}
-.card-header h3 {
-  font-size: 1.0625rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;
-  letter-spacing: -0.03em; color: #2D3436; font-family: var(--font-heading);
-}
-.card-header .card-icon {
-  width: 30px; height: 30px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-}
-.card-header .badge-live {
-  font-size: 0.625rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-  padding: 0.2rem 0.6rem; border-radius: var(--radius-pill);
-  display: flex; align-items: center; gap: 0.35rem;
-}
-.card-body { padding: 1rem 1.25rem; flex: 1; }
-
-/* ---------- YOUR POSITION ---------- */
-#positionSection { padding: 0.75rem 1.25rem; }
-.position-tranche {
-  background: var(--form-bg); border-radius: var(--radius-md); padding: 1.25rem;
-  box-shadow: var(--shadow-clay-inset); margin-bottom: 1rem;
-}
-.position-tranche:last-of-type { margin-bottom: 0; }
-.tranche-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
-.tranche-name { font-size: 0.9375rem; font-weight: 800; color: var(--text-primary); font-family: var(--font-heading); }
-.tranche-badge {
-  padding: 0.2rem 0.6rem; border-radius: var(--radius-pill);
-  font-size: 0.625rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-}
-.tranche-badge-senior { background: rgba(124,77,255,0.12); color: #7C4DFF; }
-.tranche-badge-junior { background: rgba(179,136,255,0.15); color: #B388FF; }
-
-.tranche-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; }
-.tranche-stat-label { font-size: 0.625rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 0.15rem; }
-.tranche-stat-value { font-size: 1.125rem; font-weight: 800; font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: #2D3436; }
-.tranche-stat-value.positive { color: var(--color-success); }
-.tranche-stat-value.gold { color: #5E35B1; }
-
-.position-total {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-top: 1.25rem; padding: 1rem 1.25rem;
-  background: rgba(124,77,255,0.06); border-radius: var(--radius-md);
-  box-shadow: var(--shadow-clay-inset);
-}
-.position-total-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-.position-total-value { font-size: 1.5rem; font-weight: 900; font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: #2D3436; }
-
-.position-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
-.btn-action {
-  flex: 1; padding: 0.75rem 1.5rem; border-radius: var(--radius-sm);
-  font-weight: 700; font-size: 0.875rem; font-family: var(--font-main);
-  cursor: pointer; transition: all 0.25s var(--spring);
-  text-align: center; border: none;
-}
-.btn-action-primary {
-  background: linear-gradient(135deg, #7C4DFF, #6A3DE0);
-  color: #fff; font-weight: 700; border-radius: 12px; padding: 0.75rem 1.5rem;
-  box-shadow: 4px 4px 12px rgba(124,77,255,0.3), -2px -2px 8px rgba(255,255,255,0.6);
-}
-.btn-action-primary:hover { transform: translateY(-2px); box-shadow: 6px 6px 18px rgba(124,77,255,0.4), -3px -3px 10px rgba(255,255,255,0.7); }
-.btn-action-secondary {
-  background: rgba(0,0,0,0.04);
-  border: 1px solid rgba(0,0,0,0.1);
-  color: #2D3436;
-}
-.btn-action-secondary:hover { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.2); transform: translateY(-2px); }
-
-/* ---------- POOL RATIO BAR ---------- */
-.ratio-section { margin-bottom: 1.25rem; }
-.ratio-label-row { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
-.ratio-label-row span { font-size: 0.6875rem; font-weight: 600; }
-.ratio-label-senior { color: #7C4DFF; font-weight: 700; }
-.ratio-label-junior { color: #B388FF; font-weight: 700; }
-.ratio-bar { height: 12px; border-radius: 8px; overflow: hidden; display: flex; background: rgba(0,0,0,0.06); gap: 2px; }
-.ratio-bar-senior { background: linear-gradient(90deg, #7C4DFF, #6A3DE0); border-radius: 8px; transition: width 1s var(--ease-smooth); }
-.ratio-bar-junior { background: linear-gradient(90deg, #B388FF, #D1C4E9); border-radius: 8px; transition: width 1s var(--ease-smooth); }
-
-/* Pool stats */
-.pool-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
-.pool-stat {
-  padding: 0.875rem; background: rgba(255,255,255,0.04); border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-clay-inset); transition: background 0.2s;
-}
-.pool-stat:hover { background: rgba(0,0,0,0.04); }
-.pool-stat-label { font-size: 0.625rem; color: #636E72; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 0.2rem; }
-.pool-stat-value { font-size: 1.25rem; font-weight: 800; font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: #2D3436; }
-.pool-stat-value.healthy { color: var(--color-success); }
-.pool-stat-value.warning { color: var(--color-warning); }
-.pool-stat-value.danger { color: var(--color-danger); }
-
-/* Health indicator */
-.health-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 0.35rem; vertical-align: middle; }
-.health-dot.healthy { background: var(--color-success); box-shadow: 0 0 8px rgba(0,184,148,0.5); }
-.health-dot.warning { background: var(--color-warning); box-shadow: 0 0 8px rgba(124,77,255,0.5); }
-.health-dot.danger { background: var(--color-danger); box-shadow: 0 0 8px rgba(239,68,68,0.5); }
-
-/* ---------- DEPOSIT CARDS ---------- */
-.deposit-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-.deposit-card {
-  background: var(--form-bg); border-radius: var(--radius-md); padding: 1.5rem;
-  box-shadow: var(--shadow-clay-inset); position: relative; overflow: hidden;
-}
-.deposit-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
-.deposit-card-title { font-size: 1rem; font-weight: 800; font-family: var(--font-heading); }
-.deposit-card-apy {
-  padding: 0.25rem 0.75rem; border-radius: var(--radius-pill);
-  font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono);
-}
-.apy-senior { background: rgba(124,77,255,0.12); color: #7C4DFF; }
-.apy-junior { background: rgba(179,136,255,0.15); color: #B388FF; }
-
-.risk-badge {
-  display: inline-flex; align-items: center; gap: 0.3rem;
-  padding: 0.3rem 0.75rem; border-radius: var(--radius-pill);
-  font-size: 0.6875rem; font-weight: 600; margin-bottom: 1rem;
-}
-.risk-low { background: rgba(0,184,148,0.1); color: var(--color-success); }
-.risk-high { background: rgba(239,68,68,0.1); color: var(--color-danger); }
-
-/* ---------- FORMS ---------- */
-.form-group { margin-bottom: 1rem; }
-.form-label { display: block; font-size: 0.6875rem; color: #636E72; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 0.4rem; }
-.form-input {
-  width: 100%; padding: 0.75rem 0.875rem; background: #f5f5f5;
-  border: 2px solid rgba(0,0,0,0.1); border-radius: var(--radius-sm);
-  color: #2D3436; font-family: var(--font-mono); font-size: 0.875rem;
-  transition: border-color 0.25s, box-shadow 0.25s; outline: none;
-  box-shadow: var(--shadow-clay-inset);
-}
-.form-input:hover { background: #eeeeee; }
-.form-input:focus { border-color: #7C4DFF; box-shadow: var(--shadow-clay-inset), 0 0 0 3px rgba(124,77,255,0.15); }
-.form-input::-webkit-outer-spin-button, .form-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-.form-input[type="number"] { -moz-appearance: textfield; }
-.form-hint { font-size: 0.6875rem; color: #636E72; margin-top: 0.3rem; }
-
-.form-select {
-  width: 100%; padding: 0.75rem 0.875rem; background: var(--bg-card);
-  border: 2px solid transparent; border-radius: var(--radius-sm);
-  color: var(--text-primary); font-family: var(--font-main); font-size: 0.875rem;
-  transition: border-color 0.25s, box-shadow 0.25s; outline: none;
-  -webkit-appearance: none; appearance: none;
-  box-shadow: var(--shadow-clay-inset);
-  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23636E72' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2rem;
-}
-.form-select:focus { border-color: #7C4DFF; box-shadow: var(--shadow-clay-inset), 0 0 0 3px rgba(124,77,255,0.15); }
-
-.btn-full {
-  width: 100%; padding: 0.875rem; border-radius: var(--radius-sm); border: none;
-  font-family: var(--font-main); font-size: 0.9375rem; font-weight: 700;
-  cursor: pointer; transition: all 0.25s var(--spring); text-align: center;
-}
-.btn-gold {
-  background: linear-gradient(135deg, #7C4DFF 0%, #6A3DE0 50%, #7C4DFF 100%);
-  background-size: 200% 100%; color: #ffffff;
-  box-shadow: 6px 6px 16px rgba(124,77,255,0.3), -3px -3px 10px rgba(255,255,255,0.6);
-  animation: btn-gradient 3s ease infinite;
-}
-@keyframes btn-gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.btn-gold:hover { transform: scale(1.02) translateY(-1px); box-shadow: 8px 8px 22px rgba(124,77,255,0.4), -4px -4px 14px rgba(255,255,255,0.7); }
-.btn-gold:disabled { opacity: 0.5; cursor: not-allowed; animation: none; transform: none !important; box-shadow: var(--shadow-clay-sm) !important; }
-
-.btn-outline {
-  background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.1); color: #2D3436;
-  box-shadow: var(--shadow-clay-sm);
-}
-.btn-outline:hover { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.2); transform: translateY(-2px); }
-
-.btn-junior-outline {
-  width: 100%; padding: 0.875rem; border-radius: 12px; border: 1px solid rgba(124,77,255,0.4);
-  font-family: var(--font-main); font-size: 0.9375rem; font-weight: 700;
-  cursor: pointer; transition: all 0.25s var(--spring); text-align: center;
-  background: transparent; color: #B388FF;
-}
-.btn-junior-outline:hover { background: rgba(124,77,255,0.08); border-color: #7C4DFF; transform: translateY(-2px); }
-.btn-junior-outline:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-
-/* Redemption value display */
-.redemption-display {
-  padding: 1rem; background: rgba(124,77,255,0.06); border-radius: var(--radius-sm);
-  margin-bottom: 1rem; box-shadow: var(--shadow-clay-inset);
-}
-.redemption-row { display: flex; justify-content: space-between; padding: 0.25rem 0; }
-.redemption-label { font-size: 0.75rem; color: var(--text-muted); }
-.redemption-value { font-size: 0.8125rem; font-weight: 600; font-family: var(--font-mono); color: #2D3436; }
-
-/* Gate warning */
-.gate-warning {
-  display: none; padding: 0.75rem 1rem; background: rgba(239,68,68,0.08);
-  border: 1px solid rgba(239,68,68,0.2); border-radius: var(--radius-sm);
-  font-size: 0.8125rem; color: var(--color-danger); font-weight: 600;
-  margin-bottom: 1rem; align-items: center; gap: 0.5rem;
-}
-.gate-warning.visible { display: flex; }
-
-/* ---------- WATERFALL DIAGRAM (LARGE) ---------- */
-.waterfall-large { padding: 1.5rem 0 0.5rem; }
-.waterfall-title { font-size: 0.6875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 1.25rem; text-align: center; }
-.waterfall-layer { display: flex; align-items: stretch; gap: 1rem; margin-bottom: 8px; }
-.waterfall-layer-label { width: 110px; flex-shrink: 0; text-align: right; display: flex; flex-direction: column; justify-content: center; }
-.waterfall-layer-name { font-size: 0.6875rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
-.waterfall-layer-sub { font-size: 0.6875rem; color: var(--text-muted); font-weight: 500; }
-.waterfall-bar-wrap { flex: 1; height: 40px; background: rgba(0,0,0,0.04); border-radius: 8px; overflow: hidden; position: relative; }
-.waterfall-bar {
-  height: 100%; border-radius: 8px; transition: width 1.2s var(--ease-smooth);
-  display: flex; align-items: center; padding: 0 12px;
-  width: 100% !important;
-}
-.waterfall-bar-text { font-size: 0.75rem; font-weight: 700; color: #1a1d24; white-space: nowrap; text-shadow: 0 1px 2px rgba(255,255,255,0.2); }
-.waterfall-arrow { text-align: center; color: var(--text-muted); font-size: 1.25rem; margin: 6px 0; padding-left: 110px; display: flex; justify-content: center; padding-left: calc(110px + 0.5rem); }
-.waterfall-protected { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 12px; padding: 8px 0; }
-.waterfall-protected-icon { color: var(--color-success); font-size: 1.25rem; }
-.waterfall-protected-text { font-size: 0.6875rem; font-weight: 700; color: var(--color-success); text-transform: uppercase; letter-spacing: 0.06em; }
-
-.waterfall-description {
-  margin-top: 1rem; padding: 1rem; background: var(--form-bg);
-  border-radius: var(--radius-sm); box-shadow: var(--shadow-clay-inset);
-}
-.waterfall-step { display: flex; gap: 0.75rem; padding: 0.5rem 0; }
-.waterfall-step + .waterfall-step { border-top: 1px solid rgba(0,0,0,0.04); }
-.waterfall-step-num {
-  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.6875rem; font-weight: 700; color: #1a1d24;
-}
-.waterfall-step-text { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-/* ---------- EVENTS ---------- */
-.event-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; }
-@media (max-width: 768px) { .event-list { grid-template-columns: 1fr; } }
-.event-item {
-  display: flex; align-items: flex-start; gap: 0.875rem;
-  padding: 0.625rem 0; transition: background 0.2s;
-}
-.event-item > div:last-child { flex: 1; }
-.event-item:hover { background: rgba(124,77,255,0.03); }
-.event-item + .event-item { border-top: 1px solid rgba(0,0,0,0.04); }
-.event-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 0.3rem; flex-shrink: 0; }
-.event-dot-green { background: var(--color-success); }
-.event-dot-blue { background: var(--color-pool); }
-.event-dot-gold { background: var(--gold); }
-.event-dot-purple { background: var(--accent-purple); }
-.event-text { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; }
-.event-text strong { color: var(--text-primary); font-weight: 600; }
-.event-time { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; font-family: var(--font-mono); font-weight: 500; }
-
-/* ---------- TOAST ---------- */
-.toast-container { position: fixed; top: calc(var(--nav-height) + 1rem); right: 1.5rem; z-index: 200; display: flex; flex-direction: column; gap: 0.5rem; }
-.toast {
-  padding: 0.75rem 1.25rem; background: var(--bg-card);
-  border-radius: var(--radius-md); box-shadow: var(--shadow-clay);
-  font-size: 0.8125rem; font-weight: 500; color: var(--text-primary);
-  display: flex; align-items: center; gap: 0.5rem;
-  animation: toast-in 0.3s var(--spring); max-width: 380px;
-}
-.toast.toast-success { box-shadow: var(--shadow-clay), 0 0 0 2px rgba(0,184,148,0.2); }
-.toast.toast-error { box-shadow: var(--shadow-clay), 0 0 0 2px rgba(239,68,68,0.2); }
-@keyframes toast-in { from { opacity: 0; transform: translateX(40px) scale(0.95); } to { opacity: 1; transform: translateX(0) scale(1); } }
-@keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateX(40px) scale(0.95); } }
-
-/* ---------- SCROLL REVEAL ---------- */
-.reveal {
-  opacity: 0; transform: translateY(calc(var(--motion) * 30px));
-  transition: opacity calc(var(--motion) * 0.6s) var(--ease-smooth),
-              transform calc(var(--motion) * 0.6s) var(--spring);
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
-
-
-/* ---------- NETWORK WARNING ---------- */
-.network-warning {
-  position: fixed; top: var(--nav-height); left: 0; right: 0; z-index: 99;
-  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(255,107,107,0.15) 100%);
-  border-bottom: 2px solid rgba(239,68,68,0.3);
-  font-size: 0.8125rem; font-weight: 600; color: var(--color-danger);
-  backdrop-filter: blur(12px); animation: network-warn-slide 0.3s var(--spring);
-}
-@keyframes network-warn-slide { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-.network-warning .btn-switch-network {
-  padding: 0.4rem 1rem; border-radius: var(--radius-pill); border: 1px solid rgba(239,68,68,0.3);
-  background: linear-gradient(135deg, #EF4444 0%, #F87171 100%); color: #fff;
-  font-family: var(--font-main); font-size: 0.75rem; font-weight: 700;
-  cursor: pointer; transition: all 0.2s var(--spring);
-}
-
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 1024px) {
-  .dash-row-metrics { grid-template-columns: repeat(2, 1fr); }
-  .metric-card-hero { grid-column: 1 / -1; }
-  .dash-row-2col { grid-template-columns: 1fr; }
-  .dash-row-equal { grid-template-columns: 1fr; }
-  .deposit-cards { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 768px) {
-  .dash-nav-links { display: none; }
-  .dash-container { padding: 1rem; gap: 1rem; }
-  .dash-row-metrics { grid-template-columns: 1fr 1fr; gap: 0.625rem; }
-  .page-header h1 { font-size: 1.375rem; }
-  .badge-testnet { display: none; }
-  .btn-connect { padding: 0.45rem 0.9rem; font-size: 0.75rem; }
-  .metric-value { font-size: 1.375rem; }
-  .metric-card-hero .metric-value { font-size: 1.375rem; }
-  .position-actions { flex-direction: column; }
-  .deposit-cards { grid-template-columns: 1fr; }
-  .waterfall-layer-label { width: 80px; }
-  .waterfall-bar-wrap { height: 32px; }
-  .waterfall-arrow { padding-left: 80px; }
-}
-
-@media (max-width: 480px) {
-  .dash-container { padding: 0.75rem; gap: 0.75rem; }
-  .dash-nav { padding: 0 0.75rem; }
-  .page-header h1 { font-size: 1.15rem; }
-  .metric-value { font-size: 1.25rem; }
-  .metric-card-hero .metric-value { font-size: 1.25rem; }
-  .metric-icon { width: 36px; height: 36px; border-radius: 10px; }
-  .pool-stats { grid-template-columns: 1fr 1fr; gap: 0.375rem; }
-  .pool-stat-value { font-size: 0.9375rem; }
-  .tranche-grid { grid-template-columns: 1fr; }
-  .toast-container { right: 0.75rem; left: 0.75rem; }
-  .bg-blobs { display: none; }
-}
-
-/* ---------- DARK MODE ---------- */
-[data-theme="dark"] body { background: #0f1419; }
-[data-theme="dark"] .dash-nav { background: rgba(15,20,25,0.95); border-bottom: 1px solid rgba(255,255,255,0.06); }
-[data-theme="dark"] .dash-nav .nav-logo-text { color: #ffffff; }
-[data-theme="dark"] .dash-nav-link { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .dash-nav-link:hover { color: #F0B90B; }
-[data-theme="dark"] .dash-nav-link.active { color: #F0B90B; }
-
-[data-theme="dark"] .metric-card, [data-theme="dark"] .dash-card {
-  color: #e8e8e8;
-  background: #1e2329;
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03);
-}
-[data-theme="dark"] .metric-label { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .metric-value { color: #ffffff; }
-[data-theme="dark"] .metric-icon-blue,
-[data-theme="dark"] .metric-icon-purple,
-[data-theme="dark"] .metric-icon-orange { background: rgba(124,77,255,0.15); color: #B388FF; }
-[data-theme="dark"] .metric-icon-green { background: rgba(0,184,148,0.15); color: #34D4A4; }
-[data-theme="dark"] .card-header h3 { color: #ffffff; }
-[data-theme="dark"] .card-header { border-bottom-color: rgba(255,255,255,0.06); }
-
-[data-theme="dark"] .page-header h1, [data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4 { color: #ffffff; }
-[data-theme="dark"] .page-header-sub { color: rgba(255,255,255,0.85); }
-[data-theme="dark"] .breadcrumb { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .breadcrumb span { color: rgba(255,255,255,0.7); }
-
-[data-theme="dark"] .position-tranche { background: #1e2329; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-[data-theme="dark"] .tranche-name { color: #ffffff; }
-[data-theme="dark"] .tranche-stat-label { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .tranche-stat-value { color: #ffffff; }
-[data-theme="dark"] .tranche-stat-value.positive { color: #55efc4; }
-[data-theme="dark"] .tranche-stat-value.gold { color: #B388FF; }
-
-[data-theme="dark"] .position-total { background: rgba(124,77,255,0.08); }
-[data-theme="dark"] .position-total-label { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .position-total-value { color: #ffffff; }
-
-[data-theme="dark"] .pool-stat { background: #1e2329; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-[data-theme="dark"] .pool-stat:hover { background: #252a31; }
-[data-theme="dark"] .pool-stat-label { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .pool-stat-value { color: #ffffff; }
-
-[data-theme="dark"] .ratio-bar { background: rgba(255,255,255,0.06); }
-
-[data-theme="dark"] .deposit-card { background: #1e2329; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-[data-theme="dark"] .deposit-card-title { color: #ffffff; }
-[data-theme="dark"] .form-label { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .form-input, [data-theme="dark"] .form-select { background: #1e2329; border-color: rgba(255,255,255,0.08); color: #ffffff; }
-[data-theme="dark"] .form-input:focus, [data-theme="dark"] .form-select:focus { border-color: #7C4DFF; background: #2a2f36; }
-[data-theme="dark"] .form-hint { color: rgba(255,255,255,0.7); }
-
-[data-theme="dark"] .redemption-display { background: rgba(124,77,255,0.08); }
-[data-theme="dark"] .redemption-label { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .redemption-value { color: #ffffff; }
-
-[data-theme="dark"] .waterfall-title { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .waterfall-layer-name { color: #ffffff; }
-[data-theme="dark"] .waterfall-layer-sub { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .waterfall-bar-wrap { background: #1e2329; }
-[data-theme="dark"] .waterfall-arrow { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .waterfall-description { background: #1e2329; }
-[data-theme="dark"] .waterfall-step + .waterfall-step { border-top-color: rgba(255,255,255,0.06); }
-[data-theme="dark"] .waterfall-step-text { color: rgba(255,255,255,0.7); }
-
-[data-theme="dark"] .event-item + .event-item { border-top-color: rgba(255,255,255,0.04); }
-[data-theme="dark"] .event-item:hover { background: rgba(124,77,255,0.04); }
-[data-theme="dark"] .event-text { color: rgba(255,255,255,0.7); }
-[data-theme="dark"] .event-text strong { color: #ffffff; }
-[data-theme="dark"] .event-time { color: rgba(255,255,255,0.7); }
-
-[data-theme="dark"] .toast { background: #1a1d24; color: #ffffff; }
-[data-theme="dark"] ::-webkit-scrollbar-track { background: #0f1419; }
-[data-theme="dark"] .btn-action-secondary { border-color: rgba(255,255,255,0.15); color: #fff; }
-[data-theme="dark"] .btn-outline { border-color: rgba(255,255,255,0.15); color: #fff; }
-[data-theme="dark"] .gate-warning { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.25); }
-
-/* ---------- NUCLEAR DARK MODE TEXT FIX ---------- */
-[data-theme="dark"] .page-header h1,
-[data-theme="dark"] .page-header-sub,
-[data-theme="dark"] .card-header h3,
-[data-theme="dark"] .metric-label,
-[data-theme="dark"] .metric-value,
-[data-theme="dark"] .pool-stat-label,
-[data-theme="dark"] .pool-stat-value,
-[data-theme="dark"] .tranche-stat-label,
-[data-theme="dark"] .tranche-stat-value,
-[data-theme="dark"] .position-total-label,
-[data-theme="dark"] .position-total-value,
-[data-theme="dark"] .form-label,
-[data-theme="dark"] .form-hint,
-[data-theme="dark"] .breadcrumb,
-[data-theme="dark"] .breadcrumb span,
-[data-theme="dark"] .waterfall-title,
-[data-theme="dark"] .waterfall-layer-name,
-[data-theme="dark"] .waterfall-layer-sub,
-[data-theme="dark"] .waterfall-step-text,
-[data-theme="dark"] .waterfall-description,
-[data-theme="dark"] .redemption-label,
-[data-theme="dark"] .event-time,
-[data-theme="dark"] .waterfall-arrow,
-[data-theme="dark"] p,
-[data-theme="dark"] label,
-[data-theme="dark"] .deposit-info,
-[data-theme="dark"] td,
-[data-theme="dark"] th {
-  color: rgba(255,255,255,0.85) !important;
-}
-
-[data-theme="dark"] h1,
-[data-theme="dark"] h2,
-[data-theme="dark"] h3,
-[data-theme="dark"] .metric-value,
-[data-theme="dark"] .pool-stat-value,
-[data-theme="dark"] .tranche-stat-value,
-[data-theme="dark"] .position-total-value {
-  color: #ffffff !important;
-}
-
+    .cap-ratio{display:flex;flex-direction:column;gap:14px;justify-content:center}
+    .cap-kv{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;padding:7px 0;border-bottom:1px solid var(--border)}
+    .cap-kv:last-child{border-bottom:none}
+    .cap-kv .k{color:var(--text2)} .cap-kv .v{font-family:var(--mono);font-weight:700}
+    .cap-health{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.72rem;font-weight:700;padding:2px 10px;border-radius:999px}
+    .cap-health.ok{background:var(--green-dim);color:var(--green)}
+    .cap-health .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+    /* split bar */
+    .cap-split{height:14px;border-radius:999px;overflow:hidden;display:flex;margin:4px 0 2px}
+    .cap-split i{height:100%}
+    /* APY tiles */
+    .cap-apy{display:flex;flex-direction:column;gap:12px}
+    .cap-apy-tile{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:14px}
+    .cap-apy-tile .big{font-family:var(--mono);font-weight:800;font-size:1.6rem;line-height:1}
+    .cap-apy-tile .lbl{flex:1}
+    .cap-apy-tile .lbl .t{font-weight:700;font-size:.9rem}
+    .cap-apy-tile .lbl .s{font-size:.74rem;color:var(--muted)}
+    /* waterfall */
+    .wf-bar{display:flex;height:74px;border-radius:var(--radius);overflow:hidden;margin:8px 0 14px}
+    .wf-seg{display:flex;flex-direction:column;justify-content:center;align-items:center;color:#0A0C10;
+      font-weight:700;font-size:.78rem;text-align:center;padding:6px;min-width:0}
+    .wf-seg .sub{font-family:var(--mono);font-size:.64rem;font-weight:600;opacity:.85;margin-top:2px}
+    .wf-steps{display:flex;gap:10px;flex-wrap:wrap}
+    .wf-step{flex:1;min-width:160px;display:flex;gap:9px;align-items:flex-start;font-size:.8rem;color:var(--text2)}
+    .wf-step .n{width:22px;height:22px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;
+      font-family:var(--mono);font-weight:700;font-size:.72rem;flex:none;color:var(--text)}
+    /* deposit/withdraw */
+    .cap-form .seg-toggle{display:flex;gap:6px;margin-bottom:14px}
+    .cap-form .seg-toggle button{flex:1;padding:9px;border:1px solid var(--border);background:var(--surface2);
+      color:var(--text2);border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-size:.82rem;transition:.12s}
+    .cap-form .seg-toggle button.on{border-color:var(--ai);color:var(--ai);background:var(--ai-dim)}
+    .cap-input{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:var(--radius-sm);
+      padding:10px 12px;background:var(--bg2);margin-bottom:10px}
+    .cap-input input{flex:1;background:none;border:none;color:var(--text);font-family:var(--mono);font-size:1.1rem;outline:none}
+    .cap-input .unit{font-family:var(--mono);color:var(--muted);font-size:.82rem}
+    .cap-preview{font-size:.82rem;color:var(--text2);margin-bottom:12px}
+    .cap-preview b{color:var(--text);font-family:var(--mono)}
+    .cap-gate{font-size:.78rem;color:var(--amber);background:var(--amber-dim);padding:8px 11px;border-radius:var(--radius-sm);margin-bottom:12px}
+    .cap-riskchip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:999px}
+    .cap-riskchip.low{background:var(--c1-dim);color:var(--c1)}
+    .cap-riskchip.high{background:var(--c4-dim);color:var(--c4)}
   </style>
 </head>
-<body>
+<body data-page="capital" data-mode="replay" data-theme="dark">
+  <aside class="stx-side" id="stxSide"></aside>
+  <div class="stx-content">
+    <header class="stx-top" id="stxTop"></header>
 
+    <main class="stx-main">
+      <div class="stx-pagehead">
+        <div class="stx-eyebrow">Insurance Pool · Tranches · Capital</div>
+        <h1>Capital</h1>
+        <p>The first-loss capital that backs every policy. Senior capital earns a low, protected yield; junior capital earns more and absorbs losses first — after the issuer bond reserve. The loss waterfall keeps senior triple-protected.</p>
+      </div>
 
-<!-- Network Warning Banner -->
-<div class="network-warning" id="networkWarning" style="display:none;" role="alert">
-  <span aria-hidden="true">&#9888;&#65039;</span>
-  <span>Wrong network detected. Please switch to Mantle Testnet to use Strata.</span>
-  <button class="btn-switch-network" onclick="switchToBSCTestnet()">Switch Network</button>
-</div>
+      <!-- KPI strip -->
+      <div class="stx-kpis" id="capKpis" style="grid-template-columns:repeat(5,1fr)"></div>
 
-<!-- Background Blobs -->
-<div class="bg-blobs" aria-hidden="true">
-  <svg class="bg-blob" width="400" height="350" viewBox="0 0 400 350" fill="none"><path d="M320 50c60 40 90 120 60 200s-100 120-180 110S40 300 20 220s10-140 70-170S260 10 320 50z" fill="rgba(124,77,255,0.08)"/></svg>
-  <svg class="bg-blob" width="380" height="320" viewBox="0 0 380 320" fill="none"><path d="M50 80c40-60 140-90 220-60s130 100 100 180-80 120-160 120S30 280 10 200s0-60 40-120z" fill="rgba(108,92,231,0.06)"/></svg>
-  <svg class="bg-blob" width="300" height="280" viewBox="0 0 300 280" fill="none"><path d="M240 40c50 30 70 100 50 170s-70 90-140 80S30 240 15 170 40 60 100 30s90-20 140 10z" fill="rgba(124,77,255,0.05)"/></svg>
-</div>
+      <!-- tranche allocation -->
+      <div class="stx-grid g-2" style="margin-bottom:18px">
+        <div class="stx-card soft">
+          <div class="stx-card-h"><h3>Tranche Allocation</h3><span class="stx-prov-badge replay">replay</span></div>
+          <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+            <div id="capDonut"></div>
+            <div style="flex:1;min-width:160px" id="capDonutLegend"></div>
+          </div>
+        </div>
+        <div class="stx-card soft">
+          <div class="stx-card-h"><h3>Pool Health</h3><span class="tag">senior : junior : bond</span></div>
+          <div class="cap-split" id="capSplit"></div>
+          <div class="cap-ratio" style="margin-top:10px">
+            <div class="cap-kv"><span class="k">Junior ratio (of tranches)</span><span class="v" id="capJrRatio">—</span></div>
+            <div class="cap-kv"><span class="k">Coverage ratio</span><span class="v" id="capCoverage">—</span></div>
+            <div class="cap-kv"><span class="k">Redemption gate</span><span class="v"><span class="cap-health ok"><span class="dot"></span>OPEN</span></span></div>
+            <div class="cap-kv"><span class="k">Pool health</span><span class="v"><span class="cap-health ok"><span class="dot"></span>HEALTHY</span></span></div>
+          </div>
+        </div>
+      </div>
 
-<!-- SVG Gradients -->
-<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
-  <defs>
-    <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#7C4DFF"/><stop offset="100%" stop-color="#B388FF"/>
-    </linearGradient>
-  </defs>
-</svg>
+      <!-- capital flow -->
+      <div class="stx-card soft" style="margin-bottom:18px">
+        <div class="stx-card-h"><h3>Capital Flow</h3><span class="stx-prov-badge replay">replay</span>
+          <span class="tag">pool balance by tranche · last 12 periods</span></div>
+        <div id="capFlow"></div>
+        <div id="capFlowLegend" style="margin-bottom:10px"></div>
+        <div class="stx-card-h" style="margin-top:6px"><h3 style="font-size:.9rem">Inflow vs Outflow</h3><span class="tag">last 6 periods</span></div>
+        <div id="capInOut"></div>
+        <div id="capInOutLegend"></div>
+      </div>
 
-<!-- ============================================================
-     NAVIGATION
-     ============================================================ -->
-<nav class="dash-nav" aria-label="Main navigation">
-  <div class="dash-nav-inner">
-    <a href="index.html" class="nav-logo" aria-label="Strata home">
-      <svg width="36" height="36" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <polygon points="10,9 16,9 19,13 16,17 10,17 7,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
-        <polygon points="16,9 22,9 25,13 22,17 16,17 13,13" fill="none" stroke="var(--logo-hex, #1a1a1a)" stroke-width="2"/>
-        <polygon points="16,7 20.5,13 16,19 11.5,13" fill="var(--logo-diamond, var(--gold, #F0B90B))"/><circle cx="16" cy="12.5" r="1" fill="white" opacity="0.85"/>
-      </svg>
-      <span class="nav-logo-text">Cover<span class="accent">Fi</span></span>
-    </a>
+      <!-- yield -->
+      <div class="stx-grid g-2" style="margin-bottom:18px">
+        <div class="stx-card soft">
+          <div class="stx-card-h"><h3>Tranche Yield (APY)</h3><span class="tag">senior vs junior</span></div>
+          <div id="capYield"></div>
+          <div id="capYieldLegend"></div>
+        </div>
+        <div class="stx-card soft">
+          <div class="stx-card-h"><h3>Current APY</h3></div>
+          <div class="cap-apy" id="capApy"></div>
+        </div>
+      </div>
 
-    <div class="dash-nav-links">
-      <a href="dashboard.html" class="dash-nav-link">Dashboard</a>
-      <a href="issuers.html" class="dash-nav-link">Issuers</a>
-      <a href="pool.html" class="dash-nav-link active">Pool</a>
-      <a href="coverage.html" class="dash-nav-link">Coverage</a>
-      <a href="subrogation.html" class="dash-nav-link">Subrogation</a>
-      <a href="stats.html" class="dash-nav-link">Stats</a>
-    </div>
+      <!-- loss waterfall -->
+      <div class="stx-card soft" style="margin-bottom:18px">
+        <div class="stx-card-h"><h3>Loss Waterfall</h3><span class="stx-prov-badge ai">AI</span>
+          <span class="tag">who absorbs a shortfall, and in what order</span></div>
+        <div class="wf-bar" id="capWaterfall"></div>
+        <div class="wf-steps">
+          <div class="wf-step"><span class="n">1</span><div><b style="color:var(--text)">Issuer bond reserve</b> absorbs the first loss — the issuer's own posted first-loss capital.</div></div>
+          <div class="wf-step"><span class="n">2</span><div><b style="color:var(--text)">Junior tranche</b> absorbs the next loss, in exchange for the higher yield.</div></div>
+          <div class="wf-step"><span class="n">3</span><div><b style="color:var(--text)">Senior tranche</b> is only touched last — triple-protected, hence the low-risk yield.</div></div>
+        </div>
+      </div>
 
-    <div class="nav-actions">
-      <div class="badge-testnet"><span class="dot"></span> Mantle Testnet</div>
-      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
-        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-      <button class="btn-connect" id="btnConnect" onclick="handleWalletClick()" aria-label="Connect wallet">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg>
-        Connect Wallet
-      </button>
-    </div>
+      <!-- LP positions -->
+      <div class="stx-card" style="margin-bottom:18px">
+        <div class="stx-card-h"><h3>LP Positions</h3><span class="stx-prov-badge replay">replay</span>
+          <span class="tag" id="lpCount"></span></div>
+        <div style="overflow-x:auto">
+          <table class="stx-table" id="lpTable">
+            <thead><tr>
+              <th>Address</th><th>Tranche</th><th>Token</th>
+              <th>Amount</th><th>Value</th><th>APY</th><th>PnL</th><th>Since</th>
+            </tr></thead>
+            <tbody id="lpBody"></tbody>
+          </table>
+        </div>
+        <div class="stx-pager" id="lpPager"></div>
+      </div>
+
+      <!-- deposit / withdraw (demo-safe) -->
+      <div class="stx-grid g-2" style="margin-bottom:18px">
+        <div class="stx-card cap-form">
+          <div class="stx-card-h"><h3>Provide Capital</h3><span class="cap-riskchip low" id="depRisk">LOW RISK</span></div>
+          <div class="seg-toggle" id="depToggle">
+            <button class="on" data-t="senior">Senior · srCVR</button>
+            <button data-t="junior">Junior · jrCVR</button>
+          </div>
+          <div class="cap-input"><input type="number" id="depAmt" placeholder="0.00" min="0"/><span class="unit">USDT</span></div>
+          <div class="cap-preview" id="depPreview">Enter an amount to preview the minted coverage tokens.</div>
+          <button class="stx-btn ai" id="depBtn" style="width:100%;justify-content:center">Deposit</button>
+        </div>
+        <div class="stx-card cap-form">
+          <div class="stx-card-h"><h3>Withdraw</h3><span class="tag">redeem coverage tokens</span></div>
+          <div class="seg-toggle" id="wdToggle">
+            <button class="on" data-t="senior">Senior · srCVR</button>
+            <button data-t="junior">Junior · jrCVR</button>
+          </div>
+          <div class="cap-input"><input type="number" id="wdAmt" placeholder="0.00" min="0"/><span class="unit" id="wdUnit">srCVR</span></div>
+          <div class="cap-preview" id="wdPreview">Enter an amount to preview the redemption value.</div>
+          <div class="cap-gate">Senior redemptions are prioritized; the redemption gate can pause withdrawals under stress. Gate is currently <b>OPEN</b>.</div>
+          <button class="stx-btn" id="wdBtn" style="width:100%;justify-content:center">Request withdrawal</button>
+        </div>
+      </div>
+
+      <!-- pool events -->
+      <div class="stx-card">
+        <div class="stx-card-h"><h3>Pool Events</h3><span class="stx-prov-badge replay">replay</span></div>
+        <div class="stx-feed" id="capFeed"></div>
+      </div>
+
+      <div class="stx-foot">Strata Protocol · Capital pool · <b>Presentation mode</b> — figures are seeded from the replay dataset and deposit/withdraw are demo-only (no transactions are submitted).</div>
+    </main>
   </div>
-</nav>
 
-<!-- ============================================================
-     MAIN CONTENT
-     ============================================================ -->
-<main class="dash-main" id="main-content">
-  <div class="dash-container">
+  <script src="strata-config.js"></script>
+  <script src="strata-scoring.js"></script>
+  <script src="strata-data.js"></script>
+  <script src="strata-charts.js"></script>
+  <script src="strata-shell.js"></script>
+  <script>
+  (function(){
+    var D = window.StrataData, C = window.StrataCharts;
+    var $ = function(id){ return document.getElementById(id); };
+    var pal = C.palette();
+    var COL = { senior: pal[0], junior: pal[3], bond: pal[1] }; // blue / amber / green
 
-    <!-- Page Header -->
-    <div class="page-header reveal">
-      <div>
-        <div class="breadcrumb">
-          <a href="dashboard.html">Dashboard</a>
-          <span>/</span>
-          <span>Pool Management</span>
-        </div>
-        <h1>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7C4DFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          Pool <span style="color: #7C4DFF;">Management</span>
-        </h1>
-        <p class="page-header-sub">Manage your underwriter positions and pool liquidity</p>
-      </div>
-    </div>
+    var flow = D.getCapitalFlow(12);
+    var split = D.getTrancheSplit();
+    var yld = D.getYieldHistory(9);
+    var kpis = D.getKPIs();
+    var tvl = kpis.tvl;
 
-    <!-- ==================== SECTION 1: POOL OVERVIEW METRICS ==================== -->
-    <div class="dash-row-metrics reveal">
-      <!-- TVL Hero -->
-      <div class="metric-card-hero">
-        <div class="metric-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg>
-        </div>
-        <div>
-          <div class="metric-label">Total Pool TVL</div>
-          <div class="metric-value" id="metricTVL">$0.00</div>
-        </div>
-      </div>
+    function pct(part){ return (part/split.total*100); }
 
-      <!-- Senior TVL -->
-      <div class="metric-card">
-        <div class="metric-icon metric-icon-blue">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div>
-          <div class="metric-label">Senior TVL</div>
-          <div class="metric-value" id="metricSenior">$0.00</div>
-        </div>
-      </div>
+    // ---------- toast ----------
+    function showToast(msg){
+      var t=$('stxToast');
+      if(!t){ t=document.createElement('div'); t.className='stx-toast'; t.id='stxToast'; document.body.appendChild(t); }
+      t.textContent=msg; t.classList.add('show');
+      clearTimeout(t._h); t._h=setTimeout(function(){ t.classList.remove('show'); }, 2800);
+    }
 
-      <!-- Junior TVL -->
-      <div class="metric-card">
-        <div class="metric-icon metric-icon-purple">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <div>
-          <div class="metric-label">Junior TVL</div>
-          <div class="metric-value" id="metricJunior">$0.00</div>
-        </div>
-      </div>
+    // ---------- KPIs ----------
+    function renderKpis(){
+      var prev=flow.rows[flow.rows.length-2].total, dPct=((tvl-prev)/prev*100);
+      var insured=tvl*0.78, coverage=tvl/insured*100;
+      var tiles=[
+        {k:'Pool TVL', v:D.fmtUSD(tvl), acc:'var(--c1)', delta:(dPct>=0?'+':'')+dPct.toFixed(1)+'%', dCls:dPct>=0?'up':'down'},
+        {k:'Senior tranche', v:D.fmtUSD(split.slices[0].value), acc:'var(--c1)', d:pct(split.slices[0].value).toFixed(0)+'% · low risk'},
+        {k:'Junior tranche', v:D.fmtUSD(split.slices[1].value), acc:'var(--c4)', d:pct(split.slices[1].value).toFixed(0)+'% · high yield'},
+        {k:'Bond reserve', v:D.fmtUSD(split.slices[2].value), acc:'var(--c2)', d:'first-loss'},
+        {k:'Coverage ratio', v:coverage.toFixed(0)+'%', acc:'var(--c2)', d:'healthy'}
+      ];
+      $('capKpis').innerHTML=tiles.map(function(t){
+        return '<div class="stx-kpi soft" style="--accent:'+t.acc+'"><div class="k">'+t.k+'</div>'+
+          '<div class="v">'+t.v+'</div>'+
+          (t.delta?'<div class="delta '+t.dCls+'">'+t.delta+'</div>':'<div class="d">'+t.d+'</div>')+'</div>';
+      }).join('');
+    }
 
-      <!-- Coverage Ratio -->
-      <div class="metric-card">
-        <div class="metric-icon metric-icon-green">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-        </div>
-        <div>
-          <div class="metric-label">Coverage Ratio</div>
-          <div class="metric-value" id="metricCoverage">0%</div>
-        </div>
-      </div>
-    </div>
+    // ---------- tranche donut + split ----------
+    function renderTranche(){
+      var slices=[
+        {label:'Senior', value:split.slices[0].value, color:COL.senior},
+        {label:'Junior', value:split.slices[1].value, color:COL.junior},
+        {label:'Bond reserve', value:split.slices[2].value, color:COL.bond}
+      ];
+      $('capDonut').innerHTML=C.donut(slices,{size:184,thickness:24,centerValue:D.fmtUSD(tvl),centerLabel:'Pool TVL'});
+      $('capDonutLegend').innerHTML=C.legend(slices.map(function(s){ return {label:s.label,color:s.color,value:D.fmtUSD(s.value)}; }));
+      // split bar
+      $('capSplit').innerHTML=slices.map(function(s){ return '<i style="width:'+pct(s.value).toFixed(1)+'%;background:'+s.color+'"></i>'; }).join('');
+      var jrRatio=split.slices[1].value/(split.slices[0].value+split.slices[1].value)*100;
+      $('capJrRatio').textContent=jrRatio.toFixed(1)+'%  (min 20%)';
+      $('capCoverage').textContent=(tvl/(tvl*0.78)*100).toFixed(0)+'%';
+    }
 
-    <!-- Pool Overview Card with Ratio -->
-    <div class="dash-row-full reveal">
-      <div class="dash-card">
-        <div class="card-header">
-          <h3>
-            <span class="card-icon" style="background: rgba(124,77,255,0.12); color: #7C4DFF;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
-            </span>
-            Pool Composition
-          </h3>
-          <span class="badge-live" style="background: rgba(0,184,148,0.1); color: var(--color-success);">
-            <span class="health-dot healthy" id="healthDot"></span>
-            <span id="healthLabel">Healthy</span>
-          </span>
-        </div>
-        <div class="card-body" style="padding: 1rem 1.25rem;">
-          <div class="pool-stats">
-            <div class="pool-stat">
-              <div class="pool-stat-label">Total Insured</div>
-              <div class="pool-stat-value" id="totalInsured">$0.00</div>
-            </div>
-            <div class="pool-stat">
-              <div class="pool-stat-label">Pool Health</div>
-              <div class="pool-stat-value healthy" id="poolHealth">Active</div>
-            </div>
-            <div class="pool-stat">
-              <div class="pool-stat-label">Redemption Gate</div>
-              <div class="pool-stat-value" id="redemptionGate" style="font-size: 1rem;">Inactive</div>
-            </div>
-            <div class="pool-stat">
-              <div class="pool-stat-label">Coverage Ratio (BPS)</div>
-              <div class="pool-stat-value" id="coverageBPS">0</div>
-            </div>
-          </div>
-          <div class="ratio-section">
-            <div class="ratio-label-row">
-              <span class="ratio-label-senior">Senior: <strong id="seniorPct">0%</strong></span>
-              <span class="ratio-label-junior">Junior: <strong id="juniorPct">0%</strong></span>
-            </div>
-            <div class="ratio-bar">
-              <div class="ratio-bar-senior" id="ratioBarSenior" style="width: 50%;"></div>
-              <div class="ratio-bar-junior" id="ratioBarJunior" style="width: 50%;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    // ---------- capital flow ----------
+    function renderFlow(){
+      var labels=flow.rows.map(function(r){return r.period;});
+      var series=[
+        {name:'Senior', color:COL.senior, values:flow.rows.map(function(r){return r.senior;})},
+        {name:'Junior', color:COL.junior, values:flow.rows.map(function(r){return r.junior;})},
+        {name:'Bond', color:COL.bond, values:flow.rows.map(function(r){return r.bond;})}
+      ];
+      $('capFlow').innerHTML=C.stackedArea(series,{w:900,h:240,labels:labels,valueFmt:D.fmtUSD,pad:{t:14,r:14,b:26,l:52}});
+      $('capFlowLegend').innerHTML=C.legend([
+        {label:'Senior',color:COL.senior},{label:'Junior',color:COL.junior},{label:'Bond reserve',color:COL.bond}
+      ]);
+      // inflow/outflow last 6
+      var last6=flow.rows.slice(-6);
+      var groups=last6.map(function(r){ return {label:r.period, values:[r.inflow, r.outflow]}; });
+      $('capInOut').innerHTML=C.groupedBar(groups,['Inflow','Outflow'],{w:900,h:170,valueFmt:D.fmtUSD,pad:{t:16,r:14,b:30,l:52}});
+      $('capInOutLegend').innerHTML=C.legend([{label:'Inflow',color:pal[0]},{label:'Outflow',color:pal[1]}]);
+    }
 
+    // ---------- yield ----------
+    function renderYield(){
+      var groups=yld.rows.map(function(r){ return {label:r.period, values:[r.senior, r.junior]}; });
+      $('capYield').innerHTML=C.groupedBar(groups,['Senior','Junior'],{w:520,h:230,valueFmt:function(v){return v+'%';},pad:{t:16,r:12,b:30,l:40}});
+      $('capYieldLegend').innerHTML=C.legend([{label:'Senior APY',color:pal[0]},{label:'Junior APY',color:pal[1]}]);
+      $('capApy').innerHTML=
+        '<div class="cap-apy-tile"><div class="big" style="color:'+COL.senior+'">'+yld.current.srApy.toFixed(1)+'%</div>'+
+          '<div class="lbl"><div class="t">Senior · srCVR</div><div class="s">Low risk · triple-protected</div></div>'+
+          C.sparkline(yld.srSpark,{w:80,h:28,color:COL.senior})+'</div>'+
+        '<div class="cap-apy-tile"><div class="big" style="color:'+COL.junior+'">'+yld.current.jrApy.toFixed(1)+'%</div>'+
+          '<div class="lbl"><div class="t">Junior · jrCVR</div><div class="s">High yield · first-loss after bond</div></div>'+
+          C.sparkline(yld.jrSpark,{w:80,h:28,color:COL.junior})+'</div>';
+    }
 
-    <!-- ==================== SECTION 2: YOUR POSITION ==================== -->
-    <div class="dash-row-full reveal">
-      <div class="dash-card">
-        <div class="card-header">
-          <h3>
-            <span class="card-icon" style="background: rgba(124,77,255,0.12); color: #7C4DFF;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            </span>
-            Your Pool Position
-          </h3>
-        </div>
-        <div class="card-body" id="positionSection">
-          <!-- No wallet connected state -->
-          <div id="noWalletPosition" style="text-align: center; padding: 1.25rem;">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="opacity: 0.4; margin-bottom: 0.5rem;"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg>
-            <p style="font-size: 0.875rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.15rem;">Connect Wallet</p>
-            <p style="font-size: 0.8125rem; color: var(--text-muted);">Connect your wallet to view your pool positions</p>
-          </div>
+    // ---------- loss waterfall ----------
+    function renderWaterfall(){
+      var wf=D.getLossWaterfall(); // bond, junior, senior
+      var total=wf.layers.reduce(function(a,l){return a+l.value;},0);
+      var colByKey={bond:COL.bond,junior:COL.junior,senior:COL.senior};
+      $('capWaterfall').innerHTML=wf.layers.map(function(l){
+        var w=l.value/total*100;
+        return '<div class="wf-seg" style="width:'+w.toFixed(1)+'%;background:'+colByKey[l.key]+'">'+
+          '<span>'+l.label+'</span><span class="sub">'+l.sub+' · '+D.fmtUSD(l.value)+'</span></div>';
+      }).join('');
+    }
 
-          <!-- Connected state -->
-          <div id="walletPosition" style="display: none;">
-            <!-- Senior Tranche -->
-            <div class="position-tranche">
-              <div class="tranche-header">
-                <span class="tranche-name">Senior Tranche (srCVR)</span>
-                <span class="tranche-badge tranche-badge-senior">LOW RISK</span>
-              </div>
-              <div class="tranche-grid">
-                <div>
-                  <div class="tranche-stat-label">Balance</div>
-                  <div class="tranche-stat-value" id="srBalance">0 srCVR</div>
-                </div>
-                <div>
-                  <div class="tranche-stat-label">Value (USDT)</div>
-                  <div class="tranche-stat-value positive" id="srValue">$0.00</div>
-                </div>
-                <div>
-                  <div class="tranche-stat-label">APY</div>
-                  <div class="tranche-stat-value gold" id="srAPY">4.2%</div>
-                </div>
-                <div>
-                  <div class="tranche-stat-label">Exchange Rate</div>
-                  <div class="tranche-stat-value" id="srExRate">1.00 USDT/srCVR</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Junior Tranche -->
-            <div class="position-tranche">
-              <div class="tranche-header">
-                <span class="tranche-name">Junior Tranche (jrCVR)</span>
-                <span class="tranche-badge tranche-badge-junior">HIGH YIELD</span>
-              </div>
-              <div class="tranche-grid">
-                <div>
-                  <div class="tranche-stat-label">Balance</div>
-                  <div class="tranche-stat-value" id="jrBalance">0 jrCVR</div>
-                </div>
-                <div>
-                  <div class="tranche-stat-label">Value (USDT)</div>
-                  <div class="tranche-stat-value positive" id="jrValue">$0.00</div>
-                </div>
-                <div>
-                  <div class="tranche-stat-label">APY</div>
-                  <div class="tranche-stat-value gold" id="jrAPY">9.8%</div>
-                </div>
-                <div>
-                  <div class="tranche-stat-label">Epoch Yield</div>
-                  <div class="tranche-stat-value positive" id="jrEpochYield">$0.00</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Total Position -->
-            <div class="position-total">
-              <div>
-                <div class="position-total-label">Total Position</div>
-                <div class="position-total-value" id="totalPosition">$0.00</div>
-              </div>
-              <div style="text-align: right;">
-                <div class="position-total-label">Total Yield Earned</div>
-                <div class="position-total-value positive" id="totalYield" style="color: var(--color-success);">$0.00</div>
-              </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="position-actions">
-              <button class="btn-action btn-action-primary" onclick="scrollToDeposit()">Deposit More</button>
-              <button class="btn-action btn-action-secondary" onclick="scrollToWithdraw()">Request Withdrawal</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ==================== SECTION 3: DEPOSIT ==================== -->
-    <div class="dash-row-full reveal" id="depositSection">
-      <div class="dash-card">
-        <div class="card-header">
-          <h3>
-            <span class="card-icon" style="background: rgba(124,77,255,0.12); color: #7C4DFF;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-            </span>
-            Deposit into Pool
-          </h3>
-        </div>
-        <div class="card-body">
-          <div class="deposit-cards">
-            <!-- Senior Deposit -->
-            <div class="deposit-card">
-              <div class="deposit-card-header">
-                <span class="deposit-card-title" style="color: #7C4DFF;">Senior Tranche</span>
-                <span class="deposit-card-apy apy-senior">APY ~4.2%</span>
-              </div>
-              <div class="risk-badge risk-low">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Low Risk &mdash; First loss absorbed by Junior + Bond
-              </div>
-              <div class="form-group">
-                <label class="form-label">Amount (USDT)</label>
-                <input type="number" class="form-input" id="seniorDepositAmt" placeholder="0.00" min="0" step="0.01">
-                <div class="form-hint">Min deposit: 10 USDT. You will receive srCVR tokens.</div>
-              </div>
-              <button class="btn-full btn-gold" id="btnDepositSenior" onclick="depositSenior()" disabled>
-                Deposit Senior
-              </button>
-            </div>
-
-            <!-- Junior Deposit -->
-            <div class="deposit-card">
-              <div class="deposit-card-header">
-                <span class="deposit-card-title" style="color: var(--accent-purple);">Junior Tranche</span>
-                <span class="deposit-card-apy apy-junior">APY ~9.8%</span>
-              </div>
-              <div class="risk-badge risk-high">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                Higher Risk &mdash; First loss after bond reserve
-              </div>
-              <div class="form-group">
-                <label class="form-label">Amount (USDT)</label>
-                <input type="number" class="form-input" id="juniorDepositAmt" placeholder="0.00" min="0" step="0.01">
-                <div class="form-hint">Min deposit: 10 USDT. You will receive jrCVR tokens.</div>
-              </div>
-              <button class="btn-full btn-junior-outline" id="btnDepositJunior" onclick="depositJunior()" disabled>
-                Deposit Junior
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ==================== SECTION 4: WITHDRAWAL ==================== -->
-    <div class="dash-row-full reveal" id="withdrawSection">
-      <div class="dash-card">
-        <div class="card-header">
-          <h3>
-            <span class="card-icon" style="background: rgba(124,77,255,0.12); color: #7C4DFF;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/></svg>
-            </span>
-            Request Withdrawal
-          </h3>
-        </div>
-        <div class="card-body">
-          <div class="gate-warning" id="gateWarning">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            Redemption gate is currently active. Withdrawals may be delayed or restricted.
-          </div>
-
-          <!-- Two-column layout: form left, info panel right -->
-          <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
-
-            <!-- Left: withdrawal form -->
-            <div style="flex: 1 1 340px; min-width: 280px;">
-              <div class="form-group">
-                <label class="form-label">Select Tranche</label>
-                <select class="form-select" id="withdrawTranche" onchange="updateRedemptionPreview()">
-                  <option value="senior">Senior Tranche (srCVR)</option>
-                  <option value="junior">Junior Tranche (jrCVR)</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Amount to Withdraw</label>
-                <input type="number" class="form-input" id="withdrawAmt" placeholder="0.00" min="0" step="0.01" oninput="updateRedemptionPreview()">
-                <div class="form-hint">
-                  Available: <strong id="withdrawAvailable">0.00</strong> <span id="withdrawTokenName">srCVR</span>
-                </div>
-              </div>
-
-              <div class="redemption-display" id="redemptionPreview">
-                <div class="redemption-row">
-                  <span class="redemption-label">Token Amount</span>
-                  <span class="redemption-value" id="redemptionTokens">0.00 srCVR</span>
-                </div>
-                <div class="redemption-row">
-                  <span class="redemption-label">Exchange Rate</span>
-                  <span class="redemption-value" id="redemptionRate">1.00 USDT/srCVR</span>
-                </div>
-                <div class="redemption-row" style="border-top: 1px solid rgba(0,0,0,0.06); padding-top: 0.5rem; margin-top: 0.25rem;">
-                  <span class="redemption-label" style="font-weight: 700;">Redemption Value</span>
-                  <span class="redemption-value" id="redemptionValue" style="color: var(--color-success); font-weight: 800; font-size: 1rem;">$0.00 USDT</span>
-                </div>
-              </div>
-
-              <button class="btn-full btn-outline" id="btnWithdraw" onclick="requestWithdrawal()" disabled>
-                Request Withdrawal
-              </button>
-            </div>
-
-            <!-- Right: withdrawal info panel (expands as more content is added) -->
-            <div style="flex: 1 1 260px; min-width: 220px; display: flex; flex-direction: column; gap: 0.75rem;">
-              <div style="background: var(--gold-dim); border-radius: var(--radius-md); padding: 1.25rem;">
-                <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 0.75rem;">How Withdrawals Work</div>
-                <div style="display: flex; flex-direction: column; gap: 0.625rem;">
-                  <div style="display: flex; gap: 0.625rem; align-items: flex-start;">
-                    <span style="width: 20px; height: 20px; border-radius: 50%; background: var(--color-pool); color: #fff; font-size: 0.625rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">1</span>
-                    <span style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.45;">Enter token amount and confirm the redemption value.</span>
-                  </div>
-                  <div style="display: flex; gap: 0.625rem; align-items: flex-start;">
-                    <span style="width: 20px; height: 20px; border-radius: 50%; background: var(--color-pool); color: #fff; font-size: 0.625rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">2</span>
-                    <span style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.45;">Request is queued on-chain. Senior withdrawals are processed first.</span>
-                  </div>
-                  <div style="display: flex; gap: 0.625rem; align-items: flex-start;">
-                    <span style="width: 20px; height: 20px; border-radius: 50%; background: var(--color-pool); color: #fff; font-size: 0.625rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">3</span>
-                    <span style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.45;">USDT is transferred to your wallet once liquidity is available.</span>
-                  </div>
-                </div>
-              </div>
-              <div style="background: var(--bg-card-hover); border-radius: var(--radius-md); padding: 1.25rem; border: 1px solid var(--border-color);">
-                <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 0.75rem;">Current Exchange Rates</div>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--border-color);">
-                  <span style="font-size: 0.8125rem; color: var(--text-secondary);">srCVR → USDT</span>
-                  <span style="font-size: 0.8125rem; font-weight: 700; color: var(--color-success);" id="infoRateSenior">1.67 USDT</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0;">
-                  <span style="font-size: 0.8125rem; color: var(--text-secondary);">jrCVR → USDT</span>
-                  <span style="font-size: 0.8125rem; font-weight: 700; color: var(--color-success);" id="infoRateJunior">1.00 USDT</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ==================== SECTION 5: LOSS WATERFALL ==================== -->
-    <div class="dash-row-full reveal">
-      <div class="dash-card">
-        <div class="card-header">
-          <h3>
-            <span class="card-icon" style="background: rgba(124,77,255,0.12); color: #7C4DFF;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M2 12h20"/></svg>
-            </span>
-            Loss Waterfall
-          </h3>
-          <span class="badge-live" style="background: rgba(232,118,10,0.1); color: var(--color-coverage);">
-            3-Layer Protection
-          </span>
-        </div>
-        <div class="card-body">
-          <div class="waterfall-large">
-            <div class="waterfall-title">How Losses Flow Through the Pool</div>
-
-            <!-- Layer 1: Bond Reserve -->
-            <div class="waterfall-layer">
-              <div class="waterfall-layer-label">
-                <div class="waterfall-layer-name">Bond Reserve</div>
-                <div class="waterfall-layer-sub">1st Loss</div>
-              </div>
-              <div class="waterfall-bar-wrap">
-                <div class="waterfall-bar" style="background: linear-gradient(90deg, #5E35B1, #7C4DFF);">
-                  <span class="waterfall-bar-text">Issuer Bond &mdash; Absorbed First</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="waterfall-arrow">&#8595;</div>
-
-            <!-- Layer 2: Junior -->
-            <div class="waterfall-layer">
-              <div class="waterfall-layer-label">
-                <div class="waterfall-layer-name">Junior (jrCVR)</div>
-                <div class="waterfall-layer-sub">2nd Loss</div>
-              </div>
-              <div class="waterfall-bar-wrap">
-                <div class="waterfall-bar" id="waterfallJunior" style="background: linear-gradient(90deg, #7C4DFF, #6A3DE0);">
-                  <span class="waterfall-bar-text">Higher Yield &mdash; Higher Risk</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="waterfall-arrow">&#8595;</div>
-
-            <!-- Layer 3: Senior -->
-            <div class="waterfall-layer">
-              <div class="waterfall-layer-label">
-                <div class="waterfall-layer-name">Senior (srCVR)</div>
-                <div class="waterfall-layer-sub">3rd Loss</div>
-              </div>
-              <div class="waterfall-bar-wrap">
-                <div class="waterfall-bar" id="waterfallSenior" style="background: linear-gradient(90deg, #B388FF, #D1C4E9);">
-                  <span class="waterfall-bar-text">Lower Yield &mdash; Protected</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Protected label -->
-            <div class="waterfall-protected">
-              <span class="waterfall-protected-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </span>
-              <span class="waterfall-protected-text">Senior Tranche is Triple-Protected</span>
-            </div>
-          </div>
-
-          <!-- Waterfall Description -->
-          <div class="waterfall-description">
-            <div class="waterfall-step">
-              <div class="waterfall-step-num" style="background: #5E35B1;">1</div>
-              <div class="waterfall-step-text"><strong>Bond Reserve</strong> absorbs losses first. Each issuer posts a bond that acts as first-loss capital. If losses are small, only the bond is affected.</div>
-            </div>
-            <div class="waterfall-step">
-              <div class="waterfall-step-num" style="background: #7C4DFF;">2</div>
-              <div class="waterfall-step-text"><strong>Junior Tranche (jrCVR)</strong> absorbs losses after the bond is exhausted. Junior LPs earn higher yields (9-12% APY) in exchange for taking on more risk.</div>
-            </div>
-            <div class="waterfall-step">
-              <div class="waterfall-step-num" style="background: #B388FF;">3</div>
-              <div class="waterfall-step-text"><strong>Senior Tranche (srCVR)</strong> is only affected after both the bond and junior tranche are fully depleted. Senior LPs earn stable yields (3-5% APY) with maximum protection.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ==================== SECTION 6: POOL EVENTS ==================== -->
-    <div class="dash-row-full reveal">
-      <div class="dash-card">
-        <div class="card-header">
-          <h3>
-            <span class="card-icon" style="background: rgba(124,77,255,0.12); color: #7C4DFF;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
-            </span>
-            Pool Events
-          </h3>
-          <span class="badge-live" style="background: rgba(0,184,148,0.1); color: var(--color-success);">
-            <span style="width:6px;height:6px;border-radius:50%;background:var(--color-success);display:inline-block;animation:pulse-green 1.5s ease-in-out infinite;"></span>
-            LIVE
-          </span>
-        </div>
-        <div class="card-body" style="padding: 1.25rem;">
-          <div class="event-list" id="eventList">
-            <div class="event-item">
-              <div class="event-dot event-dot-blue"></div>
-              <div>
-                <div class="event-text"><strong>Senior Deposit</strong> &mdash; 5,000 USDT deposited into Senior Tranche</div>
-                <div class="event-time">2 hours ago &bull; 0x7a3f...b2c1</div>
-              </div>
-            </div>
-            <div class="event-item">
-              <div class="event-dot event-dot-purple"></div>
-              <div>
-                <div class="event-text"><strong>Junior Deposit</strong> &mdash; 2,000 USDT deposited into Junior Tranche</div>
-                <div class="event-time">4 hours ago &bull; 0x9e21...4f8a</div>
-              </div>
-            </div>
-            <div class="event-item">
-              <div class="event-dot event-dot-gold"></div>
-              <div>
-                <div class="event-text"><strong>Premium Distributed</strong> &mdash; 125 USDT premium allocated to pool</div>
-                <div class="event-time">6 hours ago &bull; Epoch #42</div>
-              </div>
-            </div>
-            <div class="event-item">
-              <div class="event-dot event-dot-green"></div>
-              <div>
-                <div class="event-text"><strong>Withdrawal Executed</strong> &mdash; 1,000 srCVR redeemed for 1,050 USDT</div>
-                <div class="event-time">12 hours ago &bull; 0x3b71...c9e2</div>
-              </div>
-            </div>
-            <div class="event-item">
-              <div class="event-dot event-dot-blue"></div>
-              <div>
-                <div class="event-text"><strong>Senior Deposit</strong> &mdash; 10,000 USDT deposited into Senior Tranche</div>
-                <div class="event-time">1 day ago &bull; 0xf219...8d34</div>
-              </div>
-            </div>
-            <div class="event-item">
-              <div class="event-dot event-dot-gold"></div>
-              <div>
-                <div class="event-text"><strong>Premium Distributed</strong> &mdash; 98 USDT premium allocated to pool</div>
-                <div class="event-time">1 day ago &bull; Epoch #41</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</main>
-
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
-
-<!-- ============================================================
-     SCRIPTS
-     ============================================================ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-<script src="contract-abis.js"></script>
-<script>
-// ============================================================
-// Strata Pool Management — Application Logic
-// ============================================================
-
-// Contract Addresses
-const CONTRACTS = {
-  InsurancePool: '0xF1E25246D7Dcc8E63EAe39BE03DEae0C2Ed93E71',
-  srCVR:         '0xa4ECEB47F80a32D7176C23e4993cDa4d2337Fc3A',
-  jrCVR:         '0x1Ca7B678BDf1deCe9964c5178C01AB9312F2664D',
-  MockUSDT:      '0x38907cC4E615D3C7BDCBC9910C050260bBC836E5',
-  MockERC3643Token: '0xa7C664459C66325Cd9dB15245DD901f1623c9655'
-};
-const DEMO_ISSUER_TOKEN = CONTRACTS.MockERC3643Token;
-
-const BSC_TESTNET_CHAIN_ID = '0x85'; // 133
-const RPC_URL = 'https://rpc.mantle.xyz';
-
-let provider = null;
-let signer = null;
-let userAddress = null;
-let poolContract = null;
-let srCVRContract = null;
-let jrCVRContract = null;
-let usdtContract = null;
-
-// Exchange rates fetched from on-chain contracts
-let seniorExchangeRate = 1.0;
-let juniorRate = 1.0;
-
-// ---------- THEME ----------
-function toggleTheme() {
-  const html = document.documentElement;
-  const current = html.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
-  localStorage.setItem('coverfi-theme', next);
-}
-
-(function initTheme() {
-  const saved = localStorage.getItem('coverfi-theme');
-  if (saved) {
-    document.documentElement.setAttribute('data-theme', saved);
-  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
-})();
-
-// ---------- WALLET ----------
-async function handleWalletClick() {
-  if (userAddress) return;
-  if (!window.ethereum) {
-    showToast('Please install MetaMask to connect', 'error');
-    return;
-  }
-  try {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    if (accounts.length === 0) return;
-    await setupProvider(accounts[0]);
-  } catch (e) {
-    showToast('Wallet connection failed: ' + e.message, 'error');
-  }
-}
-
-async function setupProvider(account) {
-  provider = new ethers.BrowserProvider(window.ethereum);
-  signer = await provider.getSigner();
-  userAddress = account;
-
-  // Check chain
-  const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-  if (chainId !== BSC_TESTNET_CHAIN_ID) {
-    document.getElementById('networkWarning').style.display = 'flex';
-  } else {
-    document.getElementById('networkWarning').style.display = 'none';
-  }
-
-  // Init contracts
-  poolContract = new ethers.Contract(CONTRACTS.InsurancePool, COVERFI_ABIS.InsurancePool, signer);
-  srCVRContract = new ethers.Contract(CONTRACTS.srCVR, COVERFI_ABIS.srCVR, signer);
-  jrCVRContract = new ethers.Contract(CONTRACTS.jrCVR, COVERFI_ABIS.jrCVR, signer);
-  var ERC20_ABI = ['function approve(address,uint256) returns (bool)', 'function balanceOf(address) view returns (uint256)', 'function allowance(address,address) view returns (uint256)'];
-  usdtContract = new ethers.Contract(CONTRACTS.MockUSDT, ERC20_ABI, signer);
-
-  // Update UI
-  localStorage.setItem('coverfi-wallet-connected', 'true');
-  const btn = document.getElementById('btnConnect');
-  const short = account.slice(0, 6) + '...' + account.slice(-4);
-  btn.textContent = short;
-  btn.classList.add('connected');
-
-  // Enable buttons
-  document.getElementById('btnDepositSenior').disabled = false;
-  document.getElementById('btnDepositSenior').textContent = 'Approve & Deposit Senior';
-  document.getElementById('btnDepositJunior').disabled = false;
-  document.getElementById('btnDepositJunior').textContent = 'Approve & Deposit Junior';
-  document.getElementById('btnWithdraw').disabled = false;
-  document.getElementById('btnWithdraw').textContent = 'Request Withdrawal';
-
-  // Show position
-  document.getElementById('noWalletPosition').style.display = 'none';
-  document.getElementById('walletPosition').style.display = 'block';
-
-  // Load data
-  await loadPoolData();
-  await fetchExchangeRates();
-  await loadUserPosition();
-
-  showToast('Wallet connected: ' + short, 'success');
-}
-
-async function switchToBSCTestnet() {
-  try {
-    await window.ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: BSC_TESTNET_CHAIN_ID }]
+    // ---------- LP positions ----------
+    var lp=D.getLpPositions(), lpPage=1, lpSize=5;
+    function renderLp(){
+      var pages=Math.max(1,Math.ceil(lp.length/lpSize));
+      if(lpPage>pages) lpPage=pages;
+      var slice=lp.slice((lpPage-1)*lpSize, lpPage*lpSize);
+      $('lpBody').innerHTML=slice.map(function(r){
+        var trCls=r.tranche==='Senior'?'ai':'warn';
+        return '<tr>'+
+          '<td class="mono">'+r.addr+'</td>'+
+          '<td><span class="stx-badge '+trCls+'">'+r.tranche+'</span></td>'+
+          '<td class="mono">'+r.token+'</td>'+
+          '<td class="num">'+D.fmtUSD(r.amount)+'</td>'+
+          '<td class="num">'+D.fmtUSD(r.value)+'</td>'+
+          '<td class="num">'+r.apy.toFixed(1)+'%</td>'+
+          '<td class="num" style="color:var(--green)">+'+r.pnl.toFixed(1)+'%</td>'+
+          '<td class="num">'+r.since+'</td></tr>';
+      }).join('');
+      $('lpCount').textContent=lp.length+' positions';
+      $('lpPager').innerHTML='<span class="pg-info">Page '+lpPage+' of '+pages+'</span>'+
+        '<button '+(lpPage<=1?'disabled':'')+' data-pg="prev">‹ Prev</button>'+
+        '<button '+(lpPage>=pages?'disabled':'')+' data-pg="next">Next ›</button>';
+    }
+    $('lpPager').addEventListener('click',function(e){
+      var b=e.target.closest('button[data-pg]'); if(!b) return;
+      lpPage += (b.getAttribute('data-pg')==='next'?1:-1); renderLp();
     });
-    document.getElementById('networkWarning').style.display = 'none';
-  } catch (e) {
-    if (e.code === 4902) {
-      await window.ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [{
-          chainId: BSC_TESTNET_CHAIN_ID,
-          chainName: 'Mantle Mainnet',
-          nativeCurrency: { name: 'MNT', symbol: 'MNT', decimals: 18 },
-          rpcUrls: [RPC_URL],
-          blockExplorerUrls: ['https://explorer.mantle.xyz']
-        }]
+
+    // ---------- deposit / withdraw (demo-safe) ----------
+    var SR_RATE=1.04, JR_RATE=1.12; // NAV (USDT per token), seeded
+    var depTranche='senior', wdTranche='senior';
+    function depPreview(){
+      var amt=parseFloat($('depAmt').value)||0;
+      var rate=depTranche==='senior'?SR_RATE:JR_RATE, tok=depTranche==='senior'?'srCVR':'jrCVR';
+      var apy=depTranche==='senior'?yld.current.srApy:yld.current.jrApy;
+      if(amt<=0){ $('depPreview').textContent='Enter an amount to preview the minted coverage tokens.'; return; }
+      $('depPreview').innerHTML='Mints ≈ <b>'+(amt/rate).toFixed(2)+' '+tok+'</b> at NAV '+rate.toFixed(2)+
+        ' · est. <b>'+apy.toFixed(1)+'% APY</b>';
+    }
+    function wdPreview(){
+      var amt=parseFloat($('wdAmt').value)||0;
+      var rate=wdTranche==='senior'?SR_RATE:JR_RATE, tok=wdTranche==='senior'?'srCVR':'jrCVR';
+      $('wdUnit').textContent=tok;
+      if(amt<=0){ $('wdPreview').textContent='Enter an amount to preview the redemption value.'; return; }
+      $('wdPreview').innerHTML='Redeems ≈ <b>'+D.fmtUSD(amt*rate)+'</b> ('+amt+' '+tok+' × NAV '+rate.toFixed(2)+')';
+    }
+    $('depToggle').addEventListener('click',function(e){
+      var b=e.target.closest('button[data-t]'); if(!b) return;
+      depTranche=b.getAttribute('data-t');
+      $('depToggle').querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
+      var risk=$('depRisk'); risk.className='cap-riskchip '+(depTranche==='senior'?'low':'high');
+      risk.textContent=depTranche==='senior'?'LOW RISK':'HIGH YIELD';
+      depPreview();
+    });
+    $('wdToggle').addEventListener('click',function(e){
+      var b=e.target.closest('button[data-t]'); if(!b) return;
+      wdTranche=b.getAttribute('data-t');
+      $('wdToggle').querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
+      wdPreview();
+    });
+    $('depAmt').addEventListener('input',depPreview);
+    $('wdAmt').addEventListener('input',wdPreview);
+    $('depBtn').addEventListener('click',function(){ showToast('Demo mode — no transaction submitted. Connect on Mantle Sepolia to deposit for real.'); });
+    $('wdBtn').addEventListener('click',function(){ showToast('Demo mode — no transaction submitted. Withdrawals run on Mantle Sepolia.'); });
+
+    // ---------- pool events ----------
+    function renderFeed(){
+      var ev=[
+        {t:'now', m:'<b>Senior</b> deposit +'+D.fmtUSD(120000)+' · srCVR minted'},
+        {t:'8m',  m:'<b>AI</b> repriced coverage — junior APY → '+yld.current.jrApy.toFixed(1)+'%'},
+        {t:'31m', m:'<b>Junior</b> withdrawal request '+D.fmtUSD(45000)+' · queued'},
+        {t:'2h',  m:'Bond reserve topped up · coverage ratio '+(tvl/(tvl*0.78)*100).toFixed(0)+'%'},
+        {t:'5h',  m:'<b>Senior</b> deposit +'+D.fmtUSD(310000)+' · gate OPEN'},
+        {t:'1d',  m:'Epoch yield distributed to <b>jrCVR</b> holders'}
+      ];
+      $('capFeed').innerHTML=ev.map(function(e){ return '<div class="row"><span class="ts">'+e.t+'</span><span class="msg">'+e.m+'</span></div>'; }).join('');
+    }
+
+    // mode reaction
+    window.Strata && window.Strata.onMode && window.Strata.onMode(function(m){
+      document.querySelectorAll('.stx-prov-badge').forEach(function(b){
+        if(m==='live'){ b.className='stx-prov-badge chain'; b.textContent='on-chain'; }
+        else { b.className='stx-prov-badge replay'; b.textContent='replay'; }
       });
-    }
-  }
-}
-
-// ---------- FETCH EXCHANGE RATES ----------
-async function fetchExchangeRates() {
-  if (!srCVRContract || !jrCVRContract) return;
-  try {
-    var results = await Promise.allSettled([
-      srCVRContract.getCurrentExchangeRate(),
-      jrCVRContract.getPoolUnderlying(DEMO_ISSUER_TOKEN),
-      jrCVRContract.poolSupply(DEMO_ISSUER_TOKEN),
-      jrCVRContract.currentEpoch()
-    ]);
-
-    if (results[0].status === 'fulfilled') {
-      seniorExchangeRate = parseFloat(ethers.formatUnits(results[0].value, 18));
-      // No floor — show real rate even post-liquidation (< 1.0 means loss)
-    }
-
-    if (results[1].status === 'fulfilled' && results[2].status === 'fulfilled') {
-      var jrUnderlying = results[1].value;
-      var jrSupply = results[2].value;
-      if (jrSupply > 0n) {
-        juniorRate = parseFloat(ethers.formatUnits(jrUnderlying, 18)) /
-                     parseFloat(ethers.formatUnits(jrSupply, 18));
-      }
-    }
-
-    if (results[3].status === 'fulfilled') {
-      var epoch = results[3].value;
-      try {
-        var yieldVal = await jrCVRContract.epochYield(epoch);
-        var yieldNum = parseFloat(ethers.formatUnits(yieldVal, 18));
-        if (yieldNum > 0) {
-          document.getElementById('jrEpochYield').textContent = '$' + formatNumber(yieldNum.toFixed(2));
-        }
-      } catch (e) { /* silent */ }
-    }
-  } catch (err) {
-    console.warn('Exchange rate fetch failed, using defaults:', err);
-  }
-}
-
-// ---------- LOAD POOL DATA ----------
-async function loadPoolData() {
-  try {
-    // Use a dummy issuer token address for demo; in production this would be selectable
-    let poolState;
-    try {
-      poolState = await poolContract.getPoolState(DEMO_ISSUER_TOKEN);
-    } catch {
-      // Fallback: use mock data
-      poolState = null;
-    }
-
-    if (poolState) {
-      const seniorTVL = parseFloat(ethers.formatUnits(poolState.seniorTVL, 18));
-      const juniorTVL = parseFloat(ethers.formatUnits(poolState.juniorTVL, 18));
-      const totalInsured = parseFloat(ethers.formatUnits(poolState.totalInsuredAmount, 18));
-      const coverageBPS = Number(poolState.coverageRatioBPS);
-      const gateActive = poolState.redemptionGateActive;
-      const isActive = poolState.isActive;
-
-      updatePoolUI(seniorTVL, juniorTVL, totalInsured, coverageBPS, gateActive, isActive);
-    } else {
-      // Use demo data
-      updatePoolUI(75000, 25000, 80000, 12500, false, true);
-    }
-  } catch (e) {
-    console.warn('Pool data load failed, using demo data:', e);
-    updatePoolUI(75000, 25000, 80000, 12500, false, true);
-  }
-}
-
-function updatePoolUI(seniorTVL, juniorTVL, totalInsured, coverageBPS, gateActive, isActive) {
-  const totalTVL = seniorTVL + juniorTVL;
-  const coveragePct = totalInsured > 0 ? ((totalTVL / totalInsured) * 100) : 0;
-  const seniorPct = totalTVL > 0 ? ((seniorTVL / totalTVL) * 100) : 50;
-  const juniorPct = totalTVL > 0 ? ((juniorTVL / totalTVL) * 100) : 50;
-
-  document.getElementById('metricTVL').textContent = '$' + formatNumber(totalTVL);
-  document.getElementById('metricSenior').textContent = '$' + formatNumber(seniorTVL);
-  document.getElementById('metricJunior').textContent = '$' + formatNumber(juniorTVL);
-  document.getElementById('metricCoverage').textContent = coveragePct.toFixed(1) + '%';
-
-  document.getElementById('totalInsured').textContent = '$' + formatNumber(totalInsured);
-  document.getElementById('coverageBPS').textContent = coverageBPS.toLocaleString();
-
-  document.getElementById('seniorPct').textContent = seniorPct.toFixed(1) + '%';
-  document.getElementById('juniorPct').textContent = juniorPct.toFixed(1) + '%';
-  document.getElementById('ratioBarSenior').style.width = seniorPct + '%';
-  document.getElementById('ratioBarJunior').style.width = juniorPct + '%';
-
-  // Health status
-  const healthDot = document.getElementById('healthDot');
-  const healthLabel = document.getElementById('healthLabel');
-  const poolHealth = document.getElementById('poolHealth');
-
-  if (!isActive) {
-    healthDot.className = 'health-dot danger';
-    healthLabel.textContent = 'Inactive';
-    poolHealth.textContent = 'Inactive';
-    poolHealth.className = 'pool-stat-value danger';
-  } else if (coveragePct < 100) {
-    healthDot.className = 'health-dot warning';
-    healthLabel.textContent = 'Under-collateralized';
-    poolHealth.textContent = 'Warning';
-    poolHealth.className = 'pool-stat-value warning';
-  } else {
-    healthDot.className = 'health-dot healthy';
-    healthLabel.textContent = 'Healthy';
-    poolHealth.textContent = 'Active';
-    poolHealth.className = 'pool-stat-value healthy';
-  }
-
-  // Redemption gate
-  const gateEl = document.getElementById('redemptionGate');
-  const gateWarning = document.getElementById('gateWarning');
-  if (gateActive) {
-    gateEl.textContent = 'Active';
-    gateEl.style.color = 'var(--color-danger)';
-    gateWarning.classList.add('visible');
-  } else {
-    gateEl.textContent = 'Inactive';
-    gateEl.style.color = 'var(--color-success)';
-    gateWarning.classList.remove('visible');
-  }
-}
-
-// ---------- LOAD USER POSITION ----------
-async function loadUserPosition() {
-  try {
-    const srBal = await srCVRContract.balanceOf(userAddress);
-    const jrBal = await jrCVRContract.balanceOf(userAddress);
-
-    const srBalNum = parseFloat(ethers.formatUnits(srBal, 18));
-    const jrBalNum = parseFloat(ethers.formatUnits(jrBal, 18));
-
-    const srValueNum = srBalNum * seniorExchangeRate;
-    const jrValueNum = jrBalNum * juniorRate;
-
-    document.getElementById('srBalance').textContent = formatNumber(srBalNum) + ' srCVR';
-    document.getElementById('srValue').textContent = '$' + formatNumber(srValueNum) + ' USDT';
-    document.getElementById('srExRate').textContent = seniorExchangeRate.toFixed(2) + ' USDT/srCVR';
-
-    document.getElementById('jrBalance').textContent = formatNumber(jrBalNum) + ' jrCVR';
-    document.getElementById('jrValue').textContent = '$' + formatNumber(jrValueNum.toFixed(2)) + ' USDT' +
-      (juniorRate > 1.0 ? ' (+' + ((juniorRate - 1.0) * 100).toFixed(1) + '%)' : '');
-
-    const totalPos = srValueNum + jrValueNum;
-    const srYield = srBalNum * (seniorExchangeRate - 1.0);
-    const jrYield = jrBalNum * (juniorRate - 1.0);
-    const totalYield = srYield + jrYield;
-    document.getElementById('totalPosition').textContent = '$' + formatNumber(totalPos);
-    document.getElementById('totalYield').textContent = '$' + formatNumber(totalYield);
-
-    // Update withdrawal available
-    updateWithdrawAvailable(srBalNum, jrBalNum);
-  } catch (e) {
-    console.warn('User position load failed, using demo:', e);
-    // Demo data
-    document.getElementById('srBalance').textContent = '7,000 srCVR';
-    document.getElementById('srValue').textContent = '$7,350.00 USDT (+5%)';
-    document.getElementById('srExRate').textContent = '1.05 USDT/srCVR';
-    document.getElementById('jrBalance').textContent = '3,000 jrCVR';
-    document.getElementById('jrValue').textContent = '$3,000.00 USDT';
-    document.getElementById('jrEpochYield').textContent = '$42.50';
-    document.getElementById('totalPosition').textContent = '$10,350.00';
-    document.getElementById('totalYield').textContent = '$392.50';
-  }
-}
-
-let userSrBalance = 0;
-let userJrBalance = 0;
-
-function updateWithdrawAvailable(sr, jr) {
-  userSrBalance = sr;
-  userJrBalance = jr;
-  updateRedemptionPreview();
-}
-
-// ---------- DEPOSIT ----------
-async function depositSenior() {
-  const amt = document.getElementById('seniorDepositAmt').value;
-  if (!amt || parseFloat(amt) < 10) {
-    showToast('Minimum deposit is 10 USDT', 'error');
-    return;
-  }
-  const btn = document.getElementById('btnDepositSenior');
-  btn.disabled = true;
-  btn.textContent = 'Checking ratio...';
-
-  try {
-    const amount = ethers.parseUnits(amt, 18);
-
-    // Check junior ratio before attempting deposit (25% minimum enforced by contract)
-    try {
-      const poolState = await poolContract.getPoolState(DEMO_ISSUER_TOKEN);
-      const srTVL = parseFloat(ethers.formatUnits(poolState.seniorTVL, 18));
-      const jrTVL = parseFloat(ethers.formatUnits(poolState.juniorTVL, 18));
-      const depositNum = parseFloat(amt);
-      const newTotal = srTVL + jrTVL + depositNum;
-      const newJrRatio = newTotal > 0 ? (jrTVL / newTotal) * 100 : 0;
-      if (newJrRatio < 25 && jrTVL > 0) {
-        showToast('Junior ratio would drop below 25%. Deposit junior tranche first.', 'error');
-        btn.disabled = false;
-        btn.textContent = 'Approve & Deposit Senior';
-        return;
-      }
-      if (jrTVL === 0) {
-        showToast('No junior deposits yet. Please deposit to junior tranche first (25% min ratio required).', 'error');
-        btn.disabled = false;
-        btn.textContent = 'Approve & Deposit Senior';
-        return;
-      }
-    } catch (ratioErr) {
-      // If ratio check fails, proceed and let contract handle it
-      console.warn('Ratio pre-check failed:', ratioErr);
-    }
-
-    // Check & approve USDT
-    btn.textContent = 'Approving...';
-    const allowance = await usdtContract.allowance(userAddress, CONTRACTS.InsurancePool);
-    if (allowance < amount) {
-      const approveTx = await usdtContract.approve(CONTRACTS.InsurancePool, amount);
-      showToast('Approving USDT...', 'success');
-      await approveTx.wait();
-    }
-
-    // Deposit
-    btn.textContent = 'Depositing...';
-    const tx = await poolContract.depositSenior(DEMO_ISSUER_TOKEN, amount);
-    showToast('Senior deposit submitted!', 'success');
-    await tx.wait();
-    showToast('Senior deposit confirmed!', 'success');
-
-    await loadPoolData();
-    await fetchExchangeRates();
-    await loadUserPosition();
-  } catch (e) {
-    showToast('Deposit failed: ' + (e.reason || e.message), 'error');
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Approve & Deposit Senior';
-}
-
-async function depositJunior() {
-  const amt = document.getElementById('juniorDepositAmt').value;
-  if (!amt || parseFloat(amt) < 10) {
-    showToast('Minimum deposit is 10 USDT', 'error');
-    return;
-  }
-  const btn = document.getElementById('btnDepositJunior');
-  btn.disabled = true;
-  btn.textContent = 'Approving...';
-
-  try {
-    const amount = ethers.parseUnits(amt, 18);
-
-    const allowance = await usdtContract.allowance(userAddress, CONTRACTS.InsurancePool);
-    if (allowance < amount) {
-      const approveTx = await usdtContract.approve(CONTRACTS.InsurancePool, amount);
-      showToast('Approving USDT...', 'success');
-      await approveTx.wait();
-    }
-
-    btn.textContent = 'Depositing...';
-    const tx = await poolContract.depositJunior(DEMO_ISSUER_TOKEN, amount);
-    showToast('Junior deposit submitted!', 'success');
-    await tx.wait();
-    showToast('Junior deposit confirmed!', 'success');
-
-    await loadPoolData();
-    await fetchExchangeRates();
-    await loadUserPosition();
-  } catch (e) {
-    showToast('Deposit failed: ' + (e.reason || e.message), 'error');
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Approve & Deposit Junior';
-}
-
-// ---------- WITHDRAWAL ----------
-function updateRedemptionPreview() {
-  const tranche = document.getElementById('withdrawTranche').value;
-  const amt = parseFloat(document.getElementById('withdrawAmt').value) || 0;
-
-  const isSenior = tranche === 'senior';
-  const tokenName = isSenior ? 'srCVR' : 'jrCVR';
-  const rate = isSenior ? seniorExchangeRate : juniorRate;
-  const available = isSenior ? userSrBalance : userJrBalance;
-
-  document.getElementById('withdrawTokenName').textContent = tokenName;
-  document.getElementById('withdrawAvailable').textContent = formatNumber(available);
-  document.getElementById('redemptionTokens').textContent = formatNumber(amt) + ' ' + tokenName;
-  document.getElementById('redemptionRate').textContent = rate.toFixed(2) + ' USDT/' + tokenName;
-  document.getElementById('redemptionValue').textContent = '$' + formatNumber(amt * rate) + ' USDT';
-}
-
-async function requestWithdrawal() {
-  const tranche = document.getElementById('withdrawTranche').value;
-  const amt = document.getElementById('withdrawAmt').value;
-
-  if (!amt || parseFloat(amt) <= 0) {
-    showToast('Enter a valid withdrawal amount', 'error');
-    return;
-  }
-
-  const btn = document.getElementById('btnWithdraw');
-  btn.disabled = true;
-  btn.textContent = 'Processing...';
-
-  try {
-    const amount = ethers.parseUnits(amt, 18);
-    let tx;
-
-    if (tranche === 'senior') {
-      tx = await poolContract.initiateWithdrawalSenior(DEMO_ISSUER_TOKEN, amount);
-    } else {
-      tx = await poolContract.initiateWithdrawalJunior(DEMO_ISSUER_TOKEN, amount);
-    }
-
-    showToast('Withdrawal request submitted!', 'success');
-    await tx.wait();
-    showToast('Withdrawal request confirmed!', 'success');
-
-    await loadPoolData();
-    await fetchExchangeRates();
-    await loadUserPosition();
-  } catch (e) {
-    showToast('Withdrawal failed: ' + (e.reason || e.message), 'error');
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Request Withdrawal';
-}
-
-// ---------- NAVIGATION ----------
-function scrollToDeposit() {
-  document.getElementById('depositSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-function scrollToWithdraw() {
-  document.getElementById('withdrawSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-// ---------- UTILITIES ----------
-function formatNumber(n) {
-  if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
-  if (n >= 1e3) return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return n.toFixed(2);
-}
-
-function showToast(msg, type = 'success') {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = 'toast toast-' + type;
-  const icon = type === 'success' ? '&#10003;' : type === 'error' ? '&#10007;' : '&#9888;';
-  toast.innerHTML = '<span>' + icon + '</span> ' + msg;
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.style.animation = 'toast-out 0.3s forwards';
-    setTimeout(() => toast.remove(), 300);
-  }, 4000);
-}
-
-// ---------- SCROLL REVEAL ----------
-function initReveal() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-}
-
-// ---------- WALLET LISTENERS ----------
-if (window.ethereum) {
-  window.ethereum.on('accountsChanged', (accounts) => {
-    if (accounts.length > 0) {
-      setupProvider(accounts[0]);
-    } else {
-      location.reload();
-    }
-  });
-  window.ethereum.on('chainChanged', () => location.reload());
-}
-
-// ---------- INIT ----------
-document.addEventListener('DOMContentLoaded', async () => {
-  initReveal();
-  // Load demo pool data on page load
-  updatePoolUI(75000, 25000, 80000, 12500, false, true);
-  updateRedemptionPreview();
-
-  // Auto-connect if previously connected
-  if (localStorage.getItem('coverfi-wallet-connected') === 'true' && typeof window.ethereum !== 'undefined') {
-    try {
-      var accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts.length > 0) {
-        await setupProvider(accounts[0]);
-      }
-    } catch(e) {
-      console.log('Auto-reconnect failed:', e.message);
-    }
-  }
-});
-</script>
+    // ---------- boot ----------
+    renderKpis(); renderTranche(); renderFlow(); renderYield(); renderWaterfall(); renderLp(); renderFeed();
+  })();
+  </script>
 </body>
 </html>
