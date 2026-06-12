@@ -27,7 +27,8 @@
     { id: 'underwriter',label: 'Underwriter',  href: 'console.html',  icon: 'cpu' },
     { id: 'issuers',    label: 'Issuers',      href: 'issuers.html',  icon: 'building', tag: 'v1' },
     { id: 'capital',    label: 'Capital',      href: 'pool.html',     icon: 'layers',   tag: 'v1' },
-    { id: 'governance', label: 'Governance',   href: 'governance.html', icon: 'shield' }
+    { id: 'governance', label: 'Governance',   href: 'governance.html', icon: 'shield' },
+    { id: 'incidents',  label: 'Incidents',    href: 'incidents.html',  icon: 'alert' }
   ];
 
   var ICONS = {
@@ -39,7 +40,8 @@
     search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>',
     bell: '<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
     menu: '<path d="M3 6h18M3 12h18M3 18h18"/>',
-    bolt: '<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>'
+    bolt: '<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>',
+    alert: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
   };
   function svg(name, cls) {
     return '<svg viewBox="0 0 24 24" ' + (cls ? 'class="' + cls + '" ' : '') +

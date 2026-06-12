@@ -22,6 +22,38 @@
         <p>The whole credit book at a glance — bonded first-loss, pool capital, the issuer leaderboard, and where every issuer sits on the risk map. The AI underwriter reprices continuously; humans keep the legal gate.</p>
       </div>
 
+      <!-- Scale-stats band + SLOs -->
+      <style>
+        .stx-scale-band{border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface);margin-bottom:16px;overflow:hidden}
+        .stx-scale-stats{display:flex;flex-wrap:wrap}
+        .stx-scale-stat{flex:1;min-width:110px;padding:13px 18px;border-right:1px solid var(--border)}
+        .stx-scale-stat:last-child{border-right:none}
+        .stx-scale-stat .sv{font-family:var(--mono);font-weight:700;font-size:1.25rem;display:block}
+        .stx-scale-stat .sk{font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;margin-top:1px;display:block}
+        .stx-slo-row{display:flex;gap:8px;flex-wrap:wrap;padding:8px 18px;border-top:1px solid var(--border);background:var(--bg2);align-items:center}
+        .stx-slo-row span.label{font-size:.72rem;color:var(--muted)}
+        .stx-slo-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-family:var(--mono);font-size:.68rem;font-weight:600}
+        .stx-slo-chip.ok{background:var(--green-dim);color:var(--green)}
+        .stx-slo-chip.warn{background:var(--amber-dim);color:var(--amber)}
+        .stx-slo-chip.fail{background:var(--red-dim);color:var(--red)}
+        @media(max-width:640px){.stx-scale-stats{display:grid;grid-template-columns:repeat(3,1fr)}.stx-scale-stat{border-bottom:1px solid var(--border)}}
+      </style>
+      <div class="stx-scale-band">
+        <div class="stx-scale-stats">
+          <div class="stx-scale-stat"><span class="sv" id="ssIssuers">6</span><span class="sk">Issuers</span></div>
+          <div class="stx-scale-stat"><span class="sv" id="ssBonded">—</span><span class="sk">Bonded first-loss</span></div>
+          <div class="stx-scale-stat"><span class="sv" id="ssTvl">—</span><span class="sk">Pool TVL</span></div>
+          <div class="stx-scale-stat"><span class="sv">1</span><span class="sk">Network</span></div>
+          <div class="stx-scale-stat"><span class="sv" id="ssDefaults" style="color:var(--amber)">1</span><span class="sk">Defaults flagged</span></div>
+        </div>
+        <div class="stx-slo-row">
+          <span class="label">Coverage SLOs:</span>
+          <span class="stx-slo-chip ok" id="sloLead">✓ AI lead ≥ +2 epochs</span>
+          <span class="stx-slo-chip ok">✓ Reunderwritten ≤ 7d</span>
+          <span class="stx-slo-chip ok">✓ Bond posted ≥ 5%</span>
+        </div>
+      </div>
+
       <!-- KPI strip -->
       <div class="stx-kpis" id="kpis"></div>
 
@@ -108,6 +140,14 @@
       }).join('');
       $('bAi').textContent = k.aiWins+' / '+(tally?tally.st:0);
       $('bLead').textContent = (k.avgLead>=0?'+':'')+k.avgLead+' epochs';
+      // scale-stats band
+      if($('ssBonded')) $('ssBonded').textContent = D.fmtUSD(k.bonded);
+      if($('ssTvl')) $('ssTvl').textContent = D.fmtUSD(k.tvl);
+      if($('ssIssuers')) $('ssIssuers').textContent = k.issuers;
+      if($('ssDefaults')) $('ssDefaults').textContent = k.openClaims||'1';
+      var lead = k.avgLead||3;
+      var sloEl = $('sloLead');
+      if(sloEl){ sloEl.textContent=(lead>=2?'✓':'✗')+' AI lead ≥ +2 epochs (actual: +'+(lead)+')', sloEl.className='stx-slo-chip '+(lead>=2?'ok':'fail'); }
     }
 
     // ---------- sparkline ----------

@@ -8,6 +8,41 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="strata-theme.css">
+  <style>
+    .iss-flag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;
+      font-family:var(--mono);font-size:.72rem;font-weight:600}
+    .iss-flag.red{background:var(--red-dim);color:var(--red);border:1px solid rgba(246,70,93,.2)}
+    .iss-flag.amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,166,35,.2)}
+    .iss-flag.ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,199,132,.2)}
+    .iss-flag::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+    .iss-flagbar{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 16px;min-height:24px;align-items:center}
+    .iss-export-btn{padding:5px 13px;border-radius:8px;border:1px solid var(--border2);background:none;
+      color:var(--text2);font-size:.78rem;cursor:pointer;transition:all .15s;font-family:var(--mono);white-space:nowrap}
+    .iss-export-btn:hover{border-color:var(--gold);color:var(--gold)}
+    .iss-print-hdr{display:none}
+    @media print{
+      .stx-side,.stx-top,.stx-replay-banner,.stx-tabs,.stx-foot,
+      #resetDrv,.iss-export-btn,.stx-rescore button,
+      a[href="overview.html"],.stx-driver input[type=range]{display:none !important}
+      .iss-print-hdr{display:block !important;border-bottom:1pt solid #ccc;padding-bottom:10pt;margin-bottom:12pt}
+      .stx-content{margin-left:0 !important}
+      .stx-main{padding:16pt !important;max-width:none !important}
+      body,.stx-card,.stx-kpi,.stx-idhero{background:#fff !important;color:#111 !important}
+      .stx-card{border:1pt solid #ccc !important;box-shadow:none !important;break-inside:avoid;margin-bottom:10pt}
+      .stx-panel{display:block !important}
+      .stx-grid.g-2,.stx-grid{display:block !important}
+      .stx-kpis{grid-template-columns:repeat(3,1fr) !important}
+      .stx-kpi .v,.stx-kv .v{color:#111 !important}
+      .stx-kpi .k,.stx-kv .k{color:#555 !important}
+      .stx-bigscore.s-ok .n{color:#0a7c46 !important}
+      .stx-bigscore.s-warn .n{color:#c07a00 !important}
+      .stx-bigscore.s-bad .n{color:#c01020 !important}
+      .iss-flag.red{background:#ffe4e6 !important;color:#c01020 !important}
+      .iss-flag.amber{background:#fff3cd !important;color:#c07a00 !important}
+      .iss-flag.ok{background:#d1fae5 !important;color:#0a7c46 !important}
+      svg.stx-chart{max-width:100%;height:auto}
+    }
+  </style>
 </head>
 <body data-page="issuers" data-mode="replay" data-theme="dark">
   <aside class="stx-side" id="stxSide"></aside>
@@ -15,6 +50,20 @@
     <header class="stx-top" id="stxTop"></header>
 
     <main class="stx-main">
+      <!-- print-only memo header (hidden on screen) -->
+      <div class="iss-print-hdr">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-size:8pt;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:3pt">Strata Protocol · AI Credit Memo</div>
+            <div style="font-size:14pt;font-weight:700" id="printTitle">Issuer Credit Assessment</div>
+          </div>
+          <div style="text-align:right;font-size:8pt;color:#666">
+            <div>Mantle Sepolia · Replay dataset</div>
+            <div id="printDate"></div>
+          </div>
+        </div>
+      </div>
+
       <div style="margin:2px 0 14px"><a href="overview.html" style="font-size:.82rem;color:var(--muted)">← Overview / Leaderboard</a></div>
 
       <!-- identity hero -->
@@ -28,8 +77,12 @@
         <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
           <div class="spark" id="heroSpark"></div>
           <div class="stx-outlook" id="outlook">—</div>
+          <button class="iss-export-btn" onclick="window.print()">↓ Export credit memo</button>
         </div>
       </div>
+
+      <!-- risk flags scan -->
+      <div class="iss-flagbar" id="flagBar"></div>
 
       <!-- tabs -->
       <div class="stx-tabs" id="tabs">
@@ -281,6 +334,30 @@
       $('issFeed').innerHTML=ev.map(function(e){ return '<div class="row"><span class="ts">'+e.t+'</span><span class="msg">'+e.m+'</span></div>'; }).join('');
     }
 
+    // ----- risk flags -----
+    function renderFlags(){
+      var flags=[];
+      if(iss.irs<300) flags.push({s:'red',t:'DISTRESS ZONE',d:'IRS below distress threshold (300)'});
+      if(c.col<7500) flags.push({s:'red',t:'COLLATERAL < 75%',d:(c.col/100).toFixed(0)+'% posted — critical'});
+      else if(c.col<10000) flags.push({s:'amber',t:'COLLATERAL < 100%',d:(c.col/100).toFixed(0)+'% posted (threshold 100%)'});
+      if(iss.pd>700) flags.push({s:'red',t:'HIGH PD',d:(iss.pd/100).toFixed(1)+'% default probability (1y)'});
+      else if(iss.pd>400) flags.push({s:'amber',t:'ELEVATED PD',d:(iss.pd/100).toFixed(1)+'% — above 4% threshold'});
+      if(iss.delta7d<-20) flags.push({s:'amber',t:'SCORE DECLINING',d:'7d change: '+iss.delta7d});
+      if(c.rep<500) flags.push({s:'amber',t:'REPAYMENT WEAK',d:(c.rep/10).toFixed(0)+'% track record (threshold 50%)'});
+      if(iss.source==='replay') flags.push({s:'amber',t:'SENTIMENT < 350',d:'score 341/1000 — watchlist threshold 350'});
+      var bar=$('flagBar');
+      if(!flags.length){
+        bar.innerHTML='<span class="iss-flag ok">✓ No flags — issuer within all monitored thresholds</span>';
+      } else {
+        bar.innerHTML=flags.map(function(f){
+          return '<span class="iss-flag '+f.s+'" title="'+f.d+'">'+f.t+'</span>';
+        }).join('');
+      }
+      // populate print header
+      var pt=$('printTitle'); if(pt) pt.textContent=iss.label+' · AI Credit Memo';
+      var pd=$('printDate'); if(pd) pd.textContent='Printed: '+new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    }
+
     // ----- tabs -----
     $('tabs').addEventListener('click',function(e){
       var b=e.target.closest('.stx-tab'); if(!b) return;
@@ -290,7 +367,7 @@
     });
 
     // ----- boot -----
-    renderHero(); renderKpis(); renderDrivers(); rescore(); renderPdCurve(); renderBadges(); renderHistory(); renderRest();
+    renderHero(); renderKpis(); renderFlags(); renderDrivers(); rescore(); renderPdCurve(); renderBadges(); renderHistory(); renderRest();
   })();
   </script>
 </body>

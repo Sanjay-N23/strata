@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Strata — Default &amp; Incident Registry</title>
+  <meta name="description" content="Strata incident registry — browsable table of default and shortfall events; SVB replay is incident #1 with AI vs rulebook lead-time comparison.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='5' y='20' width='22' height='4' rx='1' fill='%23F0B90B'/><rect x='7' y='14' width='18' height='4' rx='1' fill='%235B8DEF'/><rect x='9' y='8' width='14' height='4' rx='1' fill='%2316C784'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="strata-theme.css">
+  <style>
+    /* featured incident card */
+    .inc-hero{background:linear-gradient(130deg,var(--red-dim) 0%,transparent 60%);
+      border:1px solid rgba(246,70,93,.2);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:18px}
+    .inc-hero-h{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+    .inc-id-badge{font-family:var(--mono);font-size:.72rem;font-weight:700;padding:3px 10px;
+      border-radius:999px;background:var(--red-dim);color:var(--red);border:1px solid rgba(246,70,93,.3)}
+    .inc-type-badge{font-family:var(--mono);font-size:.72rem;padding:3px 10px;border-radius:999px;
+      background:var(--amber-dim);color:var(--amber)}
+    .inc-hero-title{font-family:var(--head);font-weight:800;font-size:1.35rem;flex:1}
+    .inc-hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+    @media(max-width:640px){.inc-hero-stats{grid-template-columns:repeat(2,1fr)}}
+    .inc-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px}
+    .inc-stat .sv{font-family:var(--mono);font-weight:700;font-size:1.3rem}
+    .inc-stat .sk{font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;margin-top:2px}
+    /* AI vs rulebook timeline */
+    .inc-timeline{display:flex;flex-direction:column;gap:0}
+    .inc-step{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+    .inc-step:last-child{border-bottom:none}
+    .inc-epoch{font-family:var(--mono);font-size:.72rem;font-weight:700;width:44px;flex:none;
+      padding-top:2px;color:var(--muted)}
+    .inc-dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;
+      font-size:.6rem;font-weight:700;font-family:var(--mono)}
+    .inc-dot.ai{background:var(--ai-dim);color:var(--ai)}
+    .inc-dot.rulebook{background:var(--surface2);color:var(--muted)}
+    .inc-dot.alarm{background:var(--red-dim);color:var(--red)}
+    .inc-dot.ok{background:var(--green-dim);color:var(--green)}
+    .inc-step-body{flex:1}
+    .inc-step-action{font-weight:600;font-size:.88rem}
+    .inc-step-detail{font-size:.78rem;color:var(--text2);margin-top:2px}
+    /* row severity in table */
+    .inc-row-red td:first-child{border-left:3px solid var(--red)}
+    .inc-row-amber td:first-child{border-left:3px solid var(--amber)}
+    .inc-row-green td:first-child{border-left:3px solid var(--green)}
+    /* status chips */
+    .inc-status{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);
+      font-size:.7rem;font-weight:600;padding:2px 9px;border-radius:999px}
+    .inc-status.replayed{background:var(--ai-dim);color:var(--ai)}
+    .inc-status.pending{background:var(--amber-dim);color:var(--amber)}
+    .inc-status.resolved{background:var(--green-dim);color:var(--green)}
+    /* lead time chip */
+    .inc-lead{font-family:var(--mono);font-size:.78rem;font-weight:700}
+    .inc-lead.good{color:var(--green)}
+    .inc-lead.ok{color:var(--amber)}
+  </style>
+</head>
+<body data-page="incidents" data-mode="replay" data-theme="dark">
+  <aside class="stx-side" id="stxSide"></aside>
+  <div class="stx-content">
+    <header class="stx-top" id="stxTop"></header>
+
+    <main class="stx-main">
+      <div class="stx-pagehead">
+        <div class="stx-eyebrow">de.fi REKT-style · AI vs Rulebook · Ground Truth</div>
+        <h1>Default &amp; Incident Registry</h1>
+        <p>Every credit shortfall, default proposal, and sentinel alarm — with the AI lead-time vs the on-chain rulebook. The <b>SVB depeg (Mar 2023)</b> is the ground-truth replay that anchors the Turing proof.</p>
+      </div>
+
+      <!-- KPI strip -->
+      <div class="stx-kpis" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px">
+        <div class="stx-kpi">
+          <div class="k">Incidents logged</div>
+          <div class="v">4</div>
+          <div class="d">all-time</div>
+        </div>
+        <div class="stx-kpi">
+          <div class="k">Funds at risk</div>
+          <div class="v" style="color:var(--red)">$3.1M</div>
+          <div class="d">across active incidents</div>
+        </div>
+        <div class="stx-kpi">
+          <div class="k">AI avg lead</div>
+          <div class="v" style="color:var(--green)">+1.75</div>
+          <div class="d up">epochs ahead of rulebook</div>
+        </div>
+        <div class="stx-kpi">
+          <div class="k">Resolved</div>
+          <div class="v">2</div>
+          <div class="d">funds recovered / closed</div>
+        </div>
+        <div class="stx-kpi">
+          <div class="k">Pending</div>
+          <div class="v" style="color:var(--amber)">2</div>
+          <div class="d">awaiting 2-of-3 action</div>
+        </div>
+      </div>
+
+      <!-- Featured: INC-001 SVB -->
+      <div class="inc-hero">
+        <div class="inc-hero-h">
+          <span class="inc-id-badge">INC-001</span>
+          <span class="inc-type-badge">COLLATERAL SHORTFALL</span>
+          <span class="stx-prov-badge replay" style="margin-left:auto">replay · ground truth</span>
+        </div>
+        <div class="inc-hero-title">USDC · Circle — SVB Depeg (Mar 2023)</div>
+        <p style="color:var(--text2);font-size:.87rem;margin:6px 0 16px;max-width:640px">
+          Circle held $3.3B of USDC reserves at Silicon Valley Bank. When SVB was seized on 10 Mar 2023, USDC broke its peg. <b>Strata AI flagged the risk 3 epochs before the on-chain rulebook breached its threshold</b> — the definitive Turing proof.
+        </p>
+
+        <div class="inc-hero-stats">
+          <div class="inc-stat">
+            <div class="sv" style="color:var(--red)">$2.1M</div>
+            <div class="sk">Funds at risk</div>
+          </div>
+          <div class="inc-stat">
+            <div class="sv" style="color:var(--green)">+3 epochs</div>
+            <div class="sk">AI lead vs rulebook</div>
+          </div>
+          <div class="inc-stat">
+            <div class="sv">IRS 730 → 58</div>
+            <div class="sk">Score trajectory</div>
+          </div>
+          <div class="inc-stat">
+            <div class="sv">§ 7.3 · 12.1</div>
+            <div class="sk">Clauses triggered</div>
+          </div>
+        </div>
+
+        <!-- AI vs rulebook timeline -->
+        <div class="stx-grid g-2" style="gap:16px">
+          <div class="stx-card" style="padding:16px">
+            <div class="stx-card-h" style="margin-bottom:12px"><h3>Epoch-by-epoch timeline</h3></div>
+            <div class="inc-timeline">
+              <div class="inc-step">
+                <div class="inc-epoch">e1</div>
+                <div class="inc-dot ok">OK</div>
+                <div class="inc-step-body">
+                  <div class="inc-step-action">IRS 730 · PD 3.1% · Normal operations</div>
+                  <div class="inc-step-detail">Both AI and rulebook agree — no flag</div>
+                </div>
+              </div>
+              <div class="inc-step">
+                <div class="inc-epoch">e3</div>
+                <div class="inc-dot ai">AI</div>
+                <div class="inc-step-body">
+                  <div class="inc-step-action" style="color:var(--amber)">AI: sentiment 341, collateral fragility rising</div>
+                  <div class="inc-step-detail">AI scores IRS 440 → routes REPRICE to auto-clear (rule GV-01). Rulebook still 730.</div>
+                </div>
+              </div>
+              <div class="inc-step">
+                <div class="inc-epoch">e4</div>
+                <div class="inc-dot ai">AI</div>
+                <div class="inc-step-body">
+                  <div class="inc-step-action" style="color:var(--amber)">AI: proposes COLLATERAL_SHORTFALL — awaiting 2-of-3</div>
+                  <div class="inc-step-detail">AI IRS 280 (distress). Rulebook still 590. <b>AI is +3 epochs early.</b></div>
+                </div>
+              </div>
+              <div class="inc-step">
+                <div class="inc-epoch">e6</div>
+                <div class="inc-dot alarm">⚠</div>
+                <div class="inc-step-body">
+                  <div class="inc-step-action" style="color:var(--red)">SVB seized · USDC depegs to $0.877</div>
+                  <div class="inc-step-detail">Rulebook breaches threshold (IRS 180). AI already acted 3 epochs prior. 2-of-3 quorum approved halt-redemptions.</div>
+                </div>
+              </div>
+              <div class="inc-step">
+                <div class="inc-epoch">e9</div>
+                <div class="inc-dot ok">✓</div>
+                <div class="inc-step-body">
+                  <div class="inc-step-action" style="color:var(--green)">USDC re-pegged · reserves confirmed · halt lifted</div>
+                  <div class="inc-step-detail">Circle confirmed full backing. AI repriced IRS to 620. Halt-redemptions clause released.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stx-card" style="padding:16px">
+            <div class="stx-card-h" style="margin-bottom:12px"><h3>AI vs Rulebook comparison</h3></div>
+            <table class="stx-table" style="font-size:.82rem">
+              <thead>
+                <tr>
+                  <th style="text-align:left">Metric</th>
+                  <th style="text-align:left">AI Agent</th>
+                  <th style="text-align:left">Rulebook</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="text-align:left;color:var(--muted)">First alarm epoch</td>
+                  <td style="text-align:left;font-family:var(--mono);color:var(--green);font-weight:700">Epoch 4</td>
+                  <td style="text-align:left;font-family:var(--mono);color:var(--red)">Epoch 7</td>
+                </tr>
+                <tr>
+                  <td style="text-align:left;color:var(--muted)">IRS at alarm</td>
+                  <td style="text-align:left;font-family:var(--mono)">280</td>
+                  <td style="text-align:left;font-family:var(--mono)">180</td>
+                </tr>
+                <tr>
+                  <td style="text-align:left;color:var(--muted)">Lead time</td>
+                  <td style="text-align:left;font-family:var(--mono);color:var(--green);font-weight:700">+3 epochs</td>
+                  <td style="text-align:left;font-family:var(--mono);color:var(--muted)">baseline</td>
+                </tr>
+                <tr>
+                  <td style="text-align:left;color:var(--muted)">Proposed action</td>
+                  <td style="text-align:left">COLLATERAL_SHORTFALL</td>
+                  <td style="text-align:left">price freeze</td>
+                </tr>
+                <tr>
+                  <td style="text-align:left;color:var(--muted)">Halt-redemptions</td>
+                  <td style="text-align:left;color:var(--green)">✓ proactive</td>
+                  <td style="text-align:left;color:var(--amber)">reactive</td>
+                </tr>
+                <tr>
+                  <td style="text-align:left;color:var(--muted)">Funds protected</td>
+                  <td style="text-align:left;font-family:var(--mono);color:var(--green)">$2.1M</td>
+                  <td style="text-align:left;font-family:var(--mono);color:var(--muted)">$1.8M (partial)</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top:14px;padding:10px 12px;background:var(--ai-dim);border-radius:var(--radius-sm);font-size:.82rem;color:var(--ai)">
+              <b>Turing verdict:</b> AI wins — flagged distress 3 epochs before the static rulebook breached its threshold.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- All incidents table -->
+      <div class="stx-card pad0">
+        <div class="stx-card-h" style="padding:16px 18px 12px">
+          <h3>All Incidents</h3>
+          <span class="stx-prov-badge replay">replay</span>
+          <span class="tag" style="margin-left:auto">4 incidents · sorted by date desc</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="stx-table">
+            <thead>
+              <tr>
+                <th style="text-align:left">ID</th>
+                <th style="text-align:left">Date</th>
+                <th style="text-align:left">Issuer / Pool</th>
+                <th style="text-align:left">Type</th>
+                <th>Funds at Risk</th>
+                <th>AI Lead</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="inc-row-amber">
+                <td style="text-align:left;font-family:var(--mono);color:var(--muted)">INC-004</td>
+                <td style="text-align:left;font-family:var(--mono)">Jun 2026</td>
+                <td style="text-align:left"><div style="font-weight:600">mETH · Mantle</div><div style="font-size:.72rem;color:var(--muted)">Liquid staking token</div></td>
+                <td style="text-align:left"><span class="stx-badge warn" style="font-size:.7rem">Sentiment Flag</span></td>
+                <td><span style="font-family:var(--mono)">$340K</span></td>
+                <td><span class="inc-lead ok">+1 epoch</span></td>
+                <td><span class="inc-status pending">PENDING</span></td>
+              </tr>
+              <tr class="inc-row-red">
+                <td style="text-align:left;font-family:var(--mono);color:var(--muted)">INC-003</td>
+                <td style="text-align:left;font-family:var(--mono)">Jun 2026</td>
+                <td style="text-align:left"><div style="font-weight:600">USDC · Circle (SVB)</div><div style="font-size:.72rem;color:var(--muted)">Stablecoin — SVB depeg</div></td>
+                <td style="text-align:left"><span class="stx-badge alarm" style="font-size:.7rem">Collateral Shortfall</span></td>
+                <td><span style="font-family:var(--mono);color:var(--red)">$2.1M</span></td>
+                <td><span class="inc-lead good">+3 epochs</span></td>
+                <td><span class="inc-status pending">PENDING</span></td>
+              </tr>
+              <tr class="inc-row-green">
+                <td style="text-align:left;font-family:var(--mono);color:var(--muted)">INC-002</td>
+                <td style="text-align:left;font-family:var(--mono)">Feb 2024</td>
+                <td style="text-align:left"><div style="font-weight:600">Ondo · OUSG</div><div style="font-size:.72rem;color:var(--muted)">US Treasury token</div></td>
+                <td style="text-align:left"><span class="stx-badge warn" style="font-size:.7rem">Repayment Delay</span></td>
+                <td><span style="font-family:var(--mono)">$520K</span></td>
+                <td><span class="inc-lead good">+2 epochs</span></td>
+                <td><span class="inc-status resolved">RESOLVED</span></td>
+              </tr>
+              <tr class="inc-row-green">
+                <td style="text-align:left;font-family:var(--mono);color:var(--muted)">INC-001</td>
+                <td style="text-align:left;font-family:var(--mono)">Mar 2023</td>
+                <td style="text-align:left"><div style="font-weight:600">Clearpool · Auralis</div><div style="font-size:.72rem;color:var(--muted)">Private credit pool</div></td>
+                <td style="text-align:left"><span class="stx-badge warn" style="font-size:.7rem">PD Spike</span></td>
+                <td><span style="font-family:var(--mono)">$280K</span></td>
+                <td><span class="inc-lead ok">+1 epoch</span></td>
+                <td><span class="inc-status resolved">RESOLVED</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="stx-foot" style="margin-top:32px">
+        Strata Protocol · Incident Registry · Replay dataset (USDC–SVB Mar 2023 is ground truth). All IDs, dates, and figures are from the seeded replay — not live positions.
+      </div>
+    </main>
+  </div>
+
+  <script src="strata-config.js"></script>
+  <script src="strata-shell.js"></script>
+  <script src="strata-data.js"></script>
+  <script>
+    window.Strata && window.Strata.onMode && window.Strata.onMode(function(m) {
+      document.querySelectorAll('.stx-prov-badge').forEach(function(b) {
+        if (m === 'live') { b.className = 'stx-prov-badge chain'; b.textContent = 'on-chain'; }
+        else { b.className = 'stx-prov-badge replay'; b.textContent = 'replay'; }
+      });
+    });
+  </script>
+</body>
+</html>
