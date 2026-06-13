@@ -14,7 +14,7 @@ async function main() {
   const foundation = deployment.foundation;
   const usdtAddress = c.MockUSDT;
 
-  console.log("CoverFi Contract Verification on BSC Testnet");
+  console.log("Strata Contract Verification on BSC Testnet");
   console.log("=============================================");
   console.log(`Deployer: ${deployer}`);
   console.log(`Foundation: ${foundation}`);

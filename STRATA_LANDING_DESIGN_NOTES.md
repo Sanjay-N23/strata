@@ -47,7 +47,7 @@
 Keep Strata's dark-terminal brand, but borrow designmonks' *motion + structure*:
 1. **Hero** — headline "The autonomous AI underwriting desk for RWA credit risk" + accent words; subhead; CTAs **"Launch App" → overview.html** and **"Watch the Turing proof"**; background = a **looping, muted screen-capture of the console replay** (or an animated SVG of the AI-vs-rulebook chart) instead of a generic video.
 2. **Metrics band** (designmonks rating → Strata scale): *Live on Mantle Sepolia · 15 contracts · AI +3 epochs lead · 966 tests*.
-3. **Feature grid** — 3 CoverFi innovations + AI layer as accent-word cards (Issuer Bond · IRS score · Compliance-native payout · AI underwriter).
+3. **Feature grid** — 3 Strata innovations + AI layer as accent-word cards (Issuer Bond · IRS score · Compliance-native payout · AI underwriter).
 4. **"How it works"** — scroll-reveal steps (signals → AI score → autonomy gate → payout).
 5. **The Turing proof** — a highlight section animating the SVB replay (AI alarms 3 epochs early) — our signature moment.
 6. **Capability marquee** — chains/sponsors/standards (Mantle · ERC-3643 · ERC-8004 · Z.AI · Chainlink).

@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
-describe("CoverFi Protocol — Full Lifecycle Integration Tests", function () {
+describe("Strata Protocol — Full Lifecycle Integration Tests", function () {
   // Signers
   let deployer: SignerWithAddress;
   let issuer: SignerWithAddress;

@@ -16,7 +16,7 @@ import * as path from "path";
 async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("═══════════════════════════════════════════════════════════════");
-  console.log("  COVERFI — HASHKEY CHAIN TESTNET DEMO (3 Transactions)");
+  console.log("  STRATA — HASHKEY CHAIN TESTNET DEMO (3 Transactions)");
   console.log(`  Deployer: ${deployer.address}`);
   console.log("═══════════════════════════════════════════════════════════════\n");
 

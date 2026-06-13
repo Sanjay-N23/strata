@@ -26,7 +26,7 @@ async function main() {
   const explorerBase = "https://testnet-explorer.hsk.xyz/tx/";
 
   console.log("══════════════════════════════════════════════════════");
-  console.log("  COVERFI — SEED REMAINING DEMO DATA");
+  console.log("  STRATA — SEED REMAINING DEMO DATA");
   console.log(`  Deployer: ${deployer.address}`);
   console.log("══════════════════════════════════════════════════════\n");
 

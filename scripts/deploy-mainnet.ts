@@ -1,5 +1,5 @@
 /**
- * CoverFi Protocol — HashKey Chain Mainnet Deployment Script
+ * Strata Protocol — HashKey Chain Mainnet Deployment Script
  *
  * Phase 1 industrial-grade deployment:
  *   - 1 production stablecoin (CoverFiStablecoin / cfUSD)
@@ -68,7 +68,7 @@ function saveCheckpoint(state: DeploymentState): void {
 
 async function main() {
   console.log("\n═══════════════════════════════════════════════════════════════");
-  console.log("  COVERFI PROTOCOL — MAINNET DEPLOYMENT (Phase 1)");
+  console.log("  STRATA PROTOCOL — MAINNET DEPLOYMENT (Phase 1)");
   console.log("═══════════════════════════════════════════════════════════════\n");
 
   const [deployer] = await ethers.getSigners();
@@ -298,7 +298,7 @@ async function main() {
   }
 
   console.log("\n═══════════════════════════════════════════════════════════════");
-  console.log("  COVERFI PROTOCOL DEPLOYMENT COMPLETE ✓");
+  console.log("  STRATA PROTOCOL DEPLOYMENT COMPLETE ✓");
   console.log("═══════════════════════════════════════════════════════════════\n");
 }
 

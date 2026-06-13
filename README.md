@@ -332,7 +332,7 @@ Tests cover: unit · integration · edge cases · access control · reentrancy �
 |---------|------|
 | 🌐 **Web App** | [coverfi-protocol.vercel.app](https://coverfi-protocol.vercel.app) |
 | ⛓ **Block Explorer** | [testnet-explorer.hsk.xyz](https://testnet-explorer.hsk.xyz) |
-| 📦 **GitHub** | [Sanjay-N23/coverfi-protocol](https://github.com/Sanjay-N23/coverfi-protocol) |
+| 📦 **GitHub** | [Sanjay-N23/strata](https://github.com/Sanjay-N23/strata) |
 
 </div>
 
@@ -419,8 +419,8 @@ Mantle is purpose-built for compliant financial infrastructure — making it the
 
 ```bash
 # Clone and install
-git clone https://github.com/Sanjay-N23/coverfi-protocol.git
-cd coverfi-protocol
+git clone https://github.com/Sanjay-N23/strata.git
+cd strata
 npm install
 
 # Compile contracts

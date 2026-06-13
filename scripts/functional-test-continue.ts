@@ -33,7 +33,7 @@ async function main() {
   const [signer] = await ethers.getSigners();
 
   console.log("\n═══════════════════════════════════════════════════════════════");
-  console.log("  COVERFI MAINNET FUNCTIONAL E2E — CONTINUATION (Phase 9-11)");
+  console.log("  STRATA MAINNET FUNCTIONAL E2E — CONTINUATION (Phase 9-11)");
   console.log("═══════════════════════════════════════════════════════════════\n");
   console.log("  Chain:    ", chainId, "  Source:", filename);
   console.log("  Signer:   ", signer.address);

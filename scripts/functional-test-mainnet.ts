@@ -1,5 +1,5 @@
 /**
- * Functional End-to-End Test Suite — runs the full CoverFi protocol lifecycle
+ * Functional End-to-End Test Suite — runs the full Strata protocol lifecycle
  * on the live mainnet deployment, exercising every state-changing function
  * the read-only smoke-test could not cover.
  *
@@ -50,7 +50,7 @@ async function main() {
   const [signer] = await ethers.getSigners();
 
   console.log("\n═══════════════════════════════════════════════════════════════");
-  console.log("  COVERFI MAINNET FUNCTIONAL E2E TEST SUITE");
+  console.log("  STRATA MAINNET FUNCTIONAL E2E TEST SUITE");
   console.log("═══════════════════════════════════════════════════════════════\n");
   console.log("  Chain:        ", chainId);
   console.log("  Source:       ", filename);

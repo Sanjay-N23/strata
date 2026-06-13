@@ -942,10 +942,10 @@ tbody tr:hover { background: rgba(240,185,11,0.04); }
 <script src="contract-abis.js"></script>
 <script>
 // ---- Theme toggle ----
-function getTheme() { return localStorage.getItem('coverfi-theme') || 'light'; }
+function getTheme() { return localStorage.getItem('strata-theme') || 'light'; }
 function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('coverfi-theme', theme);
+  localStorage.setItem('strata-theme', theme);
 }
 function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
 (function() { setTheme(getTheme()); })();
@@ -1041,7 +1041,7 @@ async function connectWallet() {
     btn.classList.add('connected');
     document.getElementById('btnRegister').disabled = false;
 
-    localStorage.setItem('coverfi-wallet-connected', 'true');
+    localStorage.setItem('strata-wallet-connected', 'true');
     showToast('Wallet connected: ' + short, 'success');
 
     // Check attestor status
@@ -1368,7 +1368,7 @@ if (window.ethereum) {
 
 // Auto-connect if previously connected
 (async function() {
-  if (localStorage.getItem('coverfi-wallet-connected') === 'true' && typeof window.ethereum !== 'undefined') {
+  if (localStorage.getItem('strata-wallet-connected') === 'true' && typeof window.ethereum !== 'undefined') {
     try {
       var accounts = await window.ethereum.request({ method: 'eth_accounts' });
       if (accounts.length > 0) {

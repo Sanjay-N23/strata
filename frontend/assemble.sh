@@ -1,5 +1,5 @@
 #!/bin/bash
-cd "D:/COVERFI/frontend"
+cd "D:/STRATA/frontend"
 
 # Start HTML
 cat > index.html << 'HTMLSTART'

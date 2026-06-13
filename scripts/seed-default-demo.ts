@@ -21,7 +21,7 @@ async function main() {
   const explorerBase = "https://testnet-explorer.hsk.xyz/tx/";
 
   console.log("══════════════════════════════════════════════════════════════════");
-  console.log("  COVERFI — SEED DEFAULT/PAYOUT DEMO (GhostIssuer)");
+  console.log("  STRATA — SEED DEFAULT/PAYOUT DEMO (GhostIssuer)");
   console.log(`  Deployer: ${deployer.address}`);
   console.log("══════════════════════════════════════════════════════════════════\n");
 

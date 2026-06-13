@@ -1,5 +1,5 @@
 /**
- * Verify all CoverFi contracts on HashKey Chain Blockscout.
+ * Verify all Strata contracts on HashKey Chain Blockscout.
  *
  * Reads addresses from deployments/hashkeyMainnet.json and submits the
  * source code for each contract to Blockscout. This is FREE (Blockscout

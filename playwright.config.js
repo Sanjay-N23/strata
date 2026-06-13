@@ -3,7 +3,7 @@ const { defineConfig, devices } = require('@playwright/test');
 const path = require('path');
 
 /**
- * Playwright config for CoverFi frontend E2E tests.
+ * Playwright config for Strata frontend E2E tests.
  * Uses file:// protocol — no web server required.
  */
 module.exports = defineConfig({

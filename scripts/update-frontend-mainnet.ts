@@ -97,7 +97,7 @@ const CHAIN_REPLACEMENTS: Array<[RegExp | string, string]> = [
 ];
 
 const MAINNET_BANNER_HTML = `
-<!-- COVERFI MAINNET PHASE 1 BANNER -->
+<!-- STRATA MAINNET PHASE 1 BANNER -->
 <div id="cfMainnetBanner" style="
   position:fixed;top:0;left:0;right:0;z-index:99999;
   background:linear-gradient(90deg,#fbbf24,#f59e0b);

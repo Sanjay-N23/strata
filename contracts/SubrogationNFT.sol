@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 /**
  * @title SubrogationNFT — Post-Default Evidence Container
- * @notice ERC-721 minted to CoverFi Foundation after payout execution.
+ * @notice ERC-721 minted to Strata Foundation after payout execution.
  *         Contains full default evidence package for legal recovery.
  *         Non-transferable except by Foundation.
  */

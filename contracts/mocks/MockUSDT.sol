@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 /**
- * @title MockUSDT — Test USDT token for CoverFi demo
+ * @title MockUSDT — Test USDT token for Strata demo
  * @notice 18 decimals (BSC USDT standard)
  */
 contract MockUSDT is ERC20 {

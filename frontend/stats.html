@@ -884,10 +884,10 @@ td.contract-addr a {
 <script src="contract-abis.js"></script>
 <script>
 // ---- Theme ----
-function getTheme() { return localStorage.getItem('coverfi-theme') || 'light'; }
+function getTheme() { return localStorage.getItem('strata-theme') || 'light'; }
 function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('coverfi-theme', theme);
+  localStorage.setItem('strata-theme', theme);
 }
 function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
 

@@ -1,5 +1,5 @@
 /**
- * CoverFi Protocol — Comprehensive Mainnet Smoke Test
+ * Strata Protocol — Comprehensive Mainnet Smoke Test
  *
  * Runs 85+ automated checks across:
  *   - Read consistency (every public getter)
@@ -76,7 +76,7 @@ function eq(actual: any, expected: any, label: string): void {
 
 async function main() {
   console.log("\n═══════════════════════════════════════════════════════════════");
-  console.log("  COVERFI MAINNET SMOKE TEST SUITE");
+  console.log("  STRATA MAINNET SMOKE TEST SUITE");
   console.log("═══════════════════════════════════════════════════════════════\n");
 
   const network = await ethers.provider.getNetwork();

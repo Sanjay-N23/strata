@@ -1,4 +1,4 @@
-// CoverFi Protocol - Contract ABIs
+// Strata Protocol - Contract ABIs
 // Auto-generated from Hardhat artifacts
 const COVERFI_ABIS = {
   InsurancePool: [

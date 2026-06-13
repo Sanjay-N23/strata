@@ -12,7 +12,7 @@ async function main() {
   // Mocks must NEVER touch mainnet. Use scripts/deploy-mainnet.ts instead.
   assertTestnetOnly(chainId);
 
-  console.log("Deploying CoverFi Protocol with account:", deployer.address);
+  console.log("Deploying Strata Protocol with account:", deployer.address);
   console.log("Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)));
 
   const foundation = process.env.COVERFI_FOUNDATION || deployer.address;
@@ -257,7 +257,7 @@ async function main() {
 
   console.log(`\n📁 Deployment saved to deployments/${filename}`);
   console.log("\n═══════════════════════════════════════════════");
-  console.log("  COVERFI PROTOCOL DEPLOYMENT COMPLETE");
+  console.log("  STRATA PROTOCOL DEPLOYMENT COMPLETE");
   console.log("═══════════════════════════════════════════════");
   console.log(`  Contracts deployed: ${Object.keys(addresses).length}`);
   console.log(`  Network: ${network.name} (Chain ID: ${network.chainId})`);

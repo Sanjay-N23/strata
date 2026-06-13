@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 /**
  * @title TIR — Trusted Issuer Registry
  * @notice Manages bonded attestors (Custodian, Legal Rep, Auditor) and 2-of-3
- *         default confirmation logic for CoverFi Protocol.
+ *         default confirmation logic for Strata Protocol.
  */
 contract TIR is Ownable2Step, ReentrancyGuard {
     // ─── Enums ───────────────────────────────────────────────────────

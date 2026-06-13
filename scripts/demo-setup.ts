@@ -7,7 +7,7 @@ async function main() {
     await ethers.getSigners();
 
   console.log("═══════════════════════════════════════════════════");
-  console.log("  COVERFI PROTOCOL — DEMO SETUP (3 Transactions)  ");
+  console.log("  STRATA PROTOCOL — DEMO SETUP (3 Transactions)  ");
   console.log("═══════════════════════════════════════════════════\n");
 
   // Load deployment addresses
@@ -76,7 +76,7 @@ async function main() {
   const tx1a = await mockBAS.connect(issuer).submitAttestation(
     tokenAddress,
     "LEGAL_ENTITY_REGISTRATION",
-    ethers.keccak256(ethers.toUtf8Bytes("CoverFi Demo Issuer Legal Entity"))
+    ethers.keccak256(ethers.toUtf8Bytes("Strata Demo Issuer Legal Entity"))
   );
   const receipt1a = await tx1a.wait();
   console.log("BAS legal attestation submitted. TX:", receipt1a?.hash);

@@ -984,10 +984,10 @@ code, pre { font-family: var(--font-mono); }
 <script src="contract-abis.js"></script>
 <script>
 // ---- Theme ----
-function getTheme() { return localStorage.getItem('coverfi-theme') || 'light'; }
+function getTheme() { return localStorage.getItem('strata-theme') || 'light'; }
 function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('coverfi-theme', theme);
+  localStorage.setItem('strata-theme', theme);
 }
 function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
 (function() { setTheme(getTheme()); })();
@@ -1070,7 +1070,7 @@ async function handleWalletClick() {
     signer = await provider.getSigner();
     userAddress = await signer.getAddress();
 
-    localStorage.setItem('coverfi-wallet-connected', 'true');
+    localStorage.setItem('strata-wallet-connected', 'true');
     var btn = document.getElementById('btnConnect');
     var short = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
     btn.textContent = short;
@@ -1444,7 +1444,7 @@ function toggleExpand(trigger) {
 
 // ---- Auto-reconnect on load ----
 (async function() {
-  if (localStorage.getItem('coverfi-wallet-connected') === 'true' && typeof window.ethereum !== 'undefined') {
+  if (localStorage.getItem('strata-wallet-connected') === 'true' && typeof window.ethereum !== 'undefined') {
     try {
       var accounts = await window.ethereum.request({ method: 'eth_accounts' });
       if (accounts && accounts.length > 0) {

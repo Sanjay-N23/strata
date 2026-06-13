@@ -10,7 +10,7 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   const balance = await ethers.provider.getBalance(deployer.address);
   console.log("═══════════════════════════════════════════════════════════════");
-  console.log("  COVERFI — LIVE YIELD TEST ON HASHKEY CHAIN TESTNET");
+  console.log("  STRATA — LIVE YIELD TEST ON HASHKEY CHAIN TESTNET");
   console.log(`  Account: ${deployer.address}`);
   console.log(`  Balance: ${ethers.formatEther(balance)} HSK`);
   console.log("═══════════════════════════════════════════════════════════════\n");

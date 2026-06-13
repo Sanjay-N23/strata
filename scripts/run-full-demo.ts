@@ -5,7 +5,7 @@ async function main() {
   const [deployer, issuer, custodian, legalRep, auditor, underwriter, investor1] = signers;
 
   console.log("═══════════════════════════════════════════════════════════════");
-  console.log("  COVERFI PROTOCOL — FULL DEPLOY + DEMO (3 Transactions)");
+  console.log("  STRATA PROTOCOL — FULL DEPLOY + DEMO (3 Transactions)");
   console.log("═══════════════════════════════════════════════════════════════\n");
 
   const foundation = deployer.address;

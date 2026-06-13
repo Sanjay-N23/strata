@@ -23,7 +23,7 @@ async function main() {
   const tokenAddress = c.MockERC3643Token;
 
   console.log("══════════════════════════════════════════");
-  console.log("  COVERFI — CURRENT ON-CHAIN STATE");
+  console.log("  STRATA — CURRENT ON-CHAIN STATE");
   console.log(`  Deployer: ${deployer.address}`);
   console.log("══════════════════════════════════════════\n");
 

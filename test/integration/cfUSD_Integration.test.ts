@@ -4,11 +4,11 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 
 /**
  * Integration tests verifying CoverFiStablecoin (cfUSD) works correctly as the
- * settlement asset across the CoverFi protocol. These tests catch decimal
+ * settlement asset across the Strata protocol. These tests catch decimal
  * mismatches, pausable interactions, and supply-cap interactions with the
  * pool that unit tests can't.
  */
-describe("Integration: cfUSD with CoverFi Protocol", function () {
+describe("Integration: cfUSD with Strata Protocol", function () {
   async function deployFullStack() {
     const [owner, foundation, srLP, jrLP, issuerEOA] = await ethers.getSigners();
 

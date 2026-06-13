@@ -5,7 +5,7 @@ import "./IIdentityRegistry.sol";
 
 /**
  * @title IERC3643 — Minimal interface for ERC-3643 (T-REX) security tokens
- * @notice Only the functions CoverFi needs for compliance-native payout
+ * @notice Only the functions Strata needs for compliance-native payout
  */
 interface IERC3643 {
     function identityRegistry() external view returns (IIdentityRegistry);

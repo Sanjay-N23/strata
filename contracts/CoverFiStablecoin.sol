@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 
 /**
  * @title CoverFiStablecoin (cfUSD)
- * @notice Phase 1 stablecoin for the CoverFi Protocol on HashKey Chain Mainnet.
+ * @notice Phase 1 stablecoin for the Strata Protocol on HashKey Chain Mainnet.
  *         Will be replaced by integrated USDT/USDC in Phase 2 once direct
  *         partnerships with stablecoin issuers on HashKey Chain are formalized.
  *
@@ -22,7 +22,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
  *
  * @dev    6 decimals to match standard USDT behavior across the EVM ecosystem.
  *         This is NOT a mock. It is a fully functional ERC20 token used as the
- *         settlement asset for CoverFi protection coverage during Phase 1.
+ *         settlement asset for Strata protection coverage during Phase 1.
  */
 contract CoverFiStablecoin is ERC20, Ownable2Step, Pausable {
     /// @notice Maximum total supply: 1 billion cfUSD (with 6 decimals).

@@ -3,7 +3,7 @@
  * ABDK Math 64.64 Smart Contract Library.  Copyright © 2019 by ABDK Consulting.
  * Author: Mikhail Vladimirov <mikhail.vladimirov@gmail.com>
  *
- * Minimal subset used by CoverFi for premium formula: exp(), mul(), fromInt(), divu(), mulu(), toInt()
+ * Minimal subset used by Strata for premium formula: exp(), mul(), fromInt(), divu(), mulu(), toInt()
  */
 pragma solidity ^0.8.19;
 

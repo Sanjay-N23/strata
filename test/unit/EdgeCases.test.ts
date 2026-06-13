@@ -4,7 +4,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { mine } from "@nomicfoundation/hardhat-network-helpers";
 
 // ═══════════════════════════════════════════════════════════════════════════
-//  Edge Case & Security Tests for CoverFi Smart Contracts
+//  Edge Case & Security Tests for Strata Smart Contracts
 // ═══════════════════════════════════════════════════════════════════════════
 
 describe("EdgeCases", function () {

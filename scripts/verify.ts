@@ -20,7 +20,7 @@ async function main() {
   const foundation = deployment.foundation;
 
   console.log("═══════════════════════════════════════════════════");
-  console.log("  COVERFI — BNBScan Contract Verification");
+  console.log("  STRATA — BNBScan Contract Verification");
   console.log(`  Network: ${network}`);
   console.log("═══════════════════════════════════════════════════\n");
 
