@@ -58,7 +58,7 @@ async function main() {
   console.log(`Static lead:  ${res.staticLeadEpochs} epochs`);
   console.log(`Winner:       ${res.winner === 1n ? "AI" : res.winner === 2n ? "STATIC" : "tie"}`);
   console.log(`Tally:        AI wins ${ai} | static wins ${st} | avg lead ${avg}`);
-  console.log(`Agent rep:    ${correct}/${total} correct (ERC-8004 reputation)`);
+  console.log(`Agent rep:    ${correct}/${total} correct (on-chain agent reputation)`);
   console.log(`Eff premium:  ${effPrem} bps (AI-driven)`);
   console.log(`Default:      proposed by AI, ${await bench.isResolved(issuer) ? "" : ""}awaiting 2-of-3 human attestation (confirmed=${await (await ethers.getContractAt("DefaultOracle", dep.DefaultOracle)).isDefaultConfirmed(issuer)})`);
   console.log("==========================================");

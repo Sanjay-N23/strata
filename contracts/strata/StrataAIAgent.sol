@@ -54,7 +54,8 @@ contract StrataAIAgent is Ownable2Step {
     IDefaultProposer public defaultOracle;
     address public benchmark;       // TuringBenchmark (Phase B), settable
 
-    // ERC-8004 agent identity (optional on testnet; enforced when set)
+    // ERC-8004-style agent-identity gate: minimal ERC-721 ownerOf check,
+    // optional (unset on testnet), enforced on every onlyAgent call when set.
     address public erc8004Registry;
     uint256 public erc8004TokenId;
 

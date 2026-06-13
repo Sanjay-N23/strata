@@ -14,7 +14,7 @@
 [![Mantle](https://img.shields.io/badge/⛓_Chain-Mantle_Sepolia_5003-F0B90B?style=for-the-badge)](https://explorer.sepolia.mantle.xyz)
 [![Tests](https://img.shields.io/badge/✅_Tests-978_Passing-00B894?style=for-the-badge)](./test)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.19-363636?style=for-the-badge&logo=solidity)](./contracts)
-[![ERC-8004](https://img.shields.io/badge/Agent_ID-ERC--8004-7C4DFF?style=for-the-badge)](./contracts/strata)
+[![Agent Reputation](https://img.shields.io/badge/Agent-On--chain_reputation-7C4DFF?style=for-the-badge)](./contracts/strata)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](./LICENSE)
 
 <br/>
@@ -36,7 +36,9 @@ earlier than the static rulebook.** That proof is the Turing Test.
   collateral shortfall **3 epochs before** the rules-based baseline. Deterministic & reproducible.
 - 🛡️ **Human-in-the-loop** — the AI *proposes* defaults; **2-of-3 human attestors** confirm. The AI never
   confirms a legal event. Institutionally trustworthy by design.
-- 🪪 **ERC-8004 agent identity + reputation** — accrues only from correct, timely calls.
+- 🪪 **On-chain agent reputation** — `StrataAIAgent.reputation()` accrues only from correct, timely
+  calls (never self-asserted). An optional **ERC-8004**-style identity gate (ERC-721 `ownerOf`) can bind
+  every agent action to an identity NFT — wired in the contract but left inactive on this testnet deploy.
 - ⛓️ **Mantle-native** — `StrataAIAgent.submitScore()` is an AI-powered on-chain function that reprices
   the issuer in the same tx (Deployment Award).
 

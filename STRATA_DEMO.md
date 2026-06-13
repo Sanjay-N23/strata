@@ -30,8 +30,8 @@ it flags distress earlier than the static rulebook**. That proof *is* the Turing
   default — but it shows **"awaiting 2-of-3 human attestation."** The AI **cannot** confirm a default.
 - This is the institutional-trust story: AI automates everything reversible; humans adjudicate everything legal.
 
-### 3. Identity & reputation (20s)
-- ERC-8004 agent identity + **reputation 1/1** — earned only from a correct, *timely* call, never self-asserted.
+### 3. Reputation (20s)
+- On-chain **reputation 1/1** — earned only from a correct, *timely* call, never self-asserted. An optional ERC-8004-style identity gate (ERC-721 `ownerOf`) is wired in the contract but inactive on this testnet deploy.
 
 ### 4. The on-chain proof (45s) — terminal
 ```bash
@@ -53,7 +53,7 @@ npx hardhat test test/integration/TuringBenchmark.test.ts
 | On-chain AI benchmarking | The Turing harness is a reference implementation — real ground truth (USDC–SVB) |
 | AI x RWA (Track 3) | Autonomous AI underwriting + risk management of RWA issuers on Mantle |
 | Agents adapting in real time | Continuous re-underwriting loop; sentiment-driven distress detection |
-| ERC-8004 identity + reputation | Every agent has one; reputation accrues only from correct calls |
+| ERC-8004-style identity + on-chain reputation | Optional identity gate wired in-contract; reputation accrues only from correct calls |
 | Institutional trust | Human-in-the-loop 2-of-3 gate for all legal/irreversible actions |
 | Judges (Z.AI, Allora, Nansen, Virtuals) | GLM-4.6 brain · scorecard inference · sentiment signals · agent reputation |
 
