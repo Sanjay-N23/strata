@@ -23,16 +23,22 @@
       background:currentColor;flex:none}
 
     /* pending approval cards */
-    .gov-queue{display:flex;flex-direction:column;gap:12px}
-    .gov-qitem{border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;
+    .gov-queue{display:flex;flex-direction:column;gap:14px}
+    .gov-qitem{border:1px solid var(--border);border-radius:var(--radius);padding:15px 17px;
       transition:border-color .15s}
     .gov-qitem.sev-red{border-left:3px solid var(--red)}
     .gov-qitem.sev-amber{border-left:3px solid var(--amber)}
     .gov-qitem.dismissed{opacity:.35;pointer-events:none}
-    .gov-qitem-h{display:flex;align-items:center;gap:9px;margin-bottom:6px}
-    .gov-qitem-title{font-weight:700;font-size:.92rem;font-family:var(--mono)}
+    .gov-qitem-h{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+    .gov-qitem-title{font-weight:700;font-size:.9rem;font-family:var(--mono)}
     .gov-qitem-issuer{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-left:auto}
-    .gov-qitem-evidence{font-size:.82rem;color:var(--text2);margin-bottom:10px;line-height:1.45}
+    .gov-qitem-by{font-size:.72rem;color:var(--muted);margin-bottom:9px}
+    .gov-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+    .gov-chip{font-family:var(--mono);font-size:.68rem;padding:2px 9px;border-radius:999px;
+      background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+    .gov-chip b{color:var(--text);font-weight:700}
+    .gov-chip.red{background:var(--red-dim);color:var(--red);border-color:transparent}
+    .gov-chip.amber{background:var(--amber-dim);color:var(--amber);border-color:transparent}
     .gov-qitem-foot{display:flex;gap:8px;align-items:center}
     .gov-qitem-sigs{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-left:auto}
     .gov-btn{padding:5px 14px;border-radius:7px;border:1px solid var(--border2);cursor:pointer;
@@ -44,24 +50,25 @@
     .gov-btn.reject:hover{background:var(--red);color:#fff}
     .gov-btn.simulate{background:var(--ai-dim);color:var(--ai);border-color:var(--ai)}
 
-    /* audit timeline */
+    /* audit timeline — compact: bold action, muted detail, route as a chip */
     .gov-trail{display:flex;flex-direction:column;gap:0}
-    .gov-te{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);position:relative}
+    .gov-te{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid var(--border)}
     .gov-te:last-child{border-bottom:none}
-    .gov-te-dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;
-      margin-top:1px;font-size:.65rem;font-weight:700;font-family:var(--mono)}
+    .gov-te-dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;
+      margin-top:1px;font-size:.6rem;font-weight:700;font-family:var(--mono)}
     .gov-te-dot.ai{background:var(--ai-dim);color:var(--ai)}
     .gov-te-dot.human{background:var(--green-dim);color:var(--green)}
     .gov-te-dot.system{background:var(--surface2);color:var(--muted)}
     .gov-te-body{flex:1;min-width:0}
     .gov-te-action{font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--text)}
-    .gov-te-detail{font-size:.78rem;color:var(--text2);margin-top:2px}
-    .gov-te-time{font-family:var(--mono);font-size:.68rem;color:var(--muted);white-space:nowrap}
-    .gov-te-route{font-family:var(--mono);font-size:.68rem;margin-top:4px}
-    .gov-te-route.auto{color:var(--green)}
-    .gov-te-route.quorum{color:var(--ai)}
-    .gov-te-route.approved{color:var(--green)}
-    .gov-te-route.rejected{color:var(--red)}
+    .gov-te-detail{font-size:.71rem;color:var(--muted);margin-top:3px}
+    .gov-te-time{font-family:var(--mono);font-size:.66rem;color:var(--muted);white-space:nowrap}
+    .gov-te-route{display:inline-block;font-family:var(--mono);font-size:.6rem;font-weight:700;
+      margin-top:7px;padding:2px 9px;border-radius:999px;letter-spacing:.02em}
+    .gov-te-route.auto{background:var(--green-dim);color:var(--green)}
+    .gov-te-route.quorum{background:var(--ai-dim);color:var(--ai)}
+    .gov-te-route.approved{background:var(--green-dim);color:var(--green)}
+    .gov-te-route.rejected{background:var(--red-dim);color:var(--red)}
 
     /* simulation modal */
     .gov-sim-bd{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
@@ -252,9 +259,12 @@
                 <span class="gov-qitem-title">COLLATERAL_SHORTFALL</span>
                 <span class="gov-qitem-issuer">USDC-SVB</span>
               </div>
-              <div class="gov-qitem-evidence">
-                Proposed by <b>AI Agent #1</b> · Epoch 6<br>
-                Collateral ratio fell to <b style="color:var(--red)">81.4%</b> (threshold 100%). Exposure <b>$2.1M</b>. IRS 58 → PD 14.1%. Triggers § 7.3 halt-redemptions clause.
+              <div class="gov-qitem-by">AI Agent #1 · Epoch 6 · triggers § 7.3 halt-redemptions</div>
+              <div class="gov-chips">
+                <span class="gov-chip red">Collateral <b>81.4%</b></span>
+                <span class="gov-chip">Exposure <b>$2.1M</b></span>
+                <span class="gov-chip">IRS <b>58</b></span>
+                <span class="gov-chip red">PD <b>14.1%</b></span>
               </div>
               <div class="gov-qitem-foot">
                 <button class="gov-btn simulate" onclick="openSim('shortfall')">Simulate</button>
@@ -271,9 +281,12 @@
                 <span class="gov-qitem-title">SENTIMENT_FLAG</span>
                 <span class="gov-qitem-issuer">mETH</span>
               </div>
-              <div class="gov-qitem-evidence">
-                Proposed by <b>AI Agent #1</b> · Epoch 6<br>
-                Sentiment score <b style="color:var(--amber)">341</b> / 1000 (threshold 350). Negative coverage spike on X (+218%). Recommends watchlist upgrade + premium +12 bps.
+              <div class="gov-qitem-by">AI Agent #1 · Epoch 6 · recommends watchlist + premium</div>
+              <div class="gov-chips">
+                <span class="gov-chip amber">Sentiment <b>341</b></span>
+                <span class="gov-chip">Threshold <b>350</b></span>
+                <span class="gov-chip amber">Coverage <b>+218%</b></span>
+                <span class="gov-chip">Premium <b>+12 bps</b></span>
               </div>
               <div class="gov-qitem-foot">
                 <button class="gov-btn simulate" onclick="openSim('sentiment')">Simulate</button>
@@ -302,7 +315,7 @@
               <div class="gov-te-body">
                 <div class="gov-te-action">REPRICE · USDC · $310K</div>
                 <div class="gov-te-detail">IRS 72 → 68 · PD 4.1% → 5.3% · +14 bps premium</div>
-                <div class="gov-te-route auto">→ Auto-cleared (rule GV-01 · &lt; $500K)</div>
+                <div class="gov-te-route auto">Auto-cleared · GV-01</div>
               </div>
               <div class="gov-te-time">2 min ago</div>
             </div>
@@ -312,7 +325,7 @@
               <div class="gov-te-body">
                 <div class="gov-te-action">SENTIMENT_FLAG · mETH · score 341</div>
                 <div class="gov-te-detail">Negative coverage spike · +12 bps premium proposed</div>
-                <div class="gov-te-route quorum">→ Routed to 2-of-3 quorum (rule GV-06)</div>
+                <div class="gov-te-route quorum">2-of-3 quorum · GV-06</div>
               </div>
               <div class="gov-te-time">4 min ago</div>
             </div>
@@ -322,7 +335,7 @@
               <div class="gov-te-body">
                 <div class="gov-te-action">COLLATERAL_SHORTFALL · USDC-SVB · $2.1M</div>
                 <div class="gov-te-detail">Collateral 81.4% · PD 14.1% · § 7.3 triggered</div>
-                <div class="gov-te-route quorum">→ Routed to 2-of-3 quorum (rule GV-03)</div>
+                <div class="gov-te-route quorum">2-of-3 quorum · GV-03</div>
               </div>
               <div class="gov-te-time">6 min ago</div>
             </div>
@@ -332,7 +345,7 @@
               <div class="gov-te-body">
                 <div class="gov-te-action">APPROVE REPRICE · USDC · $800K</div>
                 <div class="gov-te-detail">Signer: 0x8aC7…3B1 · quorum 2-of-3 met</div>
-                <div class="gov-te-route approved">→ Executed on-chain (tx: 0xd3f4…a90c)</div>
+                <div class="gov-te-route approved">Executed ✓</div>
               </div>
               <div class="gov-te-time">18 min ago</div>
             </div>
@@ -342,7 +355,7 @@
               <div class="gov-te-body">
                 <div class="gov-te-action">ADJUST_PREMIUM · USDC · +18 bps</div>
                 <div class="gov-te-detail">Sentiment 410 → 341 · within 50 bps auto-clear</div>
-                <div class="gov-te-route auto">→ Auto-cleared (rule GV-05 · ≤ 50 bps)</div>
+                <div class="gov-te-route auto">Auto-cleared · GV-05</div>
               </div>
               <div class="gov-te-time">31 min ago</div>
             </div>
@@ -352,7 +365,7 @@
               <div class="gov-te-body">
                 <div class="gov-te-action">REPRICE · mETH · $185K</div>
                 <div class="gov-te-detail">IRS 81 → 79 · delta 7d −2.1 · +7 bps premium</div>
-                <div class="gov-te-route auto">→ Auto-cleared (rule GV-01)</div>
+                <div class="gov-te-route auto">Auto-cleared · GV-01</div>
               </div>
               <div class="gov-te-time">47 min ago</div>
             </div>
@@ -362,7 +375,7 @@
               <div class="gov-te-body">
                 <div class="gov-te-action">APPROVE PROPOSE_DEFAULT · USDC-SVB</div>
                 <div class="gov-te-detail">Signers: 0x8aC7…3B1 · 0xF32E…9D4 · 2-of-3 met</div>
-                <div class="gov-te-route approved">→ Executed · halt-redemptions active (SVB epoch)</div>
+                <div class="gov-te-route approved">Executed ✓ · halt active</div>
               </div>
               <div class="gov-te-time">2 hr ago</div>
             </div>
@@ -372,7 +385,7 @@
               <div class="gov-te-body">
                 <div class="gov-te-action">REPRICE · USDC · $240K</div>
                 <div class="gov-te-detail">IRS 64 → 58 · PD 6.1% → 8.2% · sentinel rising</div>
-                <div class="gov-te-route auto">→ Auto-cleared (rule GV-01 · &lt; $500K)</div>
+                <div class="gov-te-route auto">Auto-cleared · GV-01</div>
               </div>
               <div class="gov-te-time">2 hr ago</div>
             </div>
@@ -524,7 +537,7 @@
           '<div class="gov-te-action">' + resolution.toUpperCase() + ' ' + action + ' · ' + issuer + '</div>' +
           '<div class="gov-te-detail">Signer: you (wallet) · severity ' + sev + '</div>' +
           '<div class="gov-te-route ' + (isApproved ? 'approved' : 'rejected') + '">' +
-            '→ ' + (isApproved ? 'Executed on-chain' : 'Rejected — action voided') +
+            (isApproved ? 'Executed ✓' : 'Rejected') +
           '</div>' +
         '</div>' +
         '<div class="gov-te-time">just now</div>';
