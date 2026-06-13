@@ -126,6 +126,24 @@
 
   // ---------- wallet ----------
   var wallet = { addr: null, connected: false, wrongNet: false };
+  var activeProvider = null;
+  var eip6963 = []; // discovered { info:{uuid,name,icon,rdns}, provider }
+
+  // EIP-6963 multi-injected-provider discovery (MetaMask, Brave, OKX, Coinbase, Rabby…)
+  function discoverWallets() {
+    try {
+      window.addEventListener('eip6963:announceProvider', function (e) {
+        var d = e.detail;
+        if (d && d.info && d.provider && !eip6963.some(function (p) { return p.info.uuid === d.info.uuid; })) {
+          eip6963.push(d);
+          var m = document.getElementById('stxWalletModal');
+          if (m && m.classList.contains('open')) renderWalletList();
+        }
+      });
+      window.dispatchEvent(new Event('eip6963:requestProvider'));
+    } catch (e) {}
+  }
+
   function paintWallet() {
     var el = document.getElementById('stxWallet');
     var txt = document.getElementById('stxWalletTxt');
@@ -134,38 +152,121 @@
     el.classList.toggle('wrongnet', wallet.wrongNet);
     txt.textContent = wallet.wrongNet ? 'Wrong network' : (wallet.connected ? short(wallet.addr) : 'Connect wallet');
   }
-  async function connectWallet() {
-    if (!window.ethereum) { alert('No wallet detected. Install MetaMask or a compatible wallet to write on-chain. Browsing stays read-only.'); return; }
+
+  async function connectWithProvider(provider, label) {
+    provider = provider || window.ethereum;
+    if (!provider) { window.open('https://ethereum.org/en/wallets/find-wallet/', '_blank', 'noopener'); return; }
     try {
-      var accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      var accounts = await provider.request({ method: 'eth_requestAccounts' });
       if (!accounts || !accounts.length) return;
-      wallet.addr = accounts[0]; wallet.connected = true;
-      var chainId = await window.ethereum.request({ method: 'eth_chainId' });
+      activeProvider = provider;
+      wallet.addr = accounts[0]; wallet.connected = true; wallet.label = label || '';
+      var chainId = await provider.request({ method: 'eth_chainId' });
       if (chainId !== MANTLE.chainId) {
         try {
-          await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: MANTLE.chainId }] });
+          await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: MANTLE.chainId }] });
           wallet.wrongNet = false;
         } catch (switchErr) {
           if (switchErr && switchErr.code === 4902) {
-            await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [MANTLE] });
+            await provider.request({ method: 'wallet_addEthereumChain', params: [MANTLE] });
             wallet.wrongNet = false;
           } else { wallet.wrongNet = true; }
         }
       } else { wallet.wrongNet = false; }
+      watchProvider(provider);
+      closeWalletModal();
       paintWallet();
     } catch (err) { /* user rejected */ }
   }
-  function watchWallet() {
-    if (!window.ethereum) return;
-    window.ethereum.on && window.ethereum.on('chainChanged', function (cid) {
-      wallet.wrongNet = wallet.connected && cid !== MANTLE.chainId; paintWallet();
-    });
-    window.ethereum.on && window.ethereum.on('accountsChanged', function (a) {
+
+  function watchProvider(p) {
+    if (!p || !p.on) return;
+    p.on('chainChanged', function (cid) { wallet.wrongNet = wallet.connected && cid !== MANTLE.chainId; paintWallet(); });
+    p.on('accountsChanged', function (a) {
       if (!a || !a.length) { wallet.connected = false; wallet.addr = null; }
       else wallet.addr = a[0];
       paintWallet();
     });
   }
+
+  // curated wallets shown under "Recommended" when not already installed
+  var RECOMMENDED = [
+    { name: 'MetaMask',        rdns: 'io.metamask',       url: 'https://metamask.io/download',      color: '#F6851B', glyph: 'M' },
+    { name: 'OKX Wallet',      rdns: 'com.okex.wallet',   url: 'https://www.okx.com/web3',          color: '#111111', glyph: 'O' },
+    { name: 'Coinbase Wallet', rdns: 'com.coinbase.wallet',url:'https://www.coinbase.com/wallet',    color: '#0052FF', glyph: 'C' },
+    { name: 'Rabby',           rdns: 'io.rabby',          url: 'https://rabby.io',                  color: '#7084FF', glyph: 'R' },
+    { name: 'Trust Wallet',    rdns: 'com.trustwallet.app',url:'https://trustwallet.com/download',   color: '#3375BB', glyph: 'T' }
+  ];
+  function glyphAvatar(g, c) { return '<span class="stx-wglyph" style="background:' + c + '">' + g + '</span>'; }
+
+  function renderWalletList() {
+    var el = document.getElementById('stxWalletList'); if (!el) return;
+    var html = '', installed = {};
+    if (eip6963.length) {
+      html += '<div class="stx-wsec">Installed</div>';
+      eip6963.forEach(function (p) {
+        installed[p.info.rdns] = true;
+        html += '<button class="stx-wrow" data-act="connect" data-uuid="' + p.info.uuid + '">' +
+          '<span class="stx-wicon"><img src="' + p.info.icon + '" alt=""/></span>' +
+          '<span class="stx-wname">' + p.info.name + '</span></button>';
+      });
+    } else if (window.ethereum) {
+      html += '<div class="stx-wsec">Installed</div>' +
+        '<button class="stx-wrow" data-act="injected"><span class="stx-wicon">' + glyphAvatar('◆', 'var(--ai)') +
+        '</span><span class="stx-wname">Browser Wallet</span></button>';
+    }
+    var rec = RECOMMENDED.filter(function (r) { return !installed[r.rdns]; });
+    if (rec.length) {
+      html += '<div class="stx-wsec">Recommended</div>';
+      rec.forEach(function (r) {
+        html += '<button class="stx-wrow" data-act="install" data-url="' + r.url + '">' +
+          '<span class="stx-wicon">' + glyphAvatar(r.glyph, r.color) + '</span>' +
+          '<span class="stx-wname">' + r.name + '</span><span class="stx-wtag">Get ↗</span></button>';
+      });
+    }
+    el.innerHTML = html;
+  }
+
+  function buildWalletModal() {
+    if (document.getElementById('stxWalletModal')) { renderWalletList(); return; }
+    var m = document.createElement('div');
+    m.className = 'stx-wmodal'; m.id = 'stxWalletModal';
+    m.innerHTML =
+      '<div class="stx-wpanel">' +
+        '<div class="stx-wleft">' +
+          '<div class="stx-whead">Connect a Wallet</div>' +
+          '<div class="stx-wlist" id="stxWalletList"></div>' +
+          '<div class="stx-wnote">Connect to act on <b>Mantle Sepolia</b>. Browsing stays read-only.</div>' +
+        '</div>' +
+        '<div class="stx-wright">' +
+          '<button class="stx-wclose" id="stxWalletClose" aria-label="Close">×</button>' +
+          '<div class="stx-wq">What is a Wallet?</div>' +
+          '<div class="stx-winfo"><span class="ic">' + svg('layers') + '</span>' +
+            '<div><b>A home for your assets</b><p>A wallet holds the keys you use to sign on-chain actions — like Strata’s <i>submitScore</i> and the 2-of-3 default gate.</p></div></div>' +
+          '<div class="stx-winfo"><span class="ic">' + svg('shield') + '</span>' +
+            '<div><b>A new way to log in</b><p>No accounts or passwords — just connect your wallet.</p></div></div>' +
+          '<a class="stx-btn gold stx-wget" href="https://ethereum.org/en/wallets/find-wallet/" target="_blank" rel="noopener">Get a Wallet</a>' +
+          '<a class="stx-wlearn" href="https://ethereum.org/en/wallets/" target="_blank" rel="noopener">Learn More</a>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      if (e.target === m || e.target.closest('#stxWalletClose')) { closeWalletModal(); return; }
+      var row = e.target.closest('.stx-wrow'); if (!row) return;
+      var act = row.getAttribute('data-act');
+      if (act === 'connect') {
+        var found = eip6963.filter(function (p) { return p.info.uuid === row.getAttribute('data-uuid'); })[0];
+        if (found) connectWithProvider(found.provider, found.info.name);
+      } else if (act === 'injected') {
+        connectWithProvider(window.ethereum, 'Browser Wallet');
+      } else if (act === 'install') {
+        window.open(row.getAttribute('data-url'), '_blank', 'noopener');
+      }
+    });
+    renderWalletList();
+  }
+  function openWalletModal() { buildWalletModal(); document.getElementById('stxWalletModal').classList.add('open'); }
+  function closeWalletModal() { var m = document.getElementById('stxWalletModal'); if (m) m.classList.remove('open'); }
 
   // ---------- wire ----------
   function wire() {
@@ -174,7 +275,8 @@
       var b = e.target.closest('button'); if (b) Strata.setMode(b.getAttribute('data-m'));
     });
     var w = document.getElementById('stxWallet');
-    if (w) w.addEventListener('click', connectWallet);
+    if (w) w.addEventListener('click', openWalletModal);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeWalletModal(); });
     var burger = document.getElementById('stxBurger');
     if (burger) burger.addEventListener('click', function () {
       document.getElementById('stxSide').classList.toggle('open');
@@ -195,7 +297,7 @@
     renderTop();
     syncModeUI();
     paintWallet();
-    watchWallet();
+    discoverWallets();
     wire();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
