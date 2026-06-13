@@ -290,6 +290,55 @@
   function toggleSide() { var s = document.getElementById('stxSide'); if (!s) return; var open = s.classList.toggle('open'); ensureBackdrop().classList.toggle('open', open); }
   function closeSide() { var s = document.getElementById('stxSide'); if (s) s.classList.remove('open'); var bd = document.getElementById('stxSideBd'); if (bd) bd.classList.remove('open'); }
 
+  // ---------- command palette (search / ⌘K) ----------
+  function buildPalette() {
+    if (document.getElementById('stxPal')) return;
+    var p = document.createElement('div'); p.className = 'stx-pal'; p.id = 'stxPal';
+    p.innerHTML = '<div class="stx-pal-box">' +
+      '<div class="stx-pal-in">' + svg('search') + '<input id="stxPalInput" type="text" placeholder="Search issuers & pages…" autocomplete="off"/><kbd>esc</kbd></div>' +
+      '<div class="stx-pal-list" id="stxPalList"></div></div>';
+    document.body.appendChild(p);
+    p.addEventListener('click', function (e) {
+      if (e.target === p) { closePalette(); return; }
+      var row = e.target.closest('.stx-pal-row'); if (row) goTo(row.getAttribute('data-href'));
+    });
+    var input = document.getElementById('stxPalInput');
+    input.addEventListener('input', function () { renderPalette(input.value); });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { var first = document.querySelector('.stx-pal-row'); if (first) goTo(first.getAttribute('data-href')); }
+    });
+  }
+  function goTo(href) { if (href) window.location.href = href; }
+  function renderPalette(q) {
+    q = (q || '').toLowerCase().trim();
+    var html = '';
+    var pages = NAV.filter(function (n) { return !q || n.label.toLowerCase().indexOf(q) > -1; });
+    if (pages.length) {
+      html += '<div class="stx-pal-sec">Pages</div>';
+      pages.forEach(function (n) {
+        html += '<button class="stx-pal-row" data-href="' + n.href + '"><span class="ic">' + svg(n.icon) + '</span><span class="nm">' + n.label + '</span><span class="tag">Page</span></button>';
+      });
+    }
+    if (window.StrataData && window.StrataData.getIssuers) {
+      var iss = window.StrataData.getIssuers().filter(function (r) { return !q || (r.label + ' ' + r.sector).toLowerCase().indexOf(q) > -1; });
+      if (iss.length) {
+        html += '<div class="stx-pal-sec">Issuers</div>';
+        iss.slice(0, 8).forEach(function (r) {
+          html += '<button class="stx-pal-row" data-href="issuer.html?id=' + r.id + '"><span class="ic">' + svg('building') + '</span>' +
+            '<span class="nm">' + r.label + '<small>' + r.sector + '</small></span><span class="tag">IRS ' + r.irs + '</span></button>';
+        });
+      }
+    }
+    document.getElementById('stxPalList').innerHTML = html || '<div class="stx-pal-empty">No matches</div>';
+  }
+  function openPalette() {
+    buildPalette();
+    document.getElementById('stxPal').classList.add('open');
+    renderPalette('');
+    var i = document.getElementById('stxPalInput'); i.value = ''; setTimeout(function () { i.focus(); }, 30);
+  }
+  function closePalette() { var p = document.getElementById('stxPal'); if (p) p.classList.remove('open'); }
+
   // ---------- wire ----------
   function wire() {
     var modeWrap = document.getElementById('stxMode');
@@ -298,7 +347,7 @@
     });
     var w = document.getElementById('stxWallet');
     if (w) w.addEventListener('click', openWalletModal);
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeWalletModal(); closeSide(); } });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeWalletModal(); closeSide(); closePalette(); } });
     var burger = document.getElementById('stxBurger');
     if (burger) burger.addEventListener('click', toggleSide);
     // close the drawer when a nav link is chosen (same-page or before navigation)
@@ -309,7 +358,10 @@
       alert('Alerts — 2 open:\n• AI proposed COLLATERAL_SHORTFALL (awaiting 2-of-3)\n• Issuer sentiment < 350 (USDC replay)');
     });
     var search = document.getElementById('stxSearch');
-    if (search) search.addEventListener('click', function () { /* stub for ⌘K palette */ });
+    if (search) search.addEventListener('click', openPalette);
+    document.addEventListener('keydown', function (e) {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); openPalette(); }
+    });
   }
 
   function init() {

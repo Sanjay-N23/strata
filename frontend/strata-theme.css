@@ -495,3 +495,25 @@ body[data-page]{
   .stx-wpanel{grid-template-columns:1fr;width:94vw}
   .stx-wright{display:none}
 }
+
+/* ---- command palette (search / ⌘K) ---- */
+.stx-pal{position:fixed;inset:0;z-index:320;display:flex;justify-content:center;align-items:flex-start;
+  padding-top:12vh;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .16s}
+.stx-pal.open{opacity:1;pointer-events:auto}
+.stx-pal-box{width:min(560px,92vw);background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);
+  box-shadow:var(--elev2);overflow:hidden;max-height:70vh;display:flex;flex-direction:column}
+.stx-pal-in{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.stx-pal-in svg{width:17px;height:17px;stroke:var(--muted);fill:none;stroke-width:2;flex:none}
+.stx-pal-in input{flex:1;background:none;border:none;color:var(--text);font-size:1rem;outline:none;font-family:var(--main)}
+.stx-pal-in kbd{font-family:var(--mono);font-size:.62rem;color:var(--muted);border:1px solid var(--border);border-radius:5px;padding:2px 6px}
+.stx-pal-list{overflow-y:auto;padding:6px}
+.stx-pal-sec{font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;padding:8px 10px 4px}
+.stx-pal-row{display:flex;align-items:center;gap:11px;width:100%;padding:9px 11px;border:none;background:none;
+  color:var(--text);cursor:pointer;border-radius:var(--radius-sm);text-align:left;font-size:.9rem}
+.stx-pal-row:hover{background:var(--surface2)}
+.stx-pal-row .ic{width:28px;height:28px;border-radius:7px;background:var(--surface2);display:grid;place-items:center;flex:none}
+.stx-pal-row .ic svg{width:15px;height:15px;stroke:var(--text2);fill:none;stroke-width:1.8}
+.stx-pal-row .nm{flex:1;font-weight:600;display:flex;flex-direction:column;min-width:0}
+.stx-pal-row .nm small{font-weight:400;color:var(--muted);font-size:.72rem}
+.stx-pal-row .tag{font-family:var(--mono);font-size:.68rem;color:var(--muted);flex:none}
+.stx-pal-empty{padding:24px;text-align:center;color:var(--muted);font-size:.88rem}
