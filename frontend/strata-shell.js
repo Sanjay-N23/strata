@@ -110,7 +110,10 @@
     if (content && !content.querySelector('.stx-replay-banner')) {
       var b = document.createElement('div');
       b.className = 'stx-replay-banner';
-      b.innerHTML = svg('bolt') + ' REPLAY MODE — figures below are a historical re-enactment (USDC–SVB, Mar 2023), not live positions.';
+      b.innerHTML = '<span class="rb-ic">' + svg('bolt') + '</span>' +
+        '<b>REPLAY</b>' +
+        '<span class="rb-txt">Historical re-enactment · USDC–SVB, Mar 2023 — not live positions.</span>' +
+        '<span class="rb-hint">Switch to LIVE ↑</span>';
       top.insertAdjacentElement('afterend', b);
     }
   }
@@ -198,6 +201,16 @@
     { name: 'Trust Wallet',    rdns: 'com.trustwallet.app',url:'https://trustwallet.com/download',   color: '#3375BB', glyph: 'T' }
   ];
   function glyphAvatar(g, c) { return '<span class="stx-wglyph" style="background:' + c + '">' + g + '</span>'; }
+  // brand icon tiles for the recommended (not-installed) wallets, so they match
+  // the real EIP-6963 icons instead of looking like plain letters.
+  var WALLET_ICONS = {
+    'io.metamask': '<svg width="30" height="30" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#F6851B"/><path d="M16 7l-6 4 2 5 4 2 4-2 2-5z" fill="#fff" opacity=".95"/><path d="M10 11l-3 9 4 2 1-4zm12 0l3 9-4 2-1-4z" fill="#fff" opacity=".7"/></svg>',
+    'com.okex.wallet': '<svg width="30" height="30" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#111"/><g fill="#fff"><rect x="7" y="7" width="6" height="6"/><rect x="19" y="7" width="6" height="6"/><rect x="13" y="13" width="6" height="6"/><rect x="7" y="19" width="6" height="6"/><rect x="19" y="19" width="6" height="6"/></g></svg>',
+    'com.coinbase.wallet': '<svg width="30" height="30" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#0052FF"/><circle cx="16" cy="16" r="9" fill="none" stroke="#fff" stroke-width="3.4"/><rect x="13" y="13" width="6" height="6" rx="1.5" fill="#fff"/></svg>',
+    'io.rabby': '<svg width="30" height="30" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#7084FF"/><path d="M8 20c0-7 5-10 10-9 6 1 8 5 6 8s-12 4-16 1z" fill="#fff" opacity=".92"/><circle cx="13" cy="16" r="1.5" fill="#7084FF"/></svg>',
+    'com.trustwallet.app': '<svg width="30" height="30" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#3375BB"/><path d="M16 7l7 3v6c0 5-4 8-7 9-3-1-7-4-7-9v-6z" fill="#fff" opacity=".95"/></svg>'
+  };
+  function brandIcon(r) { return WALLET_ICONS[r.rdns] || glyphAvatar(r.glyph, r.color); }
 
   function renderWalletList() {
     var el = document.getElementById('stxWalletList'); if (!el) return;
@@ -220,7 +233,7 @@
       html += '<div class="stx-wsec">Recommended</div>';
       rec.forEach(function (r) {
         html += '<button class="stx-wrow" data-act="install" data-url="' + r.url + '">' +
-          '<span class="stx-wicon">' + glyphAvatar(r.glyph, r.color) + '</span>' +
+          '<span class="stx-wicon">' + brandIcon(r) + '</span>' +
           '<span class="stx-wname">' + r.name + '</span><span class="stx-wtag">Get ↗</span></button>';
       });
     }
@@ -268,6 +281,15 @@
   function openWalletModal() { buildWalletModal(); document.getElementById('stxWalletModal').classList.add('open'); }
   function closeWalletModal() { var m = document.getElementById('stxWalletModal'); if (m) m.classList.remove('open'); }
 
+  // ---------- sidebar drawer (burger) ----------
+  function ensureBackdrop() {
+    var bd = document.getElementById('stxSideBd');
+    if (!bd) { bd = document.createElement('div'); bd.className = 'stx-side-bd'; bd.id = 'stxSideBd'; bd.addEventListener('click', closeSide); document.body.appendChild(bd); }
+    return bd;
+  }
+  function toggleSide() { var s = document.getElementById('stxSide'); if (!s) return; var open = s.classList.toggle('open'); ensureBackdrop().classList.toggle('open', open); }
+  function closeSide() { var s = document.getElementById('stxSide'); if (s) s.classList.remove('open'); var bd = document.getElementById('stxSideBd'); if (bd) bd.classList.remove('open'); }
+
   // ---------- wire ----------
   function wire() {
     var modeWrap = document.getElementById('stxMode');
@@ -276,11 +298,12 @@
     });
     var w = document.getElementById('stxWallet');
     if (w) w.addEventListener('click', openWalletModal);
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeWalletModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeWalletModal(); closeSide(); } });
     var burger = document.getElementById('stxBurger');
-    if (burger) burger.addEventListener('click', function () {
-      document.getElementById('stxSide').classList.toggle('open');
-    });
+    if (burger) burger.addEventListener('click', toggleSide);
+    // close the drawer when a nav link is chosen (same-page or before navigation)
+    var side = document.getElementById('stxSide');
+    if (side) side.addEventListener('click', function (e) { if (e.target.closest('a')) closeSide(); });
     var bell = document.getElementById('stxBell');
     if (bell) bell.addEventListener('click', function () {
       alert('Alerts — 2 open:\n• AI proposed COLLATERAL_SHORTFALL (awaiting 2-of-3)\n• Issuer sentiment < 350 (USDC replay)');
