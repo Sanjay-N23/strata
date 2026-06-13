@@ -20,7 +20,8 @@
     "test:frontend": "node test/frontend/subrogation.helpers.test.js",
     "test:stats-nav": "node test/frontend/stats-nav.test.js",
     "test:e2e": "playwright test",
-    "test:e2e:stats": "playwright test test/e2e/stats-nav.spec.js --project=chromium-desktop"
+    "test:e2e:stats": "playwright test test/e2e/stats-nav.spec.js --project=chromium-desktop",
+    "test:all": "npm test && npm run test:e2e && npm run test:frontend"
   },
   "keywords": [],
   "author": "",

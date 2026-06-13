@@ -1,8 +1,23 @@
-import { HardhatUserConfig } from "hardhat/config";
+import { HardhatUserConfig, subtask } from "hardhat/config";
+import { TASK_TEST_GET_TEST_FILES } from "hardhat/builtin-tasks/task-names";
 import "@nomicfoundation/hardhat-toolbox";
 import * as dotenv from "dotenv";
 
 dotenv.config();
+
+// `hardhat test` / `npm test` (and `hardhat coverage`) must run ONLY the
+// Solidity + TS hardhat tests. The Playwright e2e specs (test/e2e/*.spec.js)
+// and the standalone node frontend tests (test/frontend/*.test.js) live under
+// test/ but use their own runners (`npm run test:e2e` / `test:frontend`);
+// loading them under hardhat's mocha crashes the run. Filter them out of
+// hardhat's test-file discovery so the runner stays clean and green.
+subtask(TASK_TEST_GET_TEST_FILES, async (args, _hre, runSuper) => {
+  const files: string[] = await runSuper(args);
+  return files.filter((f) => {
+    const p = f.replace(/\\/g, "/");
+    return !p.includes("/test/e2e/") && !p.includes("/test/frontend/");
+  });
+});
 
 const DEPLOYER_PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY || "0x" + "0".repeat(64);
 const BSCSCAN_API_KEY = process.env.BSCSCAN_API_KEY || "";
