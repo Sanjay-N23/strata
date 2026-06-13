@@ -197,6 +197,38 @@
     box.innerHTML = ev.map(function (e) { return '<div class="row"><span class="ts">' + e[0] + '</span><span class="msg">' + e[1] + '</span></div>'; }).join('');
   }
 
-  function init() { initNav(); initReveal(); initCounts(); initHero(); initSpine(); initGallery(); initFeed(); }
+  // ---------- agent-CLI terminal: content + rise-on-scroll ----------
+  function initTerm() {
+    var body = $('#ldTermBody'); if (!body) return;
+    var L = [
+      '<span class="c-p">$</span> <span class="c-cmd">NETWORK=mantleSepolia npx ts-node agent/index.ts</span>',
+      '<span class="c-mut">Strata agent operator 0xce22…2fb3 on mantleSepolia</span>',
+      '<span class="c-mut">Replaying: USDC (Circle) — SVB depeg, Mar 2023</span>',
+      '',
+      '<span class="c-ai">epoch 0</span>  AI 957 | static 953 | PD  4.3%   <span class="c-mut">fundamentals — calm</span>',
+      '<span class="c-ai">epoch 2</span>  AI 646 | static 943 | PD 35.4%   <span class="c-amber">elevated fear → haircut</span>',
+      '<span class="c-ai">epoch 3</span>  AI <span class="c-alarm">250</span> | static 926 | PD 75.0%   <span class="c-alarm">⚠ AI ALARMS — rulebook calm</span>',
+      '<span class="c-ai">epoch 6</span>  AI 180 | static 180            <span class="c-mut">← USDC depeg (event)</span>',
+      '<span class="c-alarm">→ proposeDefault flagged</span> <span class="c-mut">· awaiting 2-of-3 human gate</span>',
+      '<span class="c-ok">✓ TuringBenchmark.tally() → AI 1 · static 0 · +3 epochs early</span>'
+    ];
+    body.innerHTML = L.join('\n');
+  }
+  function initTermRise() {
+    var t = $('#ldTerm'); if (!t) return;
+    if (reduce) { t.style.transform = 'none'; t.style.opacity = '1'; return; }
+    var frame = function () {
+      var r = t.getBoundingClientRect(), vh = window.innerHeight || 800;
+      var p = (vh - r.top) / (vh * 0.72); p = Math.max(0, Math.min(1, p));
+      t.style.transform = 'perspective(1400px) translateY(' + ((1 - p) * 90).toFixed(1) + 'px) scale(' + (0.92 + p * 0.08).toFixed(3) + ')';
+      t.style.opacity = (0.3 + p * 0.7).toFixed(2);
+    };
+    var ticking = false;
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(function () { ticking = false; frame(); }); } }, { passive: true });
+    window.addEventListener('resize', frame);
+    frame();
+  }
+
+  function init() { initNav(); initReveal(); initCounts(); initHero(); initTerm(); initTermRise(); initSpine(); initGallery(); initFeed(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

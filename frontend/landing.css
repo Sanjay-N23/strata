@@ -232,3 +232,27 @@ html.ld-js .ld-stagger.in > *{opacity:1;transform:none}
 .ld-drawer.open{display:flex}
 .ld-drawer a{color:var(--text);font-weight:600;padding:11px 8px;border-radius:8px}
 .ld-drawer a:hover{background:var(--surface)}
+
+/* ---- rising terminal (agent CLI) — Clustly-style scroll reveal ---- */
+.ld-termband{padding:4px 0 78px}
+.ld-term{max-width:860px;margin:0 auto;border-radius:14px;overflow:hidden;background:#0A0C10;
+  border:1px solid #232A35;box-shadow:0 44px 96px rgba(20,16,12,.28);position:relative;
+  transform-origin:center bottom;will-change:transform,opacity}
+.ld-term-bar{display:flex;align-items:center;gap:8px;padding:11px 15px;background:#13171E;border-bottom:1px solid #232A35}
+.ld-term-bar .d{width:12px;height:12px;border-radius:50%}
+.ld-term-bar .d.r{background:#FF5F57}.ld-term-bar .d.y{background:#FEBC2E}.ld-term-bar .d.g{background:#28C840}
+.ld-term-bar .ttl{flex:1;text-align:center;font-family:var(--mono,monospace);font-size:.76rem;color:#6C7585;margin-right:40px}
+.ld-term-body{margin:0;padding:18px 20px;font-family:var(--mono,monospace);font-size:.82rem;line-height:1.75;
+  color:#A7AFBE;white-space:pre;overflow-x:auto}
+.ld-term-body .c-p{color:#16C784}.ld-term-body .c-cmd{color:#E7EBF2}.ld-term-body .c-ai{color:#5B8DEF}
+.ld-term-body .c-mut{color:#6C7585}.ld-term-body .c-amber{color:#F5A623}
+.ld-term-body .c-alarm{color:#F6465D;font-weight:600}.ld-term-body .c-ok{color:#16C784}
+.ld-term-badge{position:absolute;right:-12px;bottom:20px;background:#fff;color:#13171E;border-radius:999px;
+  padding:8px 16px 8px 11px;display:flex;align-items:center;gap:10px;box-shadow:0 14px 34px rgba(20,16,12,.22)}
+.ld-term-badge .bdot{width:9px;height:9px;border-radius:50%;background:#16C784;flex:none;box-shadow:0 0 0 4px rgba(22,199,132,.18)}
+.ld-term-badge .bt b{display:block;font-size:.78rem;font-weight:700;line-height:1.15}
+.ld-term-badge .bt span{font-family:var(--mono,monospace);font-size:.64rem;color:#6C7585}
+@media(max-width:560px){
+  .ld-term-body{font-size:.71rem;padding:14px 14px}
+  .ld-term-badge{right:6px;bottom:6px;padding:6px 12px 6px 9px}
+}
