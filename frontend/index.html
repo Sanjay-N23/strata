@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Strata — The Autonomous AI Underwriting Desk for RWA Credit Risk</title>
-  <meta name="description" content="Strata is an autonomous AI underwriting desk for RWA credit risk on Mantle. An AI agent re-underwrites issuers every epoch and proves on-chain it flags distress earlier than the static rulebook — replayed against the real USDC–SVB depeg.">
+  <meta name="description" content="Strata is a transparent on-chain underwriting agent for RWA credit risk on Mantle. It reads market sentiment the fundamentals-only rulebook ignores, so it flags soft-signal distress earlier — proven on-chain against the real USDC–SVB depeg, with a human 2-of-3 gate on defaults.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='5' y='20' width='22' height='4' rx='1' fill='%23F0B90B'/><rect x='7' y='14' width='18' height='4' rx='1' fill='%235B8DEF'/><rect x='9' y='8' width='14' height='4' rx='1' fill='%2316C784'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +47,7 @@
       <div class="ld-reveal">
         <span class="ld-badge"><span class="dot"></span> Live on Mantle Sepolia · AI × RWA</span>
         <h1 class="ld-h1">The autonomous <span class="ac">AI underwriting desk</span> for RWA credit risk.</h1>
-        <p class="ld-sub">An AI agent re-underwrites real-world-asset issuers every epoch, prices risk, and acts on-chain — while humans keep the legal gate. It proves, on-chain, that it flags distress earlier than the static rulebook.</p>
+        <p class="ld-sub">A transparent underwriting agent re-underwrites real-world-asset issuers every epoch, prices risk, and acts on-chain — humans keep the legal gate. It reads market <b>sentiment</b> the fundamentals-only rulebook ignores, so it flags soft-signal distress earlier — proven on-chain against the real USDC–SVB depeg.</p>
         <div class="ld-cta-row">
           <a class="ld-btn gold lg" href="overview.html">Launch the console <span class="ld-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
           <button class="ld-btn lg" data-watch>▶ Watch the Turing proof</button>
@@ -109,13 +109,14 @@
     <!-- The Turing proof — the ribbon's opening waypoint -->
     <section class="ld-section ld-proof-head" id="proof">
       <div class="ld-wrap ld-reveal" style="text-align:center">
-        <span class="ld-eyebrow">The Turing Test · on-chain</span>
-        <h2 class="ld-h2" style="max-width:18ch;margin:12px auto 8px">The AI flagged the SVB depeg <span class="ac">3 epochs</span> before the rulebook.</h2>
-        <p class="ld-lead" style="margin:0 auto">Follow the ribbon — every layer of the desk, from the proof down to the human gate.</p>
+        <span class="ld-eyebrow">Sentiment vs fundamentals · on-chain</span>
+        <h2 class="ld-h2" style="max-width:20ch;margin:12px auto 8px">The sentiment-aware arm flagged SVB <span class="ac">3 epochs</span> before the fundamentals-only rulebook.</h2>
+        <p class="ld-lead" style="margin:0 auto">Both arms see identical signals — only the AI reads market sentiment. When distress shows in mood before fundamentals, it flags first.</p>
         <div class="ld-proof-readout">
-          <div class="b"><div class="k">AI early-warning</div><div class="v" style="color:#C2F84F">+3</div></div>
-          <div class="b"><div class="k">Static rulebook</div><div class="v" style="color:var(--muted)">+0</div></div>
+          <div class="b"><div class="k">Sentiment-aware AI</div><div class="v" style="color:#C2F84F">+3</div></div>
+          <div class="b"><div class="k">Fundamentals-only rulebook</div><div class="v" style="color:var(--muted)">+0</div></div>
         </div>
+        <p class="ld-lead" style="margin:14px auto 0;font-size:.82rem;color:var(--muted);max-width:46ch">The edge is the signal, not magic: on a fundamentals-led shock where sentiment doesn't move first, the two arms tie.</p>
       </div>
     </section>
 
