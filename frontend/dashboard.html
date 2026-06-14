@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='8,8 16,8 20,14 16,20 8,20 4,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,8 24,8 28,14 24,20 16,20 12,14' fill='none' stroke='%23333' stroke-width='1.5'/><polygon points='16,5 22,14 16,23 10,14' fill='%23F0B90B'/><circle cx='16' cy='13' r='1.5' fill='white'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href='https://rpc.mantle.xyz'>
+  <link rel="preconnect" href='https://rpc.sepolia.mantle.xyz'>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
 /* ============================================================
@@ -2146,7 +2146,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <!-- Network Warning Banner -->
 <div class="network-warning" id="networkWarning" style="display:none;" role="alert">
   <span class="warn-icon" aria-hidden="true">&#9888;&#65039;</span>
-  <span>Wrong network detected. Please switch to Mantle Testnet to use Strata.</span>
+  <span>Wrong network detected. Please switch to Mantle Sepolia to use Strata.</span>
   <button class="btn-switch-network" onclick="switchToBSCTestnet()">Switch Network</button>
 </div>
 
@@ -2212,7 +2212,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
 
     <div class="nav-actions">
-      <div class="badge-testnet"><span class="dot"></span> Mantle Testnet</div>
+      <div class="badge-testnet"><span class="dot"></span> Mantle Sepolia</div>
       <div class="role-dropdown" id="roleDropdown" style="display:none;">
         <button class="role-dropdown-btn" id="roleDropdownBtn" onclick="toggleRoleDropdown()" aria-haspopup="true" aria-expanded="false">
           <span id="roleDropdownLabel">My Roles</span>
@@ -2294,7 +2294,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <!-- ---- LIVE DATA BANNER ---- -->
 <div class="live-data-banner" id="liveDataBanner">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg>
-  <span id="bannerText">Live Mantle Testnet — Connect wallet to transact</span>
+  <span id="bannerText">Live Mantle Sepolia — Connect wallet to transact</span>
   <button class="banner-btn" id="bannerBtn" onclick="connectWallet()">Connect Wallet</button>
 </div>
 
@@ -2505,7 +2505,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <div class="event-item">
           <div class="event-dot" style="background:#00B894"></div>
           <div>
-            <div class="event-text"><strong>Payout Executed</strong> &mdash; $15,000 USDT to coverage holders via 2-of-3 attestation <a href="https://explorer.mantle.xyz/tx/0x5381147c824b4006cd95af66434f57795578c050000b24674b06a16078d74c65" target="_blank" class="event-tx-link">0x5381...4c65</a></div>
+            <div class="event-text"><strong>Payout Executed</strong> &mdash; $15,000 USDT to coverage holders via 2-of-3 attestation <a href="https://explorer.sepolia.mantle.xyz/tx/0x5381147c824b4006cd95af66434f57795578c050000b24674b06a16078d74c65" target="_blank" class="event-tx-link">0x5381...4c65</a></div>
             <div class="event-time">just now</div>
           </div>
         </div>
@@ -3007,7 +3007,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         </span>
         Your Transactions
       </h3>
-      <a href="https://explorer.mantle.xyz/address/0xce220d9eD9527f9997c8045844210637F3A42fb3" target="_blank" class="view-all-link" id="txViewAllLink">View all on MantleScan &#x2197;</a>
+      <a href="https://explorer.sepolia.mantle.xyz/address/0xce220d9eD9527f9997c8045844210637F3A42fb3" target="_blank" class="view-all-link" id="txViewAllLink">View all on MantleScan &#x2197;</a>
     </div>
     <div class="tx-list" id="txList">
       <!-- Populated by JS -->
@@ -3220,42 +3220,45 @@ document.addEventListener('keydown', function(e) {
 // ---- Reduced motion ----
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ---- Mantle Mainnet Contract Addresses (from deployments/hashkeyMainnet.json) ----
+// ---- Mantle Sepolia Contract Addresses (from deployments/mantleSepolia.json) ----
 const CONTRACTS = {
   MockUSDT:          '0x38907cC4E615D3C7BDCBC9910C050260bBC836E5',
-  MockIdentityRegistry: '0x20619c533854C5a0c20284f7Dc7F5Dc3DFdD06B3',
-  MockERC3643Token:  '0xa7C664459C66325Cd9dB15245DD901f1623c9655',
-  MockBAS:           '0xB10b1c9D88126965E57cCa2a7ED5a1348dbf7552',
-  MockChainlink:     '0xF1E25246D7Dcc8E63EAe39BE03DEae0C2Ed93E71',
-  TIR:               '0x7dD7C1adC65D9e6e7Bd5532b678f856C8Ea627fC',
-  IssuerBond:        '0x65A3Ae0e4787856CfcDdE505015c5CC3d5560212',
-  IRSOracle:         '0x20619c533854C5a0c20284f7Dc7F5Dc3DFdD06B3',
-  DefaultOracle:     '0xa7C664459C66325Cd9dB15245DD901f1623c9655',
-  IssuerRegistry:    '0xB10b1c9D88126965E57cCa2a7ED5a1348dbf7552',
-  InsurancePool:     '0xF1E25246D7Dcc8E63EAe39BE03DEae0C2Ed93E71',
-  srCVR:             '0xa4ECEB47F80a32D7176C23e4993cDa4d2337Fc3A',
-  jrCVR:             '0x1Ca7B678BDf1deCe9964c5178C01AB9312F2664D',
-  ProtectionCert:    '0x8D4C37f45883aAEEd20d2CC1020e6Ab193D3A50C',
-  PayoutEngine:      '0xBCF0012388045eA1183c96EEbe24754842a549eA',
-  SubrogationNFT:    '0xc07859b25FC869F0a81fae86b9B5bEa868D08A9f'
+  MockIdentityRegistry: '0x7dD7C1adC65D9e6e7Bd5532b678f856C8Ea627fC',
+  MockERC3643Token:  '0x65A3Ae0e4787856CfcDdE505015c5CC3d5560212',
+  MockBAS:           '0x20619c533854C5a0c20284f7Dc7F5Dc3DFdD06B3',
+  MockChainlink:     '0xa7C664459C66325Cd9dB15245DD901f1623c9655',
+  TIR:               '0xB10b1c9D88126965E57cCa2a7ED5a1348dbf7552',
+  IssuerBond:        '0xF1E25246D7Dcc8E63EAe39BE03DEae0C2Ed93E71',
+  IRSOracle:         '0xa4ECEB47F80a32D7176C23e4993cDa4d2337Fc3A',
+  DefaultOracle:     '0x1Ca7B678BDf1deCe9964c5178C01AB9312F2664D',
+  IssuerRegistry:    '0x8D4C37f45883aAEEd20d2CC1020e6Ab193D3A50C',
+  InsurancePool:     '0xBCF0012388045eA1183c96EEbe24754842a549eA',
+  srCVR:             '0xc07859b25FC869F0a81fae86b9B5bEa868D08A9f',
+  jrCVR:             '0xa5d64A7770136B1EEade6B980404140D8D5F7C06',
+  ProtectionCert:    '0x2Aad26de595752d7D6FCc2f4C79F1Bf15B60E1CD',
+  PayoutEngine:      '0xD01e871c97746FC6a3f4B406aA60BE1Fb7FAcf6B',
+  SubrogationNFT:    '0x91062e509E75AAe31f1d6425b78D8815Ad941e73',
+  StrataAIAgent:     '0xDecE5A5faEBc87E1060C55FA879bE0A645796670',
+  ReplayOracle:      '0xF66ebe1f553E4D79c89C31E4b4732ADdb8079d6e',
+  TuringBenchmark:   '0xDd10c1252795456aC6fb71f5ACfE5ACAB9B43304'
 };
 // Keep backward compat alias
 const COVERFI_ADDRESSES = CONTRACTS;
 
-const BSC_TESTNET_CHAIN_ID = 177;
+const BSC_TESTNET_CHAIN_ID = 5003;
 const BSC_TESTNET_CONFIG = {
-  chainId: '0xb1',
-  chainName: 'Mantle Mainnet',
+  chainId: '0x138b',
+  chainName: 'Mantle Sepolia',
   nativeCurrency: { name: 'MNT', symbol: 'MNT', decimals: 18 },
-  rpcUrls: ['https://rpc.mantle.xyz'],
-  blockExplorerUrls: ['https://explorer.mantle.xyz']
+  rpcUrls: ['https://rpc.sepolia.mantle.xyz'],
+  blockExplorerUrls: ['https://explorer.sepolia.mantle.xyz']
 };
 
 // Demo issuer token address (MockERC3643Token deployed in demo)
 const DEMO_ISSUER_TOKEN = CONTRACTS.MockERC3643Token;
 
 // ---- Read-Only Provider (no wallet needed) ----
-var BSC_TESTNET_RPC = 'https://rpc.mantle.xyz';
+var BSC_TESTNET_RPC = 'https://rpc.sepolia.mantle.xyz';
 var readProvider = new ethers.JsonRpcProvider(BSC_TESTNET_RPC);
 
 // Read-only contract instances for data loading
@@ -3552,7 +3555,7 @@ function updateBanner() {
   if (!banner) return;
 
   if (walletConnected && isLiveData) {
-    bannerText.innerHTML = '<span class="live-data-badge"><span class="dot dot-green"></span> LIVE</span> Connected to Mantle Testnet';
+    bannerText.innerHTML = '<span class="live-data-badge"><span class="dot dot-green"></span> LIVE</span> Connected to Mantle Sepolia';
     bannerBtn.textContent = 'Refresh';
     bannerBtn.setAttribute('onclick', 'loadLiveData()');
     banner.style.background = 'var(--color-success-dim)';
@@ -3562,7 +3565,7 @@ function updateBanner() {
     bannerText.textContent = 'Loading on-chain data...';
     bannerBtn.style.display = 'none';
   } else {
-    bannerText.textContent = 'Live Mantle Testnet \u2014 Connect wallet to transact';
+    bannerText.textContent = 'Live Mantle Sepolia \u2014 Connect wallet to transact';
     bannerBtn.textContent = 'Connect';
     bannerBtn.setAttribute('onclick', 'connectWallet()');
     bannerBtn.style.display = '';
@@ -3594,11 +3597,11 @@ async function checkAndSwitchNetwork() {
           });
           return true;
         } catch (addError) {
-          showToast('Failed to add Mantle Testnet. Please add it manually.', 'error');
+          showToast('Failed to add Mantle Sepolia. Please add it manually.', 'error');
           return false;
         }
       }
-      showToast('Please switch to Mantle Testnet (Chain ID: 133)', 'error');
+      showToast('Please switch to Mantle Sepolia (Chain ID: 5003)', 'error');
       return false;
     }
   }
@@ -3668,7 +3671,7 @@ async function switchToBSCTestnet() {
   try {
     await window.ethereum.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: '0xb1' }]
+      params: [{ chainId: '0x138b' }]
     });
     hideNetworkWarning();
   } catch (e) {
@@ -3677,19 +3680,19 @@ async function switchToBSCTestnet() {
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [{
-            chainId: '0xb1',
-            chainName: 'Mantle Mainnet',
-            rpcUrls: ['https://rpc.mantle.xyz'],
+            chainId: '0x138b',
+            chainName: 'Mantle Sepolia',
+            rpcUrls: ['https://rpc.sepolia.mantle.xyz'],
             nativeCurrency: { name: 'MNT', symbol: 'MNT', decimals: 18 },
-            blockExplorerUrls: ['https://explorer.mantle.xyz']
+            blockExplorerUrls: ['https://explorer.sepolia.mantle.xyz']
           }]
         });
         hideNetworkWarning();
       } catch (addErr) {
-        showToast('Failed to add Mantle Testnet. Please add it manually.', 'error');
+        showToast('Failed to add Mantle Sepolia. Please add it manually.', 'error');
       }
     } else {
-      showToast('Please switch to Mantle Testnet manually in your wallet.', 'error');
+      showToast('Please switch to Mantle Sepolia manually in your wallet.', 'error');
     }
   }
 }
@@ -3744,7 +3747,7 @@ function updateWalletDropdown() {
     addrEl.textContent = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
   }
   if (linkEl && walletAddress) {
-    linkEl.href = 'https://explorer.mantle.xyz/address/' + walletAddress;
+    linkEl.href = 'https://explorer.sepolia.mantle.xyz/address/' + walletAddress;
   }
 }
 
@@ -3834,7 +3837,7 @@ if (typeof window.ethereum !== 'undefined') {
       showNetworkWarning();
       updateBanner();
       showMockData();
-      showToast('Wrong network. Please switch to Mantle Testnet (Chain ID: 133)', 'error');
+      showToast('Wrong network. Please switch to Mantle Sepolia (Chain ID: 5003)', 'error');
     } else {
       hideNetworkWarning();
       if (walletConnected) {
@@ -4347,8 +4350,8 @@ async function loadContractData() {
     clearTimeout(_loadingTimeout);
     setLoadingState(false);
     updateLastUpdated();
-    showToast('Live on-chain data loaded from Mantle Testnet', 'success');
-    addNotification('Data refreshed from Mantle Testnet', 'info');
+    showToast('Live on-chain data loaded from Mantle Sepolia', 'success');
+    addNotification('Data refreshed from Mantle Sepolia', 'info');
 
   } catch (err) {
     clearTimeout(_loadingTimeout);
@@ -5033,12 +5036,12 @@ async function ensureCorrectNetwork() {
     var chainId = await window.ethereum.request({ method: 'eth_chainId' });
     var currentChainId = parseInt(chainId, 16);
     if (currentChainId !== BSC_TESTNET_CHAIN_ID) {
-      showToast('Please switch to Mantle Testnet', 'error');
+      showToast('Please switch to Mantle Sepolia', 'error');
       return false;
     }
     return true;
   } catch (e) {
-    showToast('Please switch to Mantle Testnet', 'error');
+    showToast('Please switch to Mantle Sepolia', 'error');
     return false;
   }
 }
@@ -5597,7 +5600,7 @@ function renderTxList() {
   // Update "View all" link with wallet address
   var viewAllLink = document.getElementById('txViewAllLink');
   if (viewAllLink && walletAddress) {
-    viewAllLink.href = 'https://explorer.mantle.xyz/address/' + walletAddress;
+    viewAllLink.href = 'https://explorer.sepolia.mantle.xyz/address/' + walletAddress;
   }
 
   if (txHistory.length === 0) {
@@ -5619,7 +5622,7 @@ function renderTxList() {
     var statusClass = tx.status === 'confirmed' ? 'tx-confirmed' : 'tx-pending';
     var statusLabel = tx.status === 'confirmed' ? 'Confirmed' : 'Pending';
     var shortHash = tx.hash ? tx.hash.slice(0, 6) + '...' + tx.hash.slice(-3) : '';
-    var txUrl = 'https://explorer.mantle.xyz/tx/' + (tx.hash || '');
+    var txUrl = 'https://explorer.sepolia.mantle.xyz/tx/' + (tx.hash || '');
 
     html +=
       '<div class="tx-item">' +

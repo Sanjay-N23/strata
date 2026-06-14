@@ -729,7 +729,7 @@ code, pre { font-family: var(--font-mono); }
     </div>
 
     <div class="nav-actions">
-      <div class="badge-testnet"><span class="dot"></span> Mantle Testnet</div>
+      <div class="badge-testnet"><span class="dot"></span> Mantle Sepolia</div>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
         <svg class="icon-sun" width="18" aria-hidden="true" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         <svg class="icon-moon" width="18" aria-hidden="true" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -920,11 +920,11 @@ function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
 
 // ---- Constants ----
 var BSC_TESTNET_RPC = 'https://rpc.sepolia.mantle.xyz';
-var BSC_TESTNET_CHAIN_ID = 133;
-var BSCSCAN_URL = 'https://testnet-explorer.hsk.xyz';
+var BSC_TESTNET_CHAIN_ID = 5003;
+var BSCSCAN_URL = 'https://explorer.sepolia.mantle.xyz';
 
-var SUBROGATION_NFT_ADDR = '0xbBe8A2840E151cC8BF2B156e5d61a532eFCe2AB9';
-var PAYOUT_ENGINE_ADDR = '0x44944cB598A750Df4C4Bf9A7D3FdDDf7575F88F5';
+var SUBROGATION_NFT_ADDR = '0x91062e509E75AAe31f1d6425b78D8815Ad941e73';
+var PAYOUT_ENGINE_ADDR = '0xD01e871c97746FC6a3f4B406aA60BE1Fb7FAcf6B';
 
 var DEFAULT_TYPES = [
   'PAYMENT_DELAY',
@@ -1086,7 +1086,7 @@ function renderClaims(claims) {
 
     html += '  <div class="claim-row">';
     html += '    <span class="claim-row-label">Issuer Token</span>';
-    html += '    <a class="claim-row-value mono-sm" href="https://testnet-explorer.hsk.xyz/address/' + c.issuerToken + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">' + shortenAddr(c.issuerToken) + '</a>';
+    html += '    <a class="claim-row-value mono-sm" href="https://explorer.sepolia.mantle.xyz/address/' + c.issuerToken + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">' + shortenAddr(c.issuerToken) + '</a>';
     html += '  </div>';
 
     html += '  <div class="claim-row">';

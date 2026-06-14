@@ -880,7 +880,7 @@ tbody tr:hover { background: rgba(0,200,83,0.04); }
     </div>
 
     <div class="nav-actions">
-      <div class="badge-testnet"><span class="dot"></span> Mantle Testnet</div>
+      <div class="badge-testnet"><span class="dot"></span> Mantle Sepolia</div>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
         <svg class="icon-sun" width="18" aria-hidden="true" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         <svg class="icon-moon" width="18" aria-hidden="true" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1094,13 +1094,13 @@ function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
 
 // ---- Contract Addresses ----
 var CONTRACTS = {
-  ProtectionCert: '0x8D4C37f45883aAEEd20d2CC1020e6Ab193D3A50C',
-  PayoutEngine:   '0xBCF0012388045eA1183c96EEbe24754842a549eA',
-  IssuerRegistry: '0xB10b1c9D88126965E57cCa2a7ED5a1348dbf7552',
-  IRSOracle:      '0x20619c533854C5a0c20284f7Dc7F5Dc3DFdD06B3'
+  ProtectionCert: '0x2Aad26de595752d7D6FCc2f4C79F1Bf15B60E1CD',
+  PayoutEngine:   '0xD01e871c97746FC6a3f4B406aA60BE1Fb7FAcf6B',
+  IssuerRegistry: '0x8D4C37f45883aAEEd20d2CC1020e6Ab193D3A50C',
+  IRSOracle:      '0xa4ECEB47F80a32D7176C23e4993cDa4d2337Fc3A'
 };
 
-var BSC_TESTNET = { chainId: '0xb1', chainName: 'Mantle Mainnet', rpcUrl: 'https://rpc.mantle.xyz', explorer: 'https://explorer.mantle.xyz' };
+var BSC_TESTNET = { chainId: '0x138b', chainName: 'Mantle Sepolia', rpcUrl: 'https://rpc.sepolia.mantle.xyz', explorer: 'https://explorer.sepolia.mantle.xyz' };
 
 // ---- State ----
 var provider = null;
