@@ -502,11 +502,13 @@ describe("Strata Protocol — Full Lifecycle Integration Tests", function () {
       const b1After = await mockUSDT.balanceOf(investor1.address);
       const b2After = await mockUSDT.balanceOf(investor2.address);
 
-      // Total pool: $10 bond + $25 junior + $75 senior = $110
-      // investor1: 60/100 * $110 = $66
-      // investor2: 40/100 * $110 = $44
-      expect(b1After - b1Before).to.equal(USDT("66"));
-      expect(b2After - b2Before).to.equal(USDT("44"));
+      // Total pool: $10 bond + $25 junior + $75 senior = $110 (over-collateralised vs $100 covered)
+      // Indemnity cap (PayoutEngine): a holder is never paid more than their covered amount,
+      // so the pro-rata share is capped at coverage and the $10 surplus stays in the engine.
+      // investor1: min(60/100 * $110, $60) = $60
+      // investor2: min(40/100 * $110, $40) = $40
+      expect(b1After - b1Before).to.equal(USDT("60"));
+      expect(b2After - b2Before).to.equal(USDT("40"));
     });
   });
 });

@@ -207,6 +207,12 @@ contract PayoutEngine is Ownable2Step, ReentrancyGuard, Pausable {
             if (pos.paid || pos.coveredAmount == 0) continue;
 
             uint256 share = (pos.coveredAmount * totalPayout) / totalCovered;
+            // Indemnity cap: never pay a holder more than their covered amount, even when
+            // the pool is over-collateralised (totalPayout > totalCovered). Excess stays in
+            // the engine (owner-recoverable) rather than over-paying lucky holders.
+            if (share > pos.coveredAmount) {
+                share = pos.coveredAmount;
+            }
 
             // ERC-3643 compliance checks
             bool isCompliant = _checkCompliance(issuerToken, holder);
@@ -286,22 +292,26 @@ contract PayoutEngine is Ownable2Step, ReentrancyGuard, Pausable {
      * @notice Check ERC-3643 compliance: isVerified AND not frozen
      */
     function _checkCompliance(address issuerToken, address holder) internal view returns (bool) {
+        // Fail CLOSED: anything we cannot positively verify is treated as non-compliant
+        // and routed to escrow (releasable later via releaseEscrow once it verifies),
+        // never paid out. This keeps the ERC-3643 KYC/freeze gate intact even against a
+        // hostile or buggy issuer token whose compliance calls revert.
         try IERC3643(issuerToken).identityRegistry() returns (IIdentityRegistry registry) {
             try registry.isVerified(holder) returns (bool verified) {
                 if (!verified) return false;
             } catch {
-                return true; // If registry call fails, assume compliant (for mocks)
+                return false; // cannot confirm verification -> not compliant
             }
 
             try IERC3643(issuerToken).isFrozen(holder) returns (bool frozen) {
                 if (frozen) return false;
             } catch {
-                return true; // If freeze check fails, assume not frozen (for mocks)
+                return false; // cannot confirm freeze status -> not compliant
             }
 
             return true;
         } catch {
-            return true; // If no identity registry, assume compliant (for mocks)
+            return false; // no / invalid identity registry -> not compliant
         }
     }
 
