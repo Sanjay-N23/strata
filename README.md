@@ -36,9 +36,10 @@ earlier than the static rulebook.** That proof is the Turing Test.
   collateral shortfall **3 epochs before** the rules-based baseline. Deterministic & reproducible.
 - 🛡️ **Human-in-the-loop** — the AI *proposes* defaults; **2-of-3 human attestors** confirm. The AI never
   confirms a legal event. Institutionally trustworthy by design.
-- 🪪 **On-chain agent reputation** — `StrataAIAgent.reputation()` accrues only from correct, timely
-  calls (never self-asserted). An optional **ERC-8004**-style identity gate (ERC-721 `ownerOf`) can bind
-  every agent action to an identity NFT — wired in the contract but left inactive on this testnet deploy.
+- 🪪 **On-chain agent reputation + ERC-8004 identity** — `StrataAIAgent.reputation()` accrues only from
+  correct, timely calls (never self-asserted). A spec-compliant **ERC-8004** `IdentityRegistry` (the canonical
+  `0x8004A1…` is Mantle-mainnet-only) is deployed on Sepolia; deploy registers the agent (agentId #1 + agent-card)
+  and calls `setErc8004` to enforce the identity gate on every agent action.
 - ⛓️ **Mantle-native** — `StrataAIAgent.submitScore()` is an AI-powered on-chain function that reprices
   the issuer in the same tx (Deployment Award).
 
@@ -401,6 +402,8 @@ Mantle is a strong fit for compliant financial infrastructure — here's why it'
 > *Deep use of Mantle capabilities*
 
 **All 19 contracts deployed natively on Mantle Sepolia (Chain ID 5003)**, including the AI layer — `StrataAIAgent.submitScore()` reprices the issuer on-chain in the same tx. Frontend wired to Mantle RPC. Leverages Mantle's institutional L2 environment for ERC-3643 identity compliance.
+
+**Named Mantle RWA asset (AI × RWA track):** the agent underwrites a **USDY** issuer — an ERC-3643 testnet mock of Ondo's USD Yield (`"Ondo USD Yield (testnet mock)"` / `USDY`, since the real USDY/mETH are Mantle-mainnet-only). Run it on the boundary timeline with `DATASET=trade_finance_fraud ISSUER_ADDRESS=<MockUSDY> npm run live:mantle` — automated risk-management of a named RWA asset, not just a generic mock.
 
 ---
 
