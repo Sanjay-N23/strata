@@ -318,10 +318,10 @@ describe("StrataAIAgent", function () {
       await expect(agent.proposeDefault(issuer.address, 0, Z))
         .to.be.revertedWith("DefaultOracle: not authorized to flag");
     });
-    it("re-proposing an unconfirmed issuer is allowed (counter grows)", async function () {
+    it("re-proposing an unconfirmed issuer with an escalation is allowed (counter grows)", async function () {
       const { agent, issuer } = await loadFixture(fx);
-      await agent.proposeDefault(issuer.address, 0, Z);
-      await agent.proposeDefault(issuer.address, 1, Z);
+      await agent.proposeDefault(issuer.address, 2, Z); // COLLATERAL_SHORTFALL (7d grace)
+      await agent.proposeDefault(issuer.address, 3, Z); // escalate to MISAPPROPRIATION (0 grace) — allowed
       expect(await agent.proposalsCount()).to.equal(2);
     });
     it("HUMAN GATE: once a default is confirmed, re-proposal reverts", async function () {

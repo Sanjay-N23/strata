@@ -284,14 +284,16 @@ describe("DefaultOracle", function () {
       expect(await oracle.isInMonitoring(tokenAddr2.address)).to.equal(true);
     });
 
-    it("should overwrite previous event for same token with new flag", async function () {
+    it("should allow ESCALATION but block softening of the active event type", async function () {
       const { oracle, tokenAddr } = await loadFixture(deployFixture);
 
-      await oracle.flagDefaultEvent(tokenAddr.address, PAYMENT_DELAY);
-      await oracle.flagDefaultEvent(tokenAddr.address, COLLATERAL_SHORTFALL);
-
-      const evt = await oracle.getActiveEvent(tokenAddr.address);
-      expect(evt.eventType).to.equal(COLLATERAL_SHORTFALL);
+      await oracle.flagDefaultEvent(tokenAddr.address, COLLATERAL_SHORTFALL); // 7d grace
+      // escalate to a more urgent (shorter-grace) type — allowed
+      await oracle.flagDefaultEvent(tokenAddr.address, PAYMENT_DELAY);        // 48h grace
+      expect((await oracle.getActiveEvent(tokenAddr.address)).eventType).to.equal(PAYMENT_DELAY);
+      // softening back to a longer window — blocked
+      await expect(oracle.flagDefaultEvent(tokenAddr.address, COLLATERAL_SHORTFALL))
+        .to.be.revertedWith("DefaultOracle: cannot soften active event");
     });
   });
 
@@ -510,19 +512,21 @@ describe("DefaultOracle", function () {
       expect(await oracle.isDefaultConfirmed(tokenAddr.address)).to.equal(true);
     });
 
-    it("should correctly handle overwriting event type for same token", async function () {
+    it("escalating the event type preserves the original flag time (no clock reset)", async function () {
       const { oracle, tokenAddr } = await loadFixture(deployFixture);
 
-      // Flag PAYMENT_DELAY first
+      // Flag PAYMENT_DELAY first (48h grace)
       await oracle.flagDefaultEvent(tokenAddr.address, PAYMENT_DELAY);
+      const first = (await oracle.getActiveEvent(tokenAddr.address)).firstFlaggedBlock;
 
-      // Overwrite with MISAPPROPRIATION
+      // Escalate to MISAPPROPRIATION (0 grace) — allowed; original flag time is preserved
       await oracle.flagDefaultEvent(tokenAddr.address, MISAPPROPRIATION);
 
       const evt = await oracle.getActiveEvent(tokenAddr.address);
       expect(evt.eventType).to.equal(MISAPPROPRIATION);
-      // Grace expiry for MISAPPROPRIATION should equal the block of the second tx
-      expect(evt.graceExpiryBlock).to.equal(evt.firstFlaggedBlock);
+      expect(evt.firstFlaggedBlock).to.equal(first); // grace clock NOT reset by the re-flag
+      // MISAPPROPRIATION has 0 grace, so expiry is the (later) escalation block, not the original
+      expect(evt.graceExpiryBlock).to.be.greaterThan(evt.firstFlaggedBlock);
     });
 
     it("should delete all event data on clearMonitoring", async function () {

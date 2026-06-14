@@ -135,13 +135,20 @@ describe("DefaultOracle · Strata AI-proposer hook", function () {
 
   // ── M5: re-flag & human-gate guard ────────────────────────────────────
   describe("M5 · re-flag & confirmed-default guard", function () {
-    it("re-flagging an UNCONFIRMED issuer overwrites the active event", async function () {
+    it("re-flagging an UNCONFIRMED issuer may ESCALATE but not soften/reset the grace window", async function () {
       const { oracle, proposer } = await loadFixture(fx);
       await oracle.setAIProposer(proposer.address);
       const token = rnd();
-      await oracle.connect(proposer).flagDefaultEvent(token, PAYMENT_DELAY);
-      await oracle.connect(proposer).flagDefaultEvent(token, GHOST_ISSUER);
-      expect((await oracle.getActiveEvent(token)).eventType).to.equal(GHOST_ISSUER);
+      // escalation: start lenient (7d) → escalate to urgent (0 grace) — allowed, flag time preserved
+      await oracle.connect(proposer).flagDefaultEvent(token, COLLATERAL_SHORTFALL);
+      const first = (await oracle.getActiveEvent(token)).firstFlaggedBlock;
+      await oracle.connect(proposer).flagDefaultEvent(token, MISAPPROPRIATION);
+      const e = await oracle.getActiveEvent(token);
+      expect(e.eventType).to.equal(MISAPPROPRIATION);
+      expect(e.firstFlaggedBlock).to.equal(first); // grace clock NOT reset
+      // softening: relaxing back to a longer window is blocked
+      await expect(oracle.connect(proposer).flagDefaultEvent(token, PAYMENT_DELAY))
+        .to.be.revertedWith("DefaultOracle: cannot soften active event");
     });
     it("HUMAN GATE: a CONFIRMED default cannot be re-flagged (even by an authorized caller)", async function () {
       const { oracle, proposer } = await loadFixture(fx);

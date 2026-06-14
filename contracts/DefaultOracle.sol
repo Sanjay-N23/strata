@@ -92,9 +92,19 @@ contract DefaultOracle is Ownable2Step {
             graceExpiry = block.number;
         }
 
+        // Re-flag guard: if an unconfirmed event is already open, only allow ESCALATION
+        // (an equal/earlier grace expiry) and preserve the original flag time — the operator
+        // cannot soften the severity or restart the grace clock on a distressed issuer.
+        DefaultEvent storage existing = activeEvents[tokenAddress];
+        uint256 firstFlagged = block.number;
+        if (existing.isActive) {
+            require(graceExpiry <= existing.graceExpiryBlock, "DefaultOracle: cannot soften active event");
+            firstFlagged = existing.firstFlaggedBlock;
+        }
+
         activeEvents[tokenAddress] = DefaultEvent({
             eventType: eventType,
-            firstFlaggedBlock: block.number,
+            firstFlaggedBlock: firstFlagged,
             graceExpiryBlock: graceExpiry,
             isActive: true,
             isConfirmed: false,
