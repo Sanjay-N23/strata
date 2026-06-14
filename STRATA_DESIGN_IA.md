@@ -163,7 +163,7 @@ I'll then redesign page-by-page, verifying each in the live preview.
 4. **Attestor/Guardian:** Alert → gated action → approval queue → connect wallet → sign 2-of-3.
 
 ## R5. Data flow & interdependencies
-- **Sources:** Mantle Sepolia (15 contracts, read) · AI agent off-chain (writes `submitScore()` back to chain) · replay JSON (drives mode).
+- **Sources:** Mantle Sepolia (19 contracts, read) · AI agent off-chain (writes `submitScore()` back to chain) · replay JSON (drives mode).
 - **App layer:** `strata-config.js` → ethers adapter → IRS store + Live/Replay switch → surfaces; wallet guard fronts all writes.
 - **3 dependencies that will bite UX:**
   1. **`strata-config.js` + RPC = single points of failure** → health-check on load, skeletons, last-known cache.

@@ -5,7 +5,7 @@ import * as path from "path";
 async function main() {
   const [deployer] = await ethers.getSigners();
   const network = await ethers.provider.getNetwork();
-  const deployFile = path.join(__dirname, "..", "deployments", "hashkeyTestnet.json");
+  const deployFile = path.join(__dirname, "..", "deployments", "mantleSepolia.json");
   const deployment = JSON.parse(fs.readFileSync(deployFile, "utf-8"));
   const c = deployment.contracts;
 

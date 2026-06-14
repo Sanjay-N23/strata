@@ -55,7 +55,7 @@ npx hardhat test test/integration/TuringBenchmark.test.ts
 | Agents adapting in real time | Continuous re-underwriting loop; sentiment-driven distress detection |
 | ERC-8004-style identity + on-chain reputation | Optional identity gate wired in-contract; reputation accrues only from correct calls |
 | Institutional trust | Human-in-the-loop 2-of-3 gate for all legal/irreversible actions |
-| Judges (Z.AI, Allora, Nansen, Virtuals) | GLM-4.6 brain · scorecard inference · sentiment signals · agent reputation |
+| Sponsor fit | Z.AI GLM-4.6 writes the credit memo (live, in-repo); Allora / Nansen / Virtuals are named roadmap integration targets, not yet wired |
 
 ## Honest framing (pre-empt the skeptics)
 - The benchmark uses **real** USDC–SVB data, not a scripted scenario.
@@ -66,4 +66,4 @@ npx hardhat test test/integration/TuringBenchmark.test.ts
 ## Architecture (one breath)
 12 core contracts (reused) + Strata AI layer: `StrataAIAgent` (autonomy boundary, causal reprice),
 `TuringBenchmark` (on-chain AI-vs-rulebook record), `ReplayOracle` (ground-truth feed), AI-arm on
-`IRSOracle`, AI-proposer hook on `DefaultOracle`. **900+ tests pass.** Off-chain agent: Z.AI GLM-4.6 + PD scorecard.
+`IRSOracle`, AI-proposer hook on `DefaultOracle`. **978 tests pass.** Off-chain agent: Z.AI GLM-4.6 + PD scorecard.

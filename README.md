@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=14&duration=3500&pause=800&color=F0B90B&center=true&vCenter=true&width=750&lines=%E2%96%88%E2%96%88%E2%96%88+Strata+Protocol+%E2%96%88%E2%96%88%E2%96%88;First+On-Chain+RWA+Credit+Default+Swap;%2412B+in+RWA+tokens.+ZERO+issuer-default+protection.+Until+now.;ERC-3643+Native+%C2%B7+Mantle+Network+%C2%B7+978+Tests+Passing" alt="Strata Typing Banner" />
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=14&duration=3500&pause=800&color=F0B90B&center=true&vCenter=true&width=750&lines=%E2%96%88%E2%96%88%E2%96%88+Strata+Protocol+%E2%96%88%E2%96%88%E2%96%88;First+On-Chain+RWA+Credit+Default+Swap;%2426B%2B+in+RWA+tokens.+No+automated+issuer-default+protection.;ERC-3643+Native+%C2%B7+Mantle+Network+%C2%B7+978+Tests+Passing" alt="Strata Typing Banner" />
 
 <br/>
 
 # ⬡ Strata Protocol
 
-### *The world's first on-chain Credit Default Swap for ERC-3643 RWA tokens*
+### *An on-chain Credit Default Swap for ERC-3643 RWA tokens*
 
 <br/>
 
@@ -77,11 +77,11 @@ Full set in [`deployments/mantleSepolia.json`](./deployments/mantleSepolia.json)
 
 ---
 
-## 🎯 The Problem — A $12 Billion Blind Spot
+## 🎯 The Problem — A $26 Billion Blind Spot
 
 ```
 ╔══════════════════════════════════════════════════════════════════════╗
-║  $12,000,000,000+ in tokenized RWA assets live on-chain today        ║
+║  $26,000,000,000+ in tokenized RWA assets live on-chain today        ║
 ║                                                                      ║
 ║  ┌─────────────────────┐    ┌──────────────────────────────────┐     ║
 ║  │  Smart Contract Bug │    │  RWA Issuer Default              │     ║
@@ -356,7 +356,7 @@ The Strata dApp ships **10 pages**, wallet-free public stats and wallet-gated pr
 
 ## ⛓ Why Mantle?
 
-Mantle is purpose-built for compliant financial infrastructure — making it the **only viable home** for Strata:
+Mantle is a strong fit for compliant financial infrastructure — here's why it's a good home for Strata:
 
 | Requirement | Why Mantle |
 |-------------|------------------|
@@ -379,14 +379,14 @@ Mantle is purpose-built for compliant financial infrastructure — making it the
 ### ✅ Innovation
 > *Is the project solving a novel problem? Does it push the boundary of what's possible?*
 
-**Strata is the world's first on-chain CDS for ERC-3643 RWA tokens.** All existing DeFi insurance protocols cover smart contract bugs — not issuer credit default. This is an entirely unaddressed $12B+ market. Zero direct competitors in this hackathon.
+**Strata is, to our knowledge, among the first on-chain CDS designs for ERC-3643 RWA tokens.** Existing DeFi insurance protocols cover smart-contract bugs — not issuer credit default. This is a largely unaddressed slice of the **$26B+ tokenized-RWA market** (rwa.xyz, 2026). We're not aware of a direct competitor in this hackathon.
 
 ---
 
 ### ✅ Technical Excellence
 > *Code quality, smart contract security, test coverage, architecture depth*
 
-**19 production-grade contracts (12-contract base protocol across 8 layers + the AI underwriting layer). 978 passing tests.** ERC-3643 compliance gates every payout. Formal FSM for issuer lifecycle. Mathematical premium model with TWAS caching. Reentrancy guards, access control, overflow protection throughout.
+**14 production contracts (11-contract base protocol across 8 layers + a 3-contract AI underwriting layer), plus 5 test mocks — 19 deployed in total. 978 passing tests.** ERC-3643 compliance gates every payout. Formal FSM for issuer lifecycle. Mathematical premium model with TWAS caching. Reentrancy guards, access control, overflow protection throughout.
 
 ---
 
@@ -519,7 +519,7 @@ gitGraph
 | Default confirmation | Price oracle | **2-of-3 trusted attestors** |
 | Post-default claim | Nothing | **SubrogationNFT + legal recovery** |
 | Risk pricing | Fixed / AMM | **Dynamic IRS exponential model** |
-| Target market | Retail DeFi | **Institutional RWA ($12B+)** |
+| Target market | Retail DeFi | **Institutional RWA ($26B+)** |
 | Direct competitors here | Multiple | **Zero** |
 
 </div>
@@ -535,7 +535,7 @@ MIT © 2026 Strata Protocol
 
 **⬡ Strata — Protecting the Tokenized Economy**
 
-*The first protocol to bring institutional-grade credit default protection to the on-chain RWA ecosystem*
+*Bringing credit-default protection to the on-chain RWA ecosystem*
 
 <br/>
 
