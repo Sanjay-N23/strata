@@ -83,3 +83,27 @@ export function scoreIssuer(s: Signals): PdResult {
 export const ALARM_THRESHOLD = 300;       // matches TuringBenchmark.ALARM_THRESHOLD
 export const DEFAULT_PROPOSE_PD = 6000;   // pd>6000 bps -> proposeDefault
 export const DEFAULT_PROPOSE_SCORE = 200; // score<200 -> proposeDefault
+
+// ── Online calibration — minimal "learns calibration" from RESOLVED outcomes ──
+export const CALIBRATION_STEP = 10;        // alarm-threshold nudge per resolved outcome
+export const ALARM_MIN = 200;
+export const ALARM_MAX = 400;
+
+/**
+ * Nudge the alarm threshold from a RESOLVED benchmark outcome (deterministic, bounded).
+ *   - false NEGATIVE (issuer defaulted but the AI never alarmed in time) -> RAISE threshold
+ *     (alarm triggers at a higher score => MORE sensitive next time)
+ *   - false POSITIVE (the AI alarmed but no default occurred)            -> LOWER threshold
+ *     (LESS sensitive next time)
+ * One bounded parameter, updated from realized outcomes: an honest, auditable calibration
+ * loop — not opaque ML, but the agent genuinely adapts its sensitivity to its own track record.
+ */
+export function calibrateAlarmThreshold(
+  current: number,
+  outcome: { falseNegative?: boolean; falsePositive?: boolean }
+): number {
+  let t = current;
+  if (outcome.falseNegative) t += CALIBRATION_STEP;
+  if (outcome.falsePositive) t -= CALIBRATION_STEP;
+  return Math.max(ALARM_MIN, Math.min(ALARM_MAX, t));
+}

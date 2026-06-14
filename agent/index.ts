@@ -22,6 +22,8 @@ import {
   scoreIssuer,
   DEFAULT_PROPOSE_PD,
   DEFAULT_PROPOSE_SCORE,
+  ALARM_THRESHOLD,
+  calibrateAlarmThreshold,
   type Signals,
 } from "./pdModel";
 import { creditMemo, scoreAdvisory } from "./zai";
@@ -85,6 +87,7 @@ export async function main() {
 
   let prevScore: number | null = null;
   let proposed = false;
+  let alarmed = false; // did the AI cross the alarm threshold at any epoch (for calibration)
 
   for (const r of dataset.epochs) {
     // Perceive — respect the human guard: a guardian pause halts the agent mid-run.
@@ -114,6 +117,7 @@ export async function main() {
     const adv = await scoreAdvisory(sig as unknown as Signals, pd); // {0,0} offline → no-op
     const aiScore = blendScore(pd.score, adv.adjustment, adv.confidence);
     const aiPdBps = pdFromScore(aiScore);
+    if (aiScore < ALARM_THRESHOLD) alarmed = true;
     const rationaleHash = ethers.id(memo);
 
     // Act — GREEN: causal reprice + benchmark record. recordFromReplay re-derives the
@@ -150,6 +154,17 @@ export async function main() {
     console.log(`epoch ${r.epoch} (${r.date}): AI ${aiScore} | static ${staticScore} | PD ${(aiPdBps / 100).toFixed(1)}%${lead}${advNote}`);
     console.log(`   memo: ${memo}`);
   }
+
+  // Learn calibration from this RESOLVED outcome: nudge alarm sensitivity from the realized
+  // false-positive / false-negative (deterministic, bounded). The agent adapts to its own record.
+  const defaulted: boolean = dataset.event.defaulted;
+  const outcome = { falseNegative: defaulted && !alarmed, falsePositive: !defaulted && alarmed };
+  const calibrated = calibrateAlarmThreshold(ALARM_THRESHOLD, outcome);
+  console.log(
+    `\nCalibration: outcome { defaulted: ${defaulted}, alarmed: ${alarmed} } -> ` +
+      `alarm threshold ${ALARM_THRESHOLD} → ${calibrated}` +
+      (calibrated === ALARM_THRESHOLD ? " (no change — the call was correct)" : "")
+  );
 
   console.log(
     `\nReplay complete. Settle the benchmark with the owner wallet:` +
