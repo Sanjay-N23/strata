@@ -10,12 +10,17 @@ import { deploymentFilename } from "./deployHelpers";
  * signer (= deployer/owner/operator) so nonces are managed correctly and the
  * provider is resilient to the flaky public RPC.
  *   ISSUER_ADDRESS=0x... npx hardhat run scripts/strata-run-live.ts --network mantleSepolia
+ *
+ * Optional DATASET env selects the replay timeline (default usdc_svb). To underwrite the
+ * USDY testnet-mock issuer on the boundary case where the AI ties the rulebook:
+ *   DATASET=trade_finance_fraud ISSUER_ADDRESS=<MockUSDY> npx hardhat run scripts/strata-run-live.ts --network mantleSepolia
  */
 async function main() {
   const [owner] = await ethers.getSigners();
   const fname = deploymentFilename((await ethers.provider.getNetwork()).chainId);
   const dep = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "deployments", fname), "utf8")).contracts;
-  const dataset = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "agent", "data", "usdc_svb.json"), "utf8"));
+  const datasetFile = process.env.DATASET || "usdc_svb";
+  const dataset = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "agent", "data", `${datasetFile}.json`), "utf8"));
   const issuer = process.env.ISSUER_ADDRESS;
   if (!issuer) throw new Error("Set ISSUER_ADDRESS");
 

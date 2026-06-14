@@ -43,6 +43,14 @@ async function main() {
   addresses.MockERC3643Token = await mockToken.getAddress();
   console.log("MockERC3643Token:", addresses.MockERC3643Token);
 
+  // Named Mantle RWA asset for the AI x RWA track: a testnet-mock of Ondo's USDY
+  // (real USDY/mETH are Mantle-mainnet-only). The agent underwrites THIS issuer in
+  // the live run, so the demo shows automated risk management of a named RWA asset.
+  const mockUSDY = await MockERC3643Token.deploy("Ondo USD Yield (testnet mock)", "USDY", addresses.MockIdentityRegistry);
+  await mockUSDY.waitForDeployment();
+  addresses.MockUSDY = await mockUSDY.getAddress();
+  console.log("MockUSDY (USDY testnet mock):", addresses.MockUSDY);
+
   const MockBAS = await ethers.getContractFactory("MockBASAttestation");
   const mockBAS = await MockBAS.deploy();
   await mockBAS.waitForDeployment();
