@@ -15,6 +15,20 @@ import { deploymentFilename } from "./deployHelpers";
  * USDY testnet-mock issuer on the boundary case where the AI ties the rulebook:
  *   DATASET=trade_finance_fraud ISSUER_ADDRESS=<MockUSDY> npx hardhat run scripts/strata-run-live.ts --network mantleSepolia
  */
+async function withRetry<T>(label: string, fn: () => Promise<T>, tries = 5): Promise<T> {
+  let last: unknown;
+  for (let i = 0; i < tries; i++) {
+    try { return await fn(); }
+    catch (e) {
+      last = e;
+      const ms = 800 * 2 ** i;
+      console.log(`  retry ${label} (${i + 1}/${tries}) in ${ms}ms — ${String(e).slice(0, 80)}`);
+      await new Promise((r) => setTimeout(r, ms));
+    }
+  }
+  throw last;
+}
+
 async function main() {
   const [owner] = await ethers.getSigners();
   const fname = deploymentFilename((await ethers.provider.getNetwork()).chainId);
@@ -40,14 +54,14 @@ async function main() {
       activityScore: r.activityScore, offChainSentiment: r.offChainSentiment,
       epoch: r.epoch, sourceHash: ethers.id(`usdc-svb-${r.epoch}`),
     };
-    await (await replay.pushSignals(issuer, sig)).wait();
+    await withRetry("pushSignals", async () => (await replay.pushSignals(issuer, sig)).wait());
     const staticScore = Number(await oracle.computeStaticScore(sig));
     const pd = scoreIssuer(sig as any);
     const hash = ethers.id(pd.rationale);
-    await (await agent.submitScore(issuer, pd.score, pd.pdBps, hash, r.epoch)).wait();
-    await (await bench.recordFromReplay(issuer, r.epoch, pd.score, pd.pdBps)).wait();
+    await withRetry("submitScore", async () => (await agent.submitScore(issuer, pd.score, pd.pdBps, hash, r.epoch)).wait());
+    await withRetry("recordFromReplay", async () => (await bench.recordFromReplay(issuer, r.epoch, pd.score, pd.pdBps)).wait());
     if (!proposed && (pd.pdBps > 6000 || pd.score < 200)) {
-      await (await agent.proposeDefault(issuer, dataset.event.type, hash)).wait();
+      await withRetry("proposeDefault", async () => (await agent.proposeDefault(issuer, dataset.event.type, hash)).wait());
       proposed = true;
     }
     const flag = pd.score < 300 && staticScore >= 300 ? "   <-- AI ALARMS, rulebook still calm" : "";
