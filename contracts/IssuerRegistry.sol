@@ -6,6 +6,10 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+interface ITIREligibility {
+    function isFastTrackEligible(address custodian) external view returns (bool);
+}
+
 /**
  * @title IssuerRegistry — Issuer Lifecycle State Machine
  * @notice Central registry for RWA token issuers. Manages lifecycle:
@@ -58,6 +62,11 @@ contract IssuerRegistry is Ownable2Step, ReentrancyGuard {
 
     // ─── State ───────────────────────────────────────────────────────
     mapping(address => IssuerProfile) public issuers;       // tokenAddress => profile
+    event TIRUpdated(address indexed tir);
+    event IssuerReassigned(address indexed tokenAddress, address indexed newIssuerEOA);
+    /// @notice Opt-in fast-track eligibility gate (default OFF so existing flows are unaffected).
+    bool public fastTrackGate;
+    event FastTrackGateSet(bool enabled);
     mapping(address => WindDownRecord) public windDowns;
     mapping(address => address) public issuerOfToken;       // tokenAddress => issuerEOA
 
@@ -112,6 +121,18 @@ contract IssuerRegistry is Ownable2Step, ReentrancyGuard {
     /**
      * @notice Register a new RWA token issuer. Starts observation period.
      */
+    /// @notice Update the TIR used for fast-track eligibility checks (owner-only).
+    function setTIR(address _tir) external onlyOwner {
+        tir = _tir;
+        emit TIRUpdated(_tir);
+    }
+
+    /// @notice Enable/disable the fast-track eligibility gate (owner-only; default OFF).
+    function setFastTrackGate(bool enabled) external onlyOwner {
+        fastTrackGate = enabled;
+        emit FastTrackGateSet(enabled);
+    }
+
     function register(
         address tokenAddress,
         uint64 basLegalAttestUID,
@@ -126,7 +147,15 @@ contract IssuerRegistry is Ownable2Step, ReentrancyGuard {
 
         uint256 observationDays = STANDARD_OBSERVATION;
         if (useFastTrack) {
-            // Fast track eligibility check would call TIR here
+            // Fast-track eligibility gate (opt-in via setFastTrackGate; implements the check
+            // the original code only promised in a comment). Default OFF so existing flows
+            // are unaffected; production enables it once a real TIR is wired.
+            if (fastTrackGate) {
+                require(
+                    tir != address(0) && ITIREligibility(tir).isFastTrackEligible(custodian),
+                    "IssuerRegistry: custodian not fast-track eligible"
+                );
+            }
             observationDays = FAST_OBSERVATION;
         }
 
@@ -150,6 +179,17 @@ contract IssuerRegistry is Ownable2Step, ReentrancyGuard {
         issuerOfToken[tokenAddress] = msg.sender;
 
         emit IssuerRegistered(tokenAddress, msg.sender, useFastTrack, observationEndBlock);
+    }
+
+    /// @notice Anti-squat remediation: the owner reassigns a registration's issuer EOA, e.g.
+    ///         if a token address was front-run/squatted by a non-issuer before the real
+    ///         issuer could register (register() reverts on an already-registered token).
+    function reassignIssuer(address tokenAddress, address newIssuerEOA) external onlyOwner {
+        require(issuers[tokenAddress].registrationBlock != 0, "IssuerRegistry: not registered");
+        require(newIssuerEOA != address(0), "IssuerRegistry: zero EOA");
+        issuers[tokenAddress].issuerEOA = newIssuerEOA;
+        issuerOfToken[tokenAddress] = newIssuerEOA;
+        emit IssuerReassigned(tokenAddress, newIssuerEOA);
     }
 
     /**
