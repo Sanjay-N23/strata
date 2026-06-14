@@ -62,7 +62,7 @@ describe("TIR — Trusted Issuer Registry", function () {
       const att = await tir.getAttestor(custodian.address);
       expect(att.wallet).to.equal(custodian.address);
       expect(att.attestorType).to.equal(AttestorType.CUSTODIAN);
-      expect(att.bondBNB).to.equal(MIN_BOND);
+      expect(att.bondMNT).to.equal(MIN_BOND);
       expect(att.status).to.equal(AttestorStatus.ACTIVE);
       expect(att.successfulAttestations).to.equal(0);
       expect(att.disputedAttestations).to.equal(0);
@@ -102,7 +102,7 @@ describe("TIR — Trusted Issuer Registry", function () {
         .registerAttestor(AttestorType.CUSTODIAN, { value: extraBond });
 
       const att = await tir.getAttestor(custodian.address);
-      expect(att.bondBNB).to.equal(extraBond);
+      expect(att.bondMNT).to.equal(extraBond);
     });
 
     it("should record the registration timestamp", async function () {
@@ -165,9 +165,9 @@ describe("TIR — Trusted Issuer Registry", function () {
       ).to.not.be.reverted;
     });
 
-    it("should expose MIN_BOND_BNB constant as 5 ether", async function () {
+    it("should expose MIN_BOND_MNT constant as 5 ether", async function () {
       const { tir } = await loadFixture(deployFixture);
-      expect(await tir.MIN_BOND_BNB()).to.equal(ethers.parseEther("5"));
+      expect(await tir.MIN_BOND_MNT()).to.equal(ethers.parseEther("5"));
     });
   });
 
@@ -201,7 +201,7 @@ describe("TIR — Trusted Issuer Registry", function () {
 
       const att = await tir.getAttestor(custodian.address);
       expect(att.status).to.equal(AttestorStatus.SLASHED);
-      expect(att.bondBNB).to.equal(0);
+      expect(att.bondMNT).to.equal(0);
       expect(att.slashCount).to.equal(1);
     });
 
@@ -548,7 +548,7 @@ describe("TIR — Trusted Issuer Registry", function () {
 
       const att = await tir.getAttestor(custodian.address);
       expect(att.status).to.equal(AttestorStatus.SLASHED);
-      expect(att.bondBNB).to.equal(0);
+      expect(att.bondMNT).to.equal(0);
     });
 
     it("should increment slashCount", async function () {

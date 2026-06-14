@@ -160,8 +160,8 @@ async function main() {
   console.log("\n─── 3. Core Contract Reads (37 tests) ─────────────────────────\n");
 
   // TIR
-  await check("TIR-1", "tir", "TIR.MIN_BOND_BNB() = 5 ether", async () => {
-    eq(await tir.MIN_BOND_BNB(), ethers.parseEther("5"), "MIN_BOND_BNB");
+  await check("TIR-1", "tir", "TIR.MIN_BOND_MNT() = 5 ether", async () => {
+    eq(await tir.MIN_BOND_MNT(), ethers.parseEther("5"), "MIN_BOND_MNT");
   });
   await check("TIR-2", "tir", "TIR.owner() = deployer", async () => {
     eq(await tir.owner(), deployerAddr, "owner");

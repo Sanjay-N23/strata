@@ -18,7 +18,7 @@ contract TIR is Ownable2Step, ReentrancyGuard {
     struct Attestor {
         address wallet;
         AttestorType attestorType;
-        uint256 bondBNB;
+        uint256 bondMNT;
         uint256 registrationTimestamp;
         AttestorStatus status;
         uint256 successfulAttestations;
@@ -46,7 +46,7 @@ contract TIR is Ownable2Step, ReentrancyGuard {
     }
 
     // ─── Constants ───────────────────────────────────────────────────
-    uint256 public constant MIN_BOND_BNB = 5 ether;
+    uint256 public constant MIN_BOND_MNT = 5 ether;
 
     // ─── State ───────────────────────────────────────────────────────
     mapping(address => Attestor) public attestors;
@@ -54,7 +54,7 @@ contract TIR is Ownable2Step, ReentrancyGuard {
     mapping(address => bool) public monitoringActive;
 
     // ─── Events ──────────────────────────────────────────────────────
-    event AttestorRegistered(address indexed wallet, AttestorType attestorType, uint256 bondBNB);
+    event AttestorRegistered(address indexed wallet, AttestorType attestorType, uint256 bondMNT);
     event DefaultAttestationSubmitted(address indexed tokenAddress, address indexed attestor, AttestorType attestorType, uint64 basUID);
     event DefaultConfirmed(address indexed tokenAddress, uint256 confirmationBlock);
     event AttestorSlashed(address indexed wallet, uint256 bondLost, string reason);
@@ -63,17 +63,17 @@ contract TIR is Ownable2Step, ReentrancyGuard {
     // ─── Registration ────────────────────────────────────────────────
 
     /**
-     * @notice Register as a TIR attestor. Requires minimum bond of 5 BNB.
+     * @notice Register as a TIR attestor. Requires minimum bond of 5 MNT (native gas token).
      * @param attestorType The category: CUSTODIAN, LEGAL_REP, or AUDITOR
      */
     function registerAttestor(AttestorType attestorType) external payable nonReentrant {
         require(attestors[msg.sender].status == AttestorStatus.UNREGISTERED, "TIR: already registered");
-        require(msg.value >= MIN_BOND_BNB, "TIR: bond below minimum");
+        require(msg.value >= MIN_BOND_MNT, "TIR: bond below minimum");
 
         attestors[msg.sender] = Attestor({
             wallet: msg.sender,
             attestorType: attestorType,
-            bondBNB: msg.value,
+            bondMNT: msg.value,
             registrationTimestamp: block.timestamp,
             status: AttestorStatus.ACTIVE,
             successfulAttestations: 0,
@@ -153,15 +153,14 @@ contract TIR is Ownable2Step, ReentrancyGuard {
 
     /**
      * @notice Slash a fraudulent attestor — 100% bond confiscation, routed to the treasury.
-     * @dev Bonds are denominated in the chain's native gas token (MNT on Mantle; the
-     *      `bondBNB` field name is a retained legacy identifier, not a BSC dependency).
+     * @dev Bonds are denominated in the chain's native gas token (MNT on Mantle Sepolia).
      */
     function slashAttestor(address fraudulentAttestor, string calldata reason) external onlyOwner {
         Attestor storage att = attestors[fraudulentAttestor];
         require(att.status == AttestorStatus.ACTIVE, "TIR: not active");
 
-        uint256 bondLost = att.bondBNB;
-        att.bondBNB = 0;
+        uint256 bondLost = att.bondMNT;
+        att.bondMNT = 0;
         att.status = AttestorStatus.SLASHED;
         att.slashCount++;
 
@@ -237,9 +236,9 @@ contract TIR is Ownable2Step, ReentrancyGuard {
         address legalRep,
         address auditor
     ) external view returns (uint256) {
-        uint256 totalBonds = attestors[custodian].bondBNB +
-                            attestors[legalRep].bondBNB +
-                            attestors[auditor].bondBNB;
+        uint256 totalBonds = attestors[custodian].bondMNT +
+                            attestors[legalRep].bondMNT +
+                            attestors[auditor].bondMNT;
         return totalBonds * 4;
     }
 }
