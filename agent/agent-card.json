@@ -1,0 +1,18 @@
+{
+  "name": "Strata AI Underwriter",
+  "description": "Autonomous, deterministic credit-underwriting agent for RWA issuer-default risk on Mantle. Continuously re-underwrites ERC-3643 issuers, prices risk on-chain (submitScore -> reprice), and flags distress for human 2-of-3 confirmation. The AI proposes; humans dispose on irreversible/legal actions.",
+  "version": "1.0.0",
+  "registrations": [
+    { "standard": "ERC-8004", "chainId": 5003, "network": "Mantle Sepolia" }
+  ],
+  "services": [
+    { "type": "underwriting", "description": "Per-epoch PD scorecard + GLM-4.6 credit memo over IssuerSignals; deterministic (temp 0, seed 42) and reproducible." },
+    { "type": "benchmark", "description": "On-chain Turing benchmark: AI arm vs sentiment-blind rules-based baseline, resolved against ground truth. Reputation accrues only from correct, timely calls." }
+  ],
+  "trustModels": ["reputation"],
+  "endpoints": {
+    "repository": "https://github.com/Sanjay-N23/strata",
+    "console": "https://github.com/Sanjay-N23/strata/blob/main/frontend/console.html"
+  },
+  "note": "Reference ERC-8004 registration for the Mantle Sepolia testnet demo. The on-chain StrataAIAgent contract address is the source of truth; see deployments/mantleSepolia.json."
+}

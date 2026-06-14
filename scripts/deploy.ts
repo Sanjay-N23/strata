@@ -220,6 +220,15 @@ async function main() {
   addresses.TuringBenchmark = await turingBenchmark.getAddress();
   console.log("TuringBenchmark:", addresses.TuringBenchmark);
 
+  // ERC-8004 agent identity. The canonical registry (0x8004A169...432, same CREATE2
+  // address on every chain) is deployed on Mantle MAINNET but NOT on this testnet, so
+  // we deploy the reference IdentityRegistry here and register the agent against it.
+  const IdentityRegistry = await ethers.getContractFactory("IdentityRegistry");
+  const identityRegistry = await IdentityRegistry.deploy();
+  await identityRegistry.waitForDeployment();
+  addresses.IdentityRegistry = await identityRegistry.getAddress();
+  console.log("IdentityRegistry (ERC-8004):", addresses.IdentityRegistry);
+
   // Wire Strata layer. Human gate preserved: the agent can FLAG defaults but only
   // 2-of-3 TIR attestors CONFIRM them. The operator wallet runs the off-chain agent
   // (submitScore + benchmark.record + replay.pushSignals).
@@ -230,7 +239,15 @@ async function main() {
   await turingBenchmark.setRecorder(deployer.address);
   await turingBenchmark.setOracles(addresses.ReplayOracle, addresses.IRSOracle);
   await replayOracle.setReplayKeeper(deployer.address);
-  console.log("Strata AI layer wired (agent + benchmark + replay + on-chain static arm)");
+
+  // Register the agent's ERC-8004 identity (agentId == tokenId) and ACTIVATE the
+  // onlyAgent identity gate: every submitScore/proposeDefault now requires the operator
+  // to own this identity NFT. agentURI resolves to the off-chain agent card.
+  const AGENT_CARD_URI = "https://raw.githubusercontent.com/Sanjay-N23/strata/main/agent/agent-card.json";
+  await (await identityRegistry.register(AGENT_CARD_URI)).wait();
+  const agentId = await identityRegistry.agentCount();
+  await strataAgent.setErc8004(addresses.IdentityRegistry, agentId);
+  console.log(`Strata AI layer wired (agent + benchmark + replay + on-chain static arm + ERC-8004 identity #${agentId})`);
 
   // ═══════════════════════════════════════════════════════════════════
   // STEP 4: Save Deployment Addresses
