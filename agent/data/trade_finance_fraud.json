@@ -1,0 +1,20 @@
+{
+  "issuerLabel": "Trade-finance issuer — sudden borrower fraud (fundamentals-led)",
+  "source": "Synthetic boundary fixture: a hidden-fraud collapse where soft signals do NOT lead the fundamentals (contrast to usdc_svb.json, where sentiment leads).",
+  "event": {
+    "type": 3,
+    "typeName": "MISAPPROPRIATION",
+    "eventEpoch": 4,
+    "defaulted": true,
+    "note": "Boundary / control case. The distress is FUNDAMENTALS-LED: a concealed borrower fraud surfaces all at once at epoch 4, collapsing NAV/attestation/repayment/collateral and sentiment in the SAME step. Because off-chain sentiment never moved ahead of the fundamentals, the sentiment-aware AI arm has no information edge here and TIES the rules-based baseline (both first alarm at the event epoch, lead delta 0). This proves the AI's USDC-SVB lead is the SIGNAL, not magic — when there is no early soft signal, there is no lead."
+  },
+  "schema": "IssuerSignals: navPunctuality, attestationConsistency, repaymentReliability (0..1000); collateralRatioBps (0..20000, 10000=100%); activityScore, offChainSentiment (0..1000)",
+  "epochs": [
+    { "epoch": 0, "date": "2026-01-05", "navPunctuality": 950, "attestationConsistency": 950, "repaymentReliability": 950, "collateralRatioBps": 11000, "activityScore": 750, "offChainSentiment": 880, "note": "Healthy. Book performing; no public signal of trouble." },
+    { "epoch": 1, "date": "2026-01-12", "navPunctuality": 945, "attestationConsistency": 945, "repaymentReliability": 945, "collateralRatioBps": 10800, "activityScore": 740, "offChainSentiment": 860, "note": "Healthy. Fraud still concealed; sentiment calm." },
+    { "epoch": 2, "date": "2026-01-19", "navPunctuality": 940, "attestationConsistency": 940, "repaymentReliability": 940, "collateralRatioBps": 10500, "activityScore": 730, "offChainSentiment": 850, "note": "Healthy. No leading soft signal — nothing for the AI to catch early." },
+    { "epoch": 3, "date": "2026-01-26", "navPunctuality": 935, "attestationConsistency": 930, "repaymentReliability": 935, "collateralRatioBps": 10300, "activityScore": 720, "offChainSentiment": 840, "note": "Still healthy on every dimension, including sentiment. The fraud is one week from discovery." },
+    { "epoch": 4, "date": "2026-02-02", "navPunctuality": 140, "attestationConsistency": 140, "repaymentReliability": 140, "collateralRatioBps": 7800, "activityScore": 180, "offChainSentiment": 150, "note": "FRAUD DISCLOSED. Fundamentals AND sentiment collapse in the same step. Both arms alarm here — neither leads." },
+    { "epoch": 5, "date": "2026-02-09", "navPunctuality": 160, "attestationConsistency": 170, "repaymentReliability": 160, "collateralRatioBps": 7500, "activityScore": 200, "offChainSentiment": 160, "note": "Sustained distress; default confirmed." }
+  ]
+}

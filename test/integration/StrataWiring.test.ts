@@ -49,6 +49,7 @@ describe("Strata deployment wiring (integration)", function () {
     await agent.setBenchmark(await bench.getAddress());
     await bench.setStrataAgent(await agent.getAddress());
     await bench.setRecorder(deployer.address);
+    await bench.setOracles(await replay.getAddress(), await oracle.getAddress());
     await replay.setReplayKeeper(deployer.address);
 
     return { deployer, issuer, oracle, defaultOracle, agent, replay, bench };
@@ -56,7 +57,7 @@ describe("Strata deployment wiring (integration)", function () {
 
   // ── M0: every wiring link is correct ──────────────────────────────────
   describe("M0 · wiring assertions", function () {
-    it("all six cross-contract links match deploy.ts", async function () {
+    it("all cross-contract links match deploy.ts", async function () {
       const { deployer, oracle, defaultOracle, agent, replay, bench } = await loadFixture(deployed);
       const agentAddr = await agent.getAddress();
       const benchAddr = await bench.getAddress();
@@ -66,6 +67,8 @@ describe("Strata deployment wiring (integration)", function () {
       expect(await bench.strataAgent()).to.equal(agentAddr);
       expect(await bench.recorder()).to.equal(deployer.address);
       expect(await replay.replayKeeper()).to.equal(deployer.address);
+      expect(await bench.replayOracle()).to.equal(await replay.getAddress());
+      expect(await bench.irsOracle()).to.equal(await oracle.getAddress());
     });
   });
 

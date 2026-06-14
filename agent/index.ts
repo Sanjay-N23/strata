@@ -77,9 +77,11 @@ export async function main() {
     const memo = await creditMemo(sig as unknown as Signals, pd);
     const rationaleHash = ethers.id(memo);
 
-    // Act — GREEN: causal reprice + benchmark record
+    // Act — GREEN: causal reprice + benchmark record. recordFromReplay re-derives the
+    // static arm ON-CHAIN from the signals just pushed (computeStaticScore over
+    // signalsAt), so the rules-based baseline is contract-computed, not hand-fed.
     await (await agent.submitScore(issuer, pd.score, pd.pdBps, rationaleHash, r.epoch)).wait();
-    await (await bench.record(issuer, r.epoch, pd.score, staticScore, pd.pdBps)).wait();
+    await (await bench.recordFromReplay(issuer, r.epoch, pd.score, pd.pdBps)).wait();
 
     const { earlyWarning, propose } = decideActions(prevScore, pd);
 

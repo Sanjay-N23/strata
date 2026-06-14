@@ -63,7 +63,10 @@ describe("agent/index · main() orchestration (mocked chain)", function () {
         pushSignals: () => { calls.pushSignals++; return tx("pushSignals"); },
         setCursor: () => { calls.setCursor++; return tx("setCursor"); },
       },
-      bench: { record: () => { calls.record++; return tx("record"); } },
+      bench: {
+        record: () => { calls.record++; return tx("record"); },
+        recordFromReplay: () => { calls.record++; return tx("record"); }, // production path (on-chain static arm)
+      },
       defaultOracle: {},
     });
   });

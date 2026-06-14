@@ -228,8 +228,9 @@ async function main() {
   await strataAgent.setBenchmark(addresses.TuringBenchmark);
   await turingBenchmark.setStrataAgent(addresses.StrataAIAgent);
   await turingBenchmark.setRecorder(deployer.address);
+  await turingBenchmark.setOracles(addresses.ReplayOracle, addresses.IRSOracle);
   await replayOracle.setReplayKeeper(deployer.address);
-  console.log("Strata AI layer wired (agent + benchmark + replay)");
+  console.log("Strata AI layer wired (agent + benchmark + replay + on-chain static arm)");
 
   // ═══════════════════════════════════════════════════════════════════
   // STEP 4: Save Deployment Addresses

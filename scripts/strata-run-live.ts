@@ -40,7 +40,7 @@ async function main() {
     const pd = scoreIssuer(sig as any);
     const hash = ethers.id(pd.rationale);
     await (await agent.submitScore(issuer, pd.score, pd.pdBps, hash, r.epoch)).wait();
-    await (await bench.record(issuer, r.epoch, pd.score, staticScore, pd.pdBps)).wait();
+    await (await bench.recordFromReplay(issuer, r.epoch, pd.score, pd.pdBps)).wait();
     if (!proposed && (pd.pdBps > 6000 || pd.score < 200)) {
       await (await agent.proposeDefault(issuer, dataset.event.type, hash)).wait();
       proposed = true;

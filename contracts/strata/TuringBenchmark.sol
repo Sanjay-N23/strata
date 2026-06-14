@@ -2,9 +2,18 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
+import "./StrataTypes.sol";
 
 interface IStrataAgentRep {
     function recordOutcome(bool wasCorrect) external;
+}
+
+interface IReplaySignals {
+    function signalsAt(address issuer, uint64 epoch) external view returns (IssuerSignals memory);
+}
+
+interface IStaticScorer {
+    function computeStaticScore(IssuerSignals memory s) external view returns (uint16);
 }
 
 /**
@@ -39,6 +48,8 @@ contract TuringBenchmark is Ownable2Step {
 
     address public recorder;     // StrataAIAgent (or keeper) — the only writer
     address public strataAgent;  // for reputation callback
+    address public replayOracle; // on-chain signal source (trust-minimised static arm)
+    address public irsOracle;    // canonical static-arm scorer (computeStaticScore)
 
     mapping(address => Record[]) private _records;
     mapping(address => bool) public isResolved;
@@ -53,6 +64,7 @@ contract TuringBenchmark is Ownable2Step {
     event Resolved(address indexed issuer, bool defaulted, int256 aiLeadEpochs, int256 staticLeadEpochs, uint8 winner);
     event RecorderUpdated(address indexed recorder);
     event StrataAgentUpdated(address indexed agent);
+    event OraclesUpdated(address replayOracle, address irsOracle);
 
     modifier onlyRecorder() {
         require(msg.sender == recorder || msg.sender == owner(), "Bench: not recorder");
@@ -69,8 +81,36 @@ contract TuringBenchmark is Ownable2Step {
         emit StrataAgentUpdated(_agent);
     }
 
+    /// @notice Wire the on-chain signal source + static scorer used by recordFromReplay.
+    function setOracles(address _replayOracle, address _irsOracle) external onlyOwner {
+        replayOracle = _replayOracle;
+        irsOracle = _irsOracle;
+        emit OraclesUpdated(_replayOracle, _irsOracle);
+    }
+
     /**
-     * @notice Record both arms for one issuer at one epoch. Append-only.
+     * @notice Trust-minimised recorder (PRODUCTION path). Derives the static-arm score
+     *         ON-CHAIN via IRSOracle.computeStaticScore over the IssuerSignals already
+     *         pushed to ReplayOracle — so the rules-based baseline cannot be hand-fed by
+     *         the recorder; both arms read the SAME on-chain signals. Append-only.
+     */
+    function recordFromReplay(
+        address issuer,
+        uint64 epoch,
+        uint16 aiScore,
+        uint16 aiPdBps
+    ) external onlyRecorder {
+        require(!isResolved[issuer], "Bench: already resolved");
+        require(replayOracle != address(0) && irsOracle != address(0), "Bench: oracles unset");
+        IssuerSignals memory sig = IReplaySignals(replayOracle).signalsAt(issuer, epoch);
+        uint16 staticScore = IStaticScorer(irsOracle).computeStaticScore(sig);
+        _records[issuer].push(Record({ epoch: epoch, aiScore: aiScore, staticScore: staticScore, aiPdBps: aiPdBps }));
+        emit ArmsRecorded(issuer, epoch, aiScore, staticScore, aiPdBps);
+    }
+
+    /**
+     * @notice Raw recorder — caller supplies staticScore directly. Retained for unit
+     *         tests of the aggregation math; production uses recordFromReplay. Append-only.
      */
     function record(
         address issuer,
