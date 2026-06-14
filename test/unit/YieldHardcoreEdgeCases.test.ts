@@ -220,12 +220,12 @@ describe("Yield Hardcore Edge Cases", function () {
   // ═══════════════════════════════════════════════════════════════════
 
   describe("4. Supply Resurrection After Full Redemption", function () {
-    it("HC-4.1: exchange rate persists after full redemption (stale rate)", async function () {
+    it("HC-4.1: per-issuer rate resets to 1:1 after full redemption (no stale-rate carryover)", async function () {
       const { srCVR, pool, user1, issuerA } = await loadFixture(deployFixture);
 
       await srCVR.connect(pool).mint(user1.address, ethers.parseEther("1000"), issuerA);
       await srCVR.connect(pool).accrueYield(ethers.parseEther("500"), issuerA);
-      // Rate = 1.5
+      // issuerA per-issuer rate = 1.5
 
       // Redeem everything
       await srCVR.connect(pool).redeem(user1.address, ethers.parseEther("1000"), issuerA);
@@ -233,19 +233,16 @@ describe("Yield Hardcore Edge Cases", function () {
       // Supply is 0, underlying is 0
       expect(await srCVR.totalSupply()).to.equal(0);
       expect(await srCVR.totalUnderlying()).to.equal(0);
+      expect(await srCVR.poolSupply(issuerA)).to.equal(0);
+      expect(await srCVR.poolUnderlying(issuerA)).to.equal(0);
 
-      // Rate was NOT recalculated to 1.0 — it stays at last value
-      // because the contract only recalculates when totalSupply > 0
-      // The rate calculation: 0 * 1e18 / 0 is skipped
-      const staleRate = await srCVR.getCurrentExchangeRate();
-      // Rate stays at whatever it was before (could be anything)
-      // This is a potential issue: next depositor enters at stale rate
+      // FIXED (per-issuer model): the issuer's rate is back to 1e18 — no stale-rate carryover
+      // that would let the next depositor enter at an inflated rate (the old global-rate bug).
+      expect(await srCVR.exchangeRateOf(issuerA)).to.equal(ethers.parseEther("1"));
 
-      // New deposit at stale rate 1.5: 1000 USDT gives 666.66 srCVR
+      // New deposit enters fresh at 1:1 → 1000 srCVR (not 666.66 at a stale 1.5), matching jrCVR.
       await srCVR.connect(pool).mint(user1.address, ethers.parseEther("1000"), issuerA);
-      const newBal = await srCVR.balanceOf(user1.address);
-      // 1000 * 1e18 / 1.5e18 = 666.666...e18
-      expect(newBal).to.equal(ethers.parseEther("1000") * BigInt(1e18) / ethers.parseEther("1.5"));
+      expect(await srCVR.balanceOf(user1.address)).to.equal(ethers.parseEther("1000"));
     });
 
     it("HC-4.2: jrCVR full redemption then new deposit works correctly", async function () {
@@ -343,7 +340,7 @@ describe("Yield Hardcore Edge Cases", function () {
       expect(underlyingB).to.equal(ethers.parseEther("1000")); // Unchanged
     });
 
-    it("HC-6.2: but global rate benefits ALL holders equally (cross-subsidy)", async function () {
+    it("HC-6.2: the blended global rate is a back-compat VIEW only (not used for redeem)", async function () {
       const { srCVR, pool, user1, user2, issuerA, issuerB } = await loadFixture(deployFixture);
 
       await srCVR.connect(pool).mint(user1.address, ethers.parseEther("1000"), issuerA);
@@ -352,31 +349,31 @@ describe("Yield Hardcore Edge Cases", function () {
       // Only issuerA pays premium
       await srCVR.connect(pool).accrueYield(ethers.parseEther("500"), issuerA);
 
-      // Global rate = 2500/2000 = 1.25
-      const rate = await srCVR.getCurrentExchangeRate();
-      expect(rate).to.equal(ethers.parseEther("1.25"));
+      // The legacy global view still blends: 2500/2000 = 1.25 ...
+      expect(await srCVR.getCurrentExchangeRate()).to.equal(ethers.parseEther("1.25"));
+      expect(await srCVR.getRedeemableUSDT(ethers.parseEther("1000"))).to.equal(ethers.parseEther("1250"));
 
-      // User2's redeemable USDT uses GLOBAL rate
-      const redeemable2 = await srCVR.getRedeemableUSDT(ethers.parseEther("1000"));
-      expect(redeemable2).to.equal(ethers.parseEther("1250"));
-
-      // But issuerB only has 1000 underlying — redeem would FAIL with "insufficient pool underlying"
-      // This is the cross-subsidy problem: global rate > per-issuer rate for unfunded issuers
+      // ... but it is informational only. The PER-ISSUER rates are isolated:
+      expect(await srCVR.exchangeRateOf(issuerA)).to.equal(ethers.parseEther("1.5")); // got the premium
+      expect(await srCVR.exchangeRateOf(issuerB)).to.equal(ethers.parseEther("1"));   // untouched
+      // (HC-6.3 proves redeem uses the per-issuer rate, not this blended view.)
     });
 
-    it("HC-6.3: redeem fails when per-issuer underlying < global-rate-implied amount", async function () {
+    it("HC-6.3: issuer B redeems its OWN per-issuer rate, isolated from A's premium", async function () {
       const { srCVR, pool, user1, user2, issuerA, issuerB } = await loadFixture(deployFixture);
 
       await srCVR.connect(pool).mint(user1.address, ethers.parseEther("1000"), issuerA);
       await srCVR.connect(pool).mint(user2.address, ethers.parseEther("1000"), issuerB);
       await srCVR.connect(pool).accrueYield(ethers.parseEther("500"), issuerA);
 
-      // User2 tries to redeem all 1000 srCVR from issuerB
-      // Global rate = 1.25, so expects 1250 USDT
-      // But issuerB only has 1000 underlying
-      await expect(
-        srCVR.connect(pool).redeem(user2.address, ethers.parseEther("1000"), issuerB)
-      ).to.be.revertedWith("srCVR: insufficient pool underlying");
+      // FIXED: B's redeem uses B's per-issuer rate (1.0), NOT the blended 1.25, so it neither
+      // over-claims A's premium nor reverts. User2 gets exactly their fair 1000 USDT.
+      const out = await srCVR.connect(pool).redeem.staticCall(user2.address, ethers.parseEther("1000"), issuerB);
+      expect(out).to.equal(ethers.parseEther("1000"));
+      await srCVR.connect(pool).redeem(user2.address, ethers.parseEther("1000"), issuerB);
+      expect(await srCVR.poolUnderlying(issuerB)).to.equal(0);
+      // A's premium is still intact for A's holder (isolation both ways)
+      expect(await srCVR.poolUnderlying(issuerA)).to.equal(ethers.parseEther("1500"));
     });
   });
 

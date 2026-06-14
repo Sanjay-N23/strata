@@ -45,7 +45,9 @@ contract srCVR is ERC20, ReentrancyGuard {
      * @return minted Amount of srCVR minted
      */
     function mint(address depositor, uint256 usdtAmount, address issuerToken) external onlyPool nonReentrant returns (uint256 minted) {
-        minted = (usdtAmount * 1e18) / exchangeRateMantissa;
+        uint256 rate = exchangeRateOf(issuerToken); // PER-ISSUER rate — isolated from other issuers
+
+        minted = (usdtAmount * 1e18) / rate;
 
         totalUnderlying += usdtAmount;
         poolUnderlying[issuerToken] += usdtAmount;
@@ -53,22 +55,23 @@ contract srCVR is ERC20, ReentrancyGuard {
 
         _mint(depositor, minted);
 
-        emit Minted(depositor, issuerToken, usdtAmount, minted, exchangeRateMantissa);
+        emit Minted(depositor, issuerToken, usdtAmount, minted, rate);
     }
 
     /**
      * @notice Accrue yield from premium payments. Increases exchange rate.
      */
     function accrueYield(uint256 premiumForSenior, address issuerToken) external onlyPool {
+        // Premium raises ONLY this issuer's per-issuer rate (no cross-subsidy to other issuers).
         totalUnderlying += premiumForSenior;
         poolUnderlying[issuerToken] += premiumForSenior;
 
-        // Recalculate exchange rate
+        // Keep the blended global rate fresh for the back-compat view only.
         if (totalSupply() > 0) {
             exchangeRateMantissa = (totalUnderlying * 1e18) / totalSupply();
         }
 
-        emit YieldAccrued(issuerToken, premiumForSenior, exchangeRateMantissa);
+        emit YieldAccrued(issuerToken, premiumForSenior, exchangeRateOf(issuerToken));
     }
 
     /**
@@ -76,7 +79,8 @@ contract srCVR is ERC20, ReentrancyGuard {
      * @return usdtOut Amount of USDT returned
      */
     function redeem(address holder, uint256 srCVRAmount, address issuerToken) external onlyPool nonReentrant returns (uint256 usdtOut) {
-        usdtOut = (srCVRAmount * exchangeRateMantissa) / 1e18;
+        uint256 rate = exchangeRateOf(issuerToken); // PER-ISSUER — A's losses/gains never touch B
+        usdtOut = (srCVRAmount * rate) / 1e18;
 
         require(usdtOut <= totalUnderlying, "srCVR: insufficient underlying");
         require(usdtOut <= poolUnderlying[issuerToken], "srCVR: insufficient pool underlying");
@@ -88,12 +92,12 @@ contract srCVR is ERC20, ReentrancyGuard {
         _burn(holder, srCVRAmount);
         usdt.safeTransfer(holder, usdtOut);
 
-        // Recalculate exchange rate
+        // Keep the blended global rate fresh for the back-compat view only.
         if (totalSupply() > 0) {
             exchangeRateMantissa = (totalUnderlying * 1e18) / totalSupply();
         }
 
-        emit Redeemed(holder, issuerToken, srCVRAmount, usdtOut, exchangeRateMantissa);
+        emit Redeemed(holder, issuerToken, srCVRAmount, usdtOut, rate);
     }
 
     /**
@@ -118,10 +122,25 @@ contract srCVR is ERC20, ReentrancyGuard {
 
     // ─── View Functions ──────────────────────────────────────────────
 
+    /// @notice PER-ISSUER exchange rate (poolUnderlying/poolSupply for that issuer). This is the
+    /// rate mint/redeem actually use, so one issuer's default or premium NEVER moves another
+    /// issuer's senior LPs. Returns 1e18 before that issuer has any supply.
+    function exchangeRateOf(address issuerToken) public view returns (uint256) {
+        uint256 supply = poolSupply[issuerToken];
+        if (supply == 0) return 1e18;
+        return (poolUnderlying[issuerToken] * 1e18) / supply;
+    }
+
+    function getRedeemableUSDTOf(uint256 srCVRAmount, address issuerToken) external view returns (uint256) {
+        return (srCVRAmount * exchangeRateOf(issuerToken)) / 1e18;
+    }
+
+    /// @dev Back-compat BLENDED global view (not used for per-issuer mint/redeem math).
     function getRedeemableUSDT(uint256 srCVRAmount) external view returns (uint256) {
         return (srCVRAmount * exchangeRateMantissa) / 1e18;
     }
 
+    /// @dev Back-compat BLENDED global view. Use exchangeRateOf(issuer) for the real per-issuer rate.
     function getCurrentExchangeRate() external view returns (uint256) {
         return exchangeRateMantissa;
     }
