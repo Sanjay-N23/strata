@@ -206,6 +206,17 @@ contract InsurancePool is Ownable2Step, ReentrancyGuard, Pausable {
         } else {
             usdtOut = IjrCVR(jrCVRToken).redeem(msg.sender, req.tokenAmount, issuerToken);
             pools[issuerToken].juniorTVL -= usdtOut;
+            // Preserve the senior-protection buffer: a junior withdrawal must not push the
+            // junior tranche below MIN_JUNIOR_RATIO_PCT while senior capital still remains.
+            // (Default-time liquidation uses liquidateForPayout, not this path.)
+            PoolState storage p = pools[issuerToken];
+            uint256 totalAfter = p.seniorTVL + p.juniorTVL;
+            if (p.seniorTVL > 0 && totalAfter > 0) {
+                require(
+                    (p.juniorTVL * 100) / totalAfter >= MIN_JUNIOR_RATIO_PCT,
+                    "InsurancePool: junior ratio too low"
+                );
+            }
         }
 
         _updateCoverageRatio(issuerToken);
