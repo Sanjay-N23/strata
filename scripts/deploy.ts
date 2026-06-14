@@ -257,6 +257,23 @@ async function main() {
   await strataAgent.setErc8004(addresses.IdentityRegistry, agentId);
   console.log(`Strata AI layer wired (agent + benchmark + replay + on-chain static arm + ERC-8004 identity #${agentId})`);
 
+  // ── Optional role separation (avoid single-key SPOF + benchmark integrity) ──────────
+  // The contracts support distinct roles via their setters. When these env vars are set we
+  // assign them; otherwise every role stays on the deployer (the demo path, so the seeding
+  // run still works). Separating the RECORDER from the agent OPERATOR and the RESOLVER
+  // (owner) is what makes the on-chain benchmark record non-fakeable by one key.
+  // NOTE: a separate AGENT_OPERATOR also needs the ERC-8004 identity NFT (minted to the
+  // deployer above) transferred to it so the onlyAgent identity gate keeps passing. Owner
+  // (Ownable2Step) is left on the deployer here — transfer it separately via its 2-step flow.
+  if (process.env.BENCHMARK_RECORDER) { await turingBenchmark.setRecorder(process.env.BENCHMARK_RECORDER); console.log("recorder    ->", process.env.BENCHMARK_RECORDER); }
+  if (process.env.REPLAY_KEEPER)      { await replayOracle.setReplayKeeper(process.env.REPLAY_KEEPER);     console.log("replayKeeper->", process.env.REPLAY_KEEPER); }
+  if (process.env.TREASURY)           { await tir.setTreasury(process.env.TREASURY);                        console.log("treasury    ->", process.env.TREASURY); }
+  if (process.env.AGENT_OPERATOR)     { await strataAgent.setAgentOperator(process.env.AGENT_OPERATOR);     console.log("agentOperator->", process.env.AGENT_OPERATOR); } // before guardian (onlyGuardian)
+  if (process.env.GUARDIAN)           { await strataAgent.setGuardian(process.env.GUARDIAN);                console.log("guardian    ->", process.env.GUARDIAN); }            // hand off LAST
+  if (process.env.BENCHMARK_RECORDER || process.env.REPLAY_KEEPER || process.env.AGENT_OPERATOR || process.env.GUARDIAN || process.env.TREASURY) {
+    console.log("Role separation applied from env (SPOF reduced).");
+  }
+
   // ═══════════════════════════════════════════════════════════════════
   // STEP 4: Save Deployment Addresses
   // ═══════════════════════════════════════════════════════════════════
