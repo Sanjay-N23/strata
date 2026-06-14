@@ -141,8 +141,20 @@ contract TIR is Ownable2Step, ReentrancyGuard {
 
     // ─── Slashing ────────────────────────────────────────────────────
 
+    /// @notice Destination for slashed attestor bonds. Defaults to owner() when unset;
+    /// set to a treasury / insurance multisig so slashing isn't an owner-EOA windfall.
+    address public treasury;
+    event TreasuryUpdated(address indexed treasury);
+
+    function setTreasury(address _treasury) external onlyOwner {
+        treasury = _treasury;
+        emit TreasuryUpdated(_treasury);
+    }
+
     /**
-     * @notice Slash a fraudulent attestor — 100% bond confiscation.
+     * @notice Slash a fraudulent attestor — 100% bond confiscation, routed to the treasury.
+     * @dev Bonds are denominated in the chain's native gas token (MNT on Mantle; the
+     *      `bondBNB` field name is a retained legacy identifier, not a BSC dependency).
      */
     function slashAttestor(address fraudulentAttestor, string calldata reason) external onlyOwner {
         Attestor storage att = attestors[fraudulentAttestor];
@@ -153,8 +165,9 @@ contract TIR is Ownable2Step, ReentrancyGuard {
         att.status = AttestorStatus.SLASHED;
         att.slashCount++;
 
-        // Transfer bond to protocol treasury (owner)
-        (bool sent, ) = owner().call{value: bondLost}("");
+        // Route the confiscated bond to the treasury (falls back to owner if unset).
+        address dest = treasury == address(0) ? owner() : treasury;
+        (bool sent, ) = dest.call{value: bondLost}("");
         require(sent, "TIR: slash transfer failed");
 
         emit AttestorSlashed(fraudulentAttestor, bondLost, reason);
