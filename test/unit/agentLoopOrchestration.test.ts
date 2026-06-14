@@ -42,7 +42,7 @@ describe("agent/index · main() orchestration (mocked chain)", function () {
     process.env.ISSUER_ADDRESS = DEAD;
     delete process.env.ZAI_API_KEY; // deterministic offline memo (no fetch)
 
-    calls = { pushSignals: 0, submitScore: 0, record: 0, earlyWarning: 0, propose: 0, setCursor: 0, staticReads: 0 };
+    calls = { pushSignals: 0, submitScore: 0, record: 0, earlyWarning: 0, propose: 0, setCursor: 0, staticReads: 0, paused: 0, observed: 0 };
     order = [];
 
     origLog = console.log;
@@ -54,6 +54,8 @@ describe("agent/index · main() orchestration (mocked chain)", function () {
       provider: {},
       network: "localhost",
       agent: {
+        paused: async () => { calls.paused++; return false; },                          // perceive: guardian state
+        latestScore: async () => { calls.observed++; return { score: 250n, pdBps: 7500n }; }, // perceive: read-back
         submitScore: () => { calls.submitScore++; return tx("submitScore"); },
         flagEarlyWarning: () => { calls.earlyWarning++; return tx("earlyWarning"); },
         proposeDefault: () => { calls.propose++; return tx("propose"); },
@@ -85,6 +87,8 @@ describe("agent/index · main() orchestration (mocked chain)", function () {
     expect(calls.record, "benchmark.record / epoch").to.equal(N);
     expect(calls.setCursor, "setCursor / epoch").to.equal(N);
     expect(calls.staticReads, "static rulebook read / epoch").to.equal(N);
+    expect(calls.paused, "perceive guardian-pause / epoch").to.equal(N);
+    expect(calls.observed, "perceive on-chain read-back / epoch").to.equal(N);
   });
 
   it("proposes a default EXACTLY ONCE across the whole replay (once-only guard)", async function () {
@@ -114,7 +118,7 @@ describe("agent/index · main() orchestration (mocked chain)", function () {
   it("is idempotent across runs (deterministic call counts)", async function () {
     await main();
     const first = { ...calls };
-    calls = { pushSignals: 0, submitScore: 0, record: 0, earlyWarning: 0, propose: 0, setCursor: 0, staticReads: 0 };
+    calls = { pushSignals: 0, submitScore: 0, record: 0, earlyWarning: 0, propose: 0, setCursor: 0, staticReads: 0, paused: 0, observed: 0 };
     order = [];
     await main();
     expect(calls).to.deep.equal(first);
