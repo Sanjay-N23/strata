@@ -338,29 +338,37 @@ describe("StrataAIAgent", function () {
   // ════════════════════════════════════════════════════════════════════
   describe("M13 · recordOutcome / reputation", function () {
     it("all-true sequence", async function () {
-      const { agent } = await loadFixture(fx);
-      await agent.recordOutcome(true); await agent.recordOutcome(true);
+      const { agent, benchmark } = await loadFixture(fx);
+      await agent.setBenchmark(benchmark.address);
+      const b = agent.connect(benchmark);
+      await b.recordOutcome(true); await b.recordOutcome(true);
       const [c, t] = await agent.reputation();
       expect(c).to.equal(2); expect(t).to.equal(2);
     });
     it("all-false sequence (correct stays 0)", async function () {
-      const { agent } = await loadFixture(fx);
-      await agent.recordOutcome(false); await agent.recordOutcome(false);
+      const { agent, benchmark } = await loadFixture(fx);
+      await agent.setBenchmark(benchmark.address);
+      const b = agent.connect(benchmark);
+      await b.recordOutcome(false); await b.recordOutcome(false);
       const [c, t] = await agent.reputation();
       expect(c).to.equal(0); expect(t).to.equal(2);
     });
     it("mixed sequence + event", async function () {
-      const { agent } = await loadFixture(fx);
-      await expect(agent.recordOutcome(true)).to.emit(agent, "ReputationUpdated").withArgs(1, 1);
-      await agent.recordOutcome(false);
-      await agent.recordOutcome(true);
+      const { agent, benchmark } = await loadFixture(fx);
+      await agent.setBenchmark(benchmark.address);
+      const b = agent.connect(benchmark);
+      await expect(b.recordOutcome(true)).to.emit(agent, "ReputationUpdated").withArgs(1, 1);
+      await b.recordOutcome(false);
+      await b.recordOutcome(true);
       const [c, t] = await agent.reputation();
       expect(c).to.equal(2); expect(t).to.equal(3);
     });
-    it("access: owner and a set benchmark may record; others cannot", async function () {
-      const { agent, other, benchmark } = await loadFixture(fx);
+    it("access: only the set benchmark may record; owner and others cannot", async function () {
+      const { agent, owner, other, benchmark } = await loadFixture(fx);
       await expect(agent.connect(other).recordOutcome(true)).to.be.revertedWith("Strata: not benchmark");
       await agent.setBenchmark(benchmark.address);
+      // owner is no longer privileged — the backdoor was removed
+      await expect(agent.connect(owner).recordOutcome(true)).to.be.revertedWith("Strata: not benchmark");
       await expect(agent.connect(benchmark).recordOutcome(true)).to.not.be.reverted;
     });
   });

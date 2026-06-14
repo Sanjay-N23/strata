@@ -177,7 +177,9 @@ contract StrataAIAgent is Ownable2Step {
     // ════════════════════════════════════════════════════════════════
 
     function recordOutcome(bool wasCorrect) external {
-        require(msg.sender == benchmark || msg.sender == owner(), "Strata: not benchmark");
+        // Only the benchmark contract may move reputation — no owner backdoor,
+        // so reputation() reflects resolved outcomes, never owner self-assertion.
+        require(msg.sender == benchmark, "Strata: not benchmark");
         totalResolved++;
         if (wasCorrect) correctCalls++;
         emit ReputationUpdated(correctCalls, totalResolved);
