@@ -311,12 +311,15 @@ sequenceDiagram
 
 ## 🧪 Test Coverage — 978 Tests, Zero Compromises
 
-`npm test` runs **978 passing** unit + integration tests (hardhat) + 14 Playwright e2e. The Strata
-AI layer (`StrataAIAgent`, `TuringBenchmark`, `ReplayOracle`) sits at **100% line/branch/function**.
+`npm test` runs the full unit + integration suite (hardhat) + Playwright e2e. The deterministic AI-layer
+logic (`StrataAIAgent`, `TuringBenchmark`, `ReplayOracle`) is at **100% line/branch/function coverage of
+that logic** — and because coverage ≠ correctness, a **property / multi-dataset** test exercises the model's
+*behaviour*: determinism, monotonicity, and a lead-time that **varies by dataset** (3 epochs on USDC-SVB,
+0 on the fundamentals-led boundary case) rather than a hardcoded constant.
 
 | Suite | Indicative coverage | Status |
 |---|---|:---:|
-| **Strata AI layer** | agent loop, PD scorecard, threshold parity, on-chain benchmark | ✅ 100% lines/branches/funcs |
+| **Strata AI layer** | agent loop, PD scorecard, threshold parity, on-chain benchmark | ✅ 100% of the deterministic logic + property/multi-dataset tests |
 | IssuerRegistry (lifecycle) | 6-state FSM | ✅ Passing |
 | IRSOracle (scoring + EWS) | credit score, TWAS cache, early-warning alerts | ✅ Passing |
 | TIR (attestation) | 2-of-3 attestor quorum | ✅ Passing |
