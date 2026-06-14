@@ -280,9 +280,15 @@ describe("TuringBenchmark", function () {
       const [c, t] = await rep([[0, 900, 900]], 1, true);
       expect(c).to.equal(0); expect(t).to.equal(1);
     });
-    it("defaulted = false → NO callback (0,0)", async function () {
+    it("defaulted = false + AI alarmed → FALSE POSITIVE recorded against reputation (0,1)", async function () {
+      // AI score 250 (<300) at epoch 3 = it cried wolf, but no default occurred.
       const [c, t] = await rep([[3, 250, 900]], 6, false);
-      expect(c).to.equal(0); expect(t).to.equal(0);
+      expect(c).to.equal(0); expect(t).to.equal(1);
+    });
+    it("defaulted = false + AI stayed calm → correct, no false alarm (1,1)", async function () {
+      // AI score 900 (>=300) = it did NOT alarm; correctly rewarded for not crying wolf.
+      const [c, t] = await rep([[3, 900, 900]], 6, false);
+      expect(c).to.equal(1); expect(t).to.equal(1);
     });
     it("no agent wired → resolve does not revert", async function () {
       const { bench, rec } = await loadFixture(fx);

@@ -155,10 +155,13 @@ contract TuringBenchmark is Ownable2Step {
         if (winner == 1) aiWins++;
         else if (winner == 2) staticWins++;
 
-        // Reputation: AI is "correct" if it gave a real, timely warning at least as
-        // early as the rulebook. Only meaningful when an event actually occurred.
-        if (defaulted && strataAgent != address(0)) {
-            bool aiCorrect = (aiLead >= 0) && (aiLead >= staticLead);
+        // Reputation (TWO-SIDED, not an upward-only ratchet): on a real default the AI is
+        // "correct" iff it warned at least as early as the rulebook; on a NON-default a false
+        // alarm counts AGAINST it (false positive) and staying calm counts FOR it.
+        if (strataAgent != address(0)) {
+            bool aiCorrect = defaulted
+                ? ((aiLead >= 0) && (aiLead >= staticLead))
+                : (aiLead < 0); // no default: correct == the AI did NOT alarm (no false positive)
             IStrataAgentRep(strataAgent).recordOutcome(aiCorrect);
         }
 
